@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PT Manager">
+<meta name="theme-color" content="#0F172A">
+<title>PT Manager AI</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --acc:#38BDF8;--acc2:#0EA5E9;--acc3:#0284C7;
+  --acc-soft:#E0F5FF;--acc-softer:#F0FAFF;--acc-text:#0C4A6E;
+  --navy:#0F172A;--navy2:#1E293B;--navy3:#334155;
+  --surface:#fff;--surface2:#F8FAFC;--surface3:#F1F5F9;
+  --text:#0F172A;--text2:#475569;--text3:#94A3B8;
+  --border:rgba(148,163,184,0.18);--border2:rgba(148,163,184,0.32);
+  --r:14px;--shadow:0 2px 12px rgba(15,23,42,0.07);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+.t-sky{--acc:#38BDF8;--acc2:#0EA5E9;--acc-soft:#E0F5FF;--acc-softer:#F0FAFF;--acc-text:#0C4A6E}
+.t-pink{--acc:#F472B6;--acc2:#EC4899;--acc-soft:#FDE7F3;--acc-softer:#FFF0F8;--acc-text:#831843}
+.t-lime{--acc:#84CC16;--acc2:#65A30D;--acc-soft:#ECFCCB;--acc-softer:#F7FFED;--acc-text:#2D5016}
+.t-purple{--acc:#A78BFA;--acc2:#8B5CF6;--acc-soft:#EDE9FE;--acc-softer:#F5F3FF;--acc-text:#3B0764}
+.t-peach{--acc:#FB923C;--acc2:#F97316;--acc-soft:#FFEDD5;--acc-softer:#FFF7ED;--acc-text:#7C2D12}
+.t-mint{--acc:#2DD4BF;--acc2:#14B8A6;--acc-soft:#CCFBF1;--acc-softer:#F0FFFE;--acc-text:#134E4A}
+
+html,body{height:100%;overflow:hidden;font-family:'Pretendard',sans-serif;background:var(--surface2);color:var(--text)}
+
+/* ── 앱 레이아웃 ── */
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
+
+/* ── 상단 헤더 (모바일) ── */
+.mob-header{background:var(--navy);padding:max(44px,env(safe-area-inset-top,44px)) 16px 14px;flex-shrink:0}
+.trainer-header{background:var(--navy);padding:max(44px,env(safe-area-inset-top,44px)) 16px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.trainer-header h1{font-size:16px;font-weight:700;color:#fff}
+
+/* ── 콘텐츠 영역 ── */
+.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:14px 14px calc(70px + var(--safe-bottom));background:var(--surface2)}
+
+/* ── 하단 탭바 ── */
+.tabbar{background:var(--surface);border-top:0.5px solid var(--border2);display:flex;padding-bottom:var(--safe-bottom);flex-shrink:0;position:relative;z-index:10}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:8px 4px 6px;transition:all .15s}
+.tab-item i{font-size:22px;color:var(--text3);transition:color .15s}
+.tab-item span{font-size:9px;color:var(--text3);font-weight:500;transition:color .15s}
+.tab-item.active i,.tab-item.active span{color:var(--acc2)}
+.tab-dot{position:relative}
+.tab-dot::after{content:'';position:absolute;top:0;right:-1px;width:7px;height:7px;background:#F43F5E;border-radius:50%;border:1.5px solid var(--surface)}
+
+/* ── 트레이너 사이드바 (태블릿) ── */
+@media(min-width:768px){
+  #app{flex-direction:row}
+  .mob-header{display:none}
+  .trainer-header{display:none}
+  .sidebar{width:220px;background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;height:100vh}
+  .sidebar-logo{padding:24px 16px 14px;border-bottom:1px solid rgba(255,255,255,0.07)}
+  .sidebar-logo h1{font-size:15px;font-weight:700;color:#fff}
+  .sidebar-logo p{font-size:11px;color:rgba(255,255,255,0.38);margin-top:2px}
+  .sidebar-nav{flex:1;padding:10px 8px;overflow-y:auto}
+  .s-section{font-size:9px;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:0.9px;padding:10px 8px 3px;margin-top:2px}
+  .s-item{display:flex;align-items:center;gap:7px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:12px;color:rgba(255,255,255,0.5);transition:all .15s;margin-bottom:1px}
+  .s-item:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.85)}
+  .s-item.active{background:rgba(255,255,255,0.1);color:var(--acc)}
+  .s-item i{font-size:15px;width:17px;text-align:center}
+  .s-badge{margin-left:auto;background:var(--acc);color:var(--navy);font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px}
+  .sidebar-bottom{padding:10px 10px 16px;border-top:1px solid rgba(255,255,255,0.07)}
+  .role-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;border-radius:8px;font-size:12px;cursor:pointer;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);font-weight:500}
+  .role-btn:hover{background:rgba(255,255,255,0.1);color:#fff}
+  .main-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  .topbar{background:var(--surface);border-bottom:0.5px solid var(--border2);padding:0 20px;height:52px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+  .topbar h2{font-size:14px;font-weight:600;flex:1}
+  .tabbar{display:none}
+  .content{padding:16px 20px 20px}
+}
+@media(max-width:767px){
+  .sidebar{display:none}
+  .main-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  .topbar{display:none}
+}
+
+/* ── 공통 컴포넌트 ── */
+.card{background:var(--surface);border:0.5px solid var(--border2);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:10px}
+.card-acc{background:var(--acc-softer);border-color:rgba(0,0,0,0.05)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metric{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
+.metric-label{font-size:11px;color:var(--text3);margin-bottom:3px;font-weight:500}
+.metric-value{font-size:22px;font-weight:700;color:var(--acc2)}
+.metric-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.sec-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;display:flex;align-items:center;gap:4px}
+.mc{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border);cursor:pointer}
+.mc:last-child{border-bottom:none}
+.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.mname{font-size:13px;font-weight:600}
+.msub{font-size:11px;color:var(--text3);margin-top:1px}
+.tag{display:inline-flex;align-items:center;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600}
+.tag-acc{background:var(--acc-soft);color:var(--acc-text)}
+.tag-g{background:#DCFCE7;color:#14532D}
+.tag-y{background:#FEF9C3;color:#713F12}
+.tag-r{background:#FEE2E2;color:#7F1D1D}
+.tag-gr{background:var(--surface3);color:var(--text3)}
+.warn-pill{background:#FFF1F2;border:0.5px solid rgba(244,63,94,0.2);color:#9F1239;font-size:10px;padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:3px;margin-right:4px;margin-bottom:4px;font-weight:500}
+.ex-row{display:flex;align-items:center;gap:7px;padding:6px 10px;background:var(--surface2);border-radius:8px;margin:3px 0;border:0.5px solid var(--border)}
+.ex-row span:first-child{font-size:12px;font-weight:500;flex:1}
+.ex-row span:last-of-type{font-size:11px;color:var(--text3)}
+.divider{height:0.5px;background:var(--border);margin:10px 0}
+.progress-bar{height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;margin-top:4px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:3px}
+.xp-bar-wrap{height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;margin-top:4px}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:3px}
+.level-pill{display:inline-flex;align-items:center;gap:3px;background:var(--acc-soft);color:var(--acc-text);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+.xp-pill{background:var(--acc-soft);color:var(--acc-text);font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;display:inline-block;margin-top:5px}
+.form-group{margin-bottom:11px}
+.form-label{font-size:10px;color:var(--text3);margin-bottom:3px;display:block;font-weight:600;text-transform:uppercase;letter-spacing:0.4px}
+input,select,textarea{width:100%;padding:9px 11px;border:0.5px solid var(--border2);border-radius:9px;background:var(--surface);color:var(--text);font-size:13px;font-family:'Pretendard',sans-serif;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft)}
+textarea{resize:vertical;min-height:70px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:10px 16px;border-radius:10px;font-size:13px;cursor:pointer;border:0.5px solid var(--border2);background:var(--surface);color:var(--text2);font-family:'Pretendard',sans-serif;font-weight:500;transition:all .15s;-webkit-appearance:none}
+.btn:active{transform:scale(0.97)}
+.btn-acc{background:var(--acc);color:var(--acc-text);border-color:var(--acc);font-weight:700}
+.btn-full{width:100%;margin-top:6px}
+.session-item{padding:10px 0;border-bottom:0.5px solid var(--border)}
+.session-item:last-child{border-bottom:none}
+.sticky-warn{background:#FFF1F2;border:0.5px solid rgba(244,63,94,0.2);border-left:3px solid #F43F5E;border-radius:0 10px 10px 0;padding:10px 12px;margin-bottom:12px}
+.inbody-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:0.5px solid var(--border)}
+.inbody-row:last-child{border-bottom:none}
+.pos{color:#059669;font-weight:600}
+.neg{color:#DC2626;font-weight:600}
+.notice-card{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:var(--shadow)}
+.notice-pin{border-left:3px solid #EAB308;background:#FFFBEB;border-radius:0 12px 12px 0}
+.mini-chart{display:flex;align-items:flex-end;gap:3px;height:40px;margin-bottom:4px}
+.bar{flex:1;border-radius:3px 3px 0 0}
+.bar.filled{background:var(--acc)}
+.bar.empty{background:var(--surface3);border:0.5px solid var(--border)}
+.streak-card{background:var(--navy2);border-radius:14px;padding:14px 16px;color:#fff;margin-bottom:12px}
+.streak-big{font-size:30px;font-weight:700;color:var(--acc);line-height:1}
+.streak-dots{display:flex;gap:5px;margin-top:9px}
+.s-dot{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,0.4);font-weight:600;border:1px solid rgba(255,255,255,0.08);flex-shrink:0}
+.s-dot.done{background:var(--acc);color:var(--navy);border-color:var(--acc)}
+.s-dot.today{background:rgba(255,255,255,0.15);color:#fff;border:2px solid var(--acc);animation:dp 1.5s infinite}
+@keyframes dp{0%,100%{box-shadow:0 0 0 0 rgba(56,189,248,0.4)}50%{box-shadow:0 0 0 5px transparent}}
+.mission-item{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:13px;margin-bottom:8px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.mission-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.mission-item.hard::before{background:#F43F5E}
+.mission-item.mid::before{background:var(--acc)}
+.mission-item.done{opacity:0.5;background:var(--surface3)}
+.mission-item.done::before{background:var(--border2)}
+.mission-item:active{transform:scale(0.98)}
+.mi-title{font-size:13px;font-weight:600;margin-bottom:2px}
+.mi-desc{font-size:11px;color:var(--text3)}
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.hm-card{background:var(--surface);border:0.5px solid var(--border2);border-radius:14px;padding:14px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow)}
+.hm-card.acc{background:var(--acc-softer);border-color:rgba(0,0,0,0.04)}
+.hm-card:active{transform:scale(0.97)}
+.hm-icon{font-size:22px;margin-bottom:7px}
+.hm-title{font-size:13px;font-weight:700;margin-bottom:2px}
+.hm-sub{font-size:11px;color:var(--text3)}
+.check-item{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:13px;cursor:pointer}
+.check-item:last-child{border-bottom:none}
+.check-item input{width:16px;height:16px;accent-color:var(--acc);cursor:pointer;flex-shrink:0;margin-top:1px}
+.ai-block{background:var(--acc-softer);border:0.5px solid var(--border2);border-radius:10px;padding:11px 13px;margin-bottom:8px}
+.ai-block-title{font-size:10px;font-weight:700;color:var(--acc2);margin-bottom:7px;text-transform:uppercase;letter-spacing:0.5px;display:flex;align-items:center;gap:4px}
+.ai-ex{font-size:12px;padding:5px 0;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;gap:8px}
+.ai-ex:last-child{border-bottom:none}
+.ai-ex span:last-child{font-size:10px;color:var(--text3);background:var(--surface);padding:1px 6px;border-radius:10px;border:0.5px solid var(--border);white-space:nowrap}
+
+/* 테마 스와치 */
+.swatch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.swatch-item{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 6px;border-radius:12px;cursor:pointer;border:2px solid var(--border2);background:var(--surface);transition:all .15s}
+.swatch-item.active{border-color:var(--acc);background:var(--acc-softer)}
+.swatch-item:active{transform:scale(0.95)}
+.swatch-circle{width:30px;height:30px;border-radius:50%}
+.swatch-name{font-size:11px;font-weight:600;color:var(--text2)}
+
+/* 회원 헤더 */
+.member-header{background:var(--navy);padding:max(44px,env(safe-area-inset-top,44px)) 16px 16px;flex-shrink:0}
+.mh-greeting{font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:2px}
+.mh-name{font-size:18px;font-weight:700;color:var(--acc)}
+.mh-sub{font-size:11px;color:rgba(255,255,255,0.45);margin-top:1px}
+.xp-labels{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:3px;margin-top:10px}
+.xp-track{background:rgba(255,255,255,0.12);border-radius:10px;height:6px;overflow:hidden}
+.xp-fill-w{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:10px}
+
+/* 역할 전환 버튼 (모바일 상단) */
+.role-toggle-mob{position:absolute;right:14px;top:max(44px,env(safe-area-inset-top,44px));display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.1);border:0.5px solid rgba(255,255,255,0.2);border-radius:20px;padding:5px 10px;font-size:11px;color:rgba(255,255,255,0.8);cursor:pointer;font-weight:500}
+
+/* 페이지 애니메이션 */
+.page-enter{animation:pIn .2s ease}
+@keyframes pIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* 스크롤바 숨김 */
+::-webkit-scrollbar{display:none}
+</style>
+</head>
+<body>
+<div id="app" class="t-sky">
+
+  <!-- 사이드바 (태블릿) -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 9px;margin-bottom:8px"><span style="font-size:11px;color:var(--acc);font-weight:600">⚡ PT Manager AI</span></div>
+      <h1 id="sb-title">트레이너 모드</h1>
+      <p id="sb-sub">Kim Trainer님</p>
+    </div>
+    <nav class="sidebar-nav" id="sb-nav"></nav>
+    <div id="sb-theme-wrap" style="display:none;padding:10px 10px 8px;border-top:1px solid rgba(255,255,255,0.07)">
+      <div style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:7px">테마</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap" id="sb-swatches"></div>
+    </div>
+    <div class="sidebar-bottom">
+      <button class="role-btn" onclick="toggleRole()"><i class="ti ti-switch-horizontal"></i><span id="role-btn-txt">회원 뷰로 전환</span></button>
+    </div>
+  </div>
+
+  <!-- 메인 영역 -->
+  <div class="main-area">
+    <!-- 태블릿 탑바 -->
+    <div class="topbar" id="topbar">
+      <h2 id="topbar-title">대시보드</h2>
+      <div id="topbar-actions"></div>
+    </div>
+
+    <!-- 회원 모바일 헤더 -->
+    <div id="member-header-mob" style="display:none;position:relative">
+      <div class="member-header" id="member-header-inner">
+        <div class="mh-greeting">안녕하세요 👋</div>
+        <div class="mh-name">김민지님</div>
+        <div class="mh-sub">근비대 · 7주차 진행중</div>
+        <div class="xp-labels"><span>경험치</span><span id="xp-label-mob">820 / 1000 XP</span></div>
+        <div class="xp-track"><div class="xp-fill-w" id="xp-bar-mob" style="width:82%"></div></div>
+      </div>
+      <div class="role-toggle-mob" onclick="toggleRole()"><i class="ti ti-switch-horizontal"></i>트레이너 뷰</div>
+    </div>
+
+    <!-- 트레이너 모바일 헤더 -->
+    <div id="trainer-header-mob" style="position:relative">
+      <div class="trainer-header">
+        <div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:1px">⚡ PT Manager AI</div>
+          <h1 style="font-size:16px;font-weight:700;color:#fff" id="trainer-page-title-mob">대시보드</h1>
+        </div>
+        <div id="trainer-topbar-actions-mob"></div>
+      </div>
+      <div class="role-toggle-mob" style="top:max(46px,env(safe-area-inset-top,46px))" onclick="toggleRole()"><i class="ti ti-switch-horizontal"></i>회원 뷰</div>
+    </div>
+
+    <!-- 콘텐츠 -->
+    <div class="content" id="content"></div>
+
+    <!-- 하단 탭바 (모바일) -->
+    <div class="tabbar" id="tabbar"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ── 전역 상태 ──
+let role = 'trainer';
+let curPage = 'dashboard';
+let curTheme = 'sky';
+let chartInst = null;
+
+const themes = [
+  {id:'sky',name:'스카이',color:'#38BDF8',cls:'t-sky'},
+  {id:'pink',name:'핑크',color:'#F472B6',cls:'t-pink'},
+  {id:'lime',name:'라임',color:'#84CC16',cls:'t-lime'},
+  {id:'purple',name:'퍼플',color:'#A78BFA',cls:'t-purple'},
+  {id:'peach',name:'피치',color:'#FB923C',cls:'t-peach'},
+  {id:'mint',name:'민트',color:'#2DD4BF',cls:'t-mint'},
+];
+
+const members = [
+  {name:'김민지',goal:'근비대',week:7,sessions:24,bg:'#DBEAFE',tc:'#1E3A8A',init:'김',warns:['무릎 약함','점프 동작 주의'],level:5,xp:820,xpMax:1000,streak:12},
+  {name:'이준혁',goal:'감량',week:5,sessions:18,bg:'#DCFCE7',tc:'#14532D',init:'이',warns:['혈압 주의'],level:3,xp:340,xpMax:600,streak:5},
+  {name:'박서연',goal:'재활',week:3,sessions:12,bg:'#FEE2E2',tc:'#7F1D1D',init:'박',warns:['허리 디스크','데드리프트 금지'],level:2,xp:180,xpMax:400,streak:3},
+  {name:'최동우',goal:'근비대',week:5,sessions:9,bg:'#FEF9C3',tc:'#713F12',init:'최',warns:['무릎 통증(우)'],level:2,xp:210,xpMax:400,streak:8},
+];
+
+let missions = [
+  {id:1,title:'이번 주 3회 출석',desc:'주 3회 이상 수업 참석',xp:150,done:false,type:'hard',icon:'🏃'},
+  {id:2,title:'7일 연속 숙제 완료',desc:'매일 숙제를 빠짐없이 체크',xp:200,done:false,type:'hard',icon:'🔥'},
+  {id:3,title:'인바디 측정하기',desc:'이번 달 인바디 측정 완료',xp:100,done:true,type:'mid',icon:'📊'},
+  {id:4,title:'수업 후기 남기기',desc:'오늘 수업 만족도 입력',xp:50,done:true,type:'mid',icon:'⭐'},
+  {id:5,title:'체중 목표 50% 달성',desc:'목표 체중의 50% 달성',xp:300,done:false,type:'hard',icon:'🏆'},
+  {id:6,title:'누적 수업 10회',desc:'누적 수업 10회 달성',xp:80,done:false,type:'mid',icon:'💪'},
+  {id:7,title:'한 달 개근',desc:'한 달 모든 수업 참석',xp:500,done:false,type:'hard',icon:'👑'},
+  {id:8,title:'건강 식단 인증',desc:'식단 사진을 트레이너에게 전송',xp:30,done:false,type:'mid',icon:'🥗'},
+];
+
+const trainerNav = [
+  {id:'dashboard',icon:'ti-layout-dashboard',label:'대시보드'},
+  {id:'members',icon:'ti-users',label:'회원 관리'},
+  {sec:'수업 관리'},
+  {id:'session',icon:'ti-notebook',label:'수업 일지',badge:'3'},
+  {id:'ai-plan',icon:'ti-robot',label:'AI 수업안'},
+  {sec:'데이터'},
+  {id:'inbody',icon:'ti-chart-line',label:'인바디 변화'},
+  {sec:'공유'},
+  {id:'homework',icon:'ti-checklist',label:'숙제 공유'},
+  {id:'notice',icon:'ti-speakerphone',label:'센터 공지'},
+];
+
+const memberNav = [
+  {id:'m-home',icon:'ti-home',label:'홈'},
+  {id:'m-journal',icon:'ti-notebook',label:'수업 일지'},
+  {id:'m-inbody',icon:'ti-chart-line',label:'인바디'},
+  {sec:'게임'},
+  {id:'m-missions',icon:'ti-trophy',label:'미션',badge:'5'},
+  {sec:'기타'},
+  {id:'m-homework',icon:'ti-checklist',label:'숙제'},
+  {id:'m-notice',icon:'ti-speakerphone',label:'공지'},
+  {id:'m-settings',icon:'ti-palette',label:'테마 설정'},
+];
+
+const memberTabs = [
+  {id:'m-home',icon:'ti-home',label:'홈'},
+  {id:'m-missions',icon:'ti-trophy',label:'미션',dot:true},
+  {id:'m-journal',icon:'ti-notebook',label:'일지'},
+  {id:'m-homework',icon:'ti-checklist',label:'숙제'},
+  {id:'m-settings',icon:'ti-user',label:'내 정보'},
+];
+
+const trainerTabs = [
+  {id:'dashboard',icon:'ti-layout-dashboard',label:'대시보드'},
+  {id:'members',icon:'ti-users',label:'회원'},
+  {id:'session',icon:'ti-notebook',label:'수업일지'},
+  {id:'ai-plan',icon:'ti-robot',label:'AI수업안'},
+  {id:'inbody',icon:'ti-chart-line',label:'인바디'},
+];
+
+const pageTitles = {
+  dashboard:'대시보드',members:'회원 관리',session:'수업 일지',
+  'ai-plan':'AI 수업안',inbody:'인바디 변화',homework:'숙제 공유',notice:'센터 공지',
+  'm-home':'홈','m-journal':'수업 일지','m-inbody':'인바디 변화',
+  'm-missions':'미션 & 보상','m-homework':'숙제','m-notice':'센터 공지','m-settings':'설정',
+};
+
+// ── 테마 적용 ──
+function applyTheme(id) {
+  curTheme = id;
+  const app = document.getElementById('app');
+  themes.forEach(t => app.classList.remove(t.cls));
+  app.classList.add(themes.find(x => x.id === id).cls);
+  renderSbSwatches();
+}
+
+function renderSbSwatches() {
+  const el = document.getElementById('sb-swatches');
+  if (!el) return;
+  el.innerHTML = themes.map(t =>
+    `<div onclick="applyTheme('${t.id}')" style="width:22px;height:22px;border-radius:50%;background:${t.color};cursor:pointer;border:2px solid ${t.id===curTheme?'#fff':'transparent'};transition:all .15s"></div>`
+  ).join('');
+}
+
+// ── 네비게이션 렌더링 ──
+function renderNav() {
+  const isMobile = window.innerWidth < 768;
+
+  // 사이드바
+  const sbNav = document.getElementById('sb-nav');
+  const nav = role === 'trainer' ? trainerNav : memberNav;
+  sbNav.innerHTML = nav.map(it => {
+    if (it.sec) return `<div class="s-section">${it.sec}</div>`;
+    const badge = it.badge ? `<span class="s-badge">${it.badge}</span>` : '';
+    return `<div class="s-item ${it.id===curPage?'active':''}" onclick="showPage('${it.id}')"><i class="ti ${it.icon}"></i>${it.label}${badge}</div>`;
+  }).join('');
+
+  document.getElementById('sb-title').textContent = role === 'trainer' ? '트레이너 모드' : '회원 모드';
+  document.getElementById('sb-sub').textContent = role === 'trainer' ? 'Kim Trainer님' : '김민지님';
+  document.getElementById('role-btn-txt').textContent = role === 'trainer' ? '회원 뷰로 전환' : '트레이너 뷰로 전환';
+  document.getElementById('sb-theme-wrap').style.display = role === 'member' ? 'block' : 'none';
+  renderSbSwatches();
+
+  // 탭바 (모바일)
+  const tabs = role === 'trainer' ? trainerTabs : memberTabs;
+  const tabbar = document.getElementById('tabbar');
+  tabbar.innerHTML = tabs.map(t =>
+    `<div class="tab-item ${t.id===curPage?'active':''} ${t.dot?'tab-dot':''}" onclick="showPage('${t.id}')"><i class="ti ${t.icon}"></i><span>${t.label}</span></div>`
+  ).join('');
+
+  // 모바일 헤더 전환
+  document.getElementById('member-header-mob').style.display = (role==='member'&&isMobile) ? 'block' : 'none';
+  document.getElementById('trainer-header-mob').style.display = (role==='trainer'&&isMobile) ? 'block' : 'none';
+  if (isMobile && role==='trainer') {
+    document.getElementById('trainer-page-title-mob').textContent = pageTitles[curPage] || '';
+  }
+
+  // 탑바 액션
+  const ta = document.getElementById('topbar-actions');
+  const tam = document.getElementById('trainer-topbar-actions-mob');
+  const title = document.getElementById('topbar-title');
+  if (title) title.textContent = pageTitles[curPage] || '';
+  let actions = '';
+  if (role==='trainer') {
+    if (curPage==='dashboard') actions = `<button class="btn" style="font-size:11px;padding:6px 10px" onclick="showPage('session')"><i class="ti ti-plus"></i>수업 일지</button><button class="btn btn-acc" style="font-size:11px;padding:6px 10px;margin-left:6px" onclick="showPage('ai-plan')"><i class="ti ti-robot"></i>AI 수업안</button>`;
+    else if (curPage==='m-home'||curPage==='m-missions') actions = `<div class="level-pill"><i class="ti ti-star"></i>Lv.5</div>`;
+  } else {
+    actions = `<div class="level-pill"><i class="ti ti-star"></i>Lv.5</div>`;
+  }
+  if (ta) ta.innerHTML = actions;
+  if (tam) tam.innerHTML = '';
+}
+
+// ── 페이지 이동 ──
+function showPage(id) {
+  curPage = id;
+  renderNav();
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+  const c = document.getElementById('content');
+  c.innerHTML = '';
+  const div = document.createElement('div');
+  div.className = 'page-enter';
+  div.innerHTML = getHTML(id);
+  c.appendChild(div);
+  c.scrollTop = 0;
+  setTimeout(() => postRender(id), 100);
+}
+
+function postRender(id) {
+  if (id === 'inbody' || id === 'm-inbody') drawChart(id);
+}
+
+// ── 역할 전환 ──
+function toggleRole() {
+  role = role === 'trainer' ? 'member' : 'trainer';
+  showPage(role === 'member' ? 'm-home' : 'dashboard');
+}
+
+// ══════════════════════════════════
+// TRAINER PAGES
+// ══════════════════════════════════
+function getHTML(id) {
+  if (role === 'trainer') {
+    if (id==='dashboard') return tDash();
+    if (id==='members') return tMembers();
+    if (id==='session') return tSession();
+    if (id==='ai-plan') return tAI();
+    if (id==='inbody') return tInbody();
+    if (id==='homework') return tHomework();
+    if (id==='notice') return tNotice();
+  } else {
+    if (id==='m-home') return mHome();
+    if (id==='m-journal') return mJournal();
+    if (id==='m-inbody') return mInbody();
+    if (id==='m-missions') return mMissions();
+    if (id==='m-homework') return mHomework();
+    if (id==='m-notice') return mNotice();
+    if (id==='m-settings') return mSettings();
+  }
+  return '';
+}
+
+function tDash() { return `
+  <div class="grid-2" style="margin-bottom:10px">
+    <div class="metric"><div class="metric-label">전체 회원</div><div class="metric-value">12</div><div class="metric-sub">이번 달 +2</div></div>
+    <div class="metric"><div class="metric-label">오늘 수업</div><div class="metric-value">4</div><div class="metric-sub">완료 2 / 예정 2</div></div>
+    <div class="metric"><div class="metric-label">숙제 완료율</div><div class="metric-value">68%</div><div class="metric-sub">이번 주</div></div>
+    <div class="metric"><div class="metric-label">AI 미확정</div><div class="metric-value" style="color:#F43F5E">5</div><div class="metric-sub">검토 필요</div></div>
+  </div>
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-calendar"></i>오늘 수업</div>
+    ${members.map((m,i)=>`<div class="mc"><div class="avatar" style="background:${m.bg};color:${m.tc}">${m.init}</div><div><div class="mname">${m.name}</div><div class="msub">${['10:00','13:00','15:00','18:00'][i]}</div></div><span class="tag ${i<2?'tag-g':'tag-y'}" style="margin-left:auto">${i<2?'완료':'예정'}</span></div>`).join('')}
+  </div>
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-trophy"></i>회원 미션 현황</div>
+    ${members.map(m=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:0.5px solid var(--border)"><div class="avatar" style="background:${m.bg};color:${m.tc};width:30px;height:30px;font-size:11px">${m.init}</div><div style="flex:1"><div style="font-size:12px;font-weight:600">${m.name} <span class="tag tag-acc">Lv.${m.level}</span></div><div class="xp-bar-wrap"><div class="xp-fill" style="width:${Math.round(m.xp/m.xpMax*100)}%"></div></div></div><span style="font-size:11px;color:#F43F5E;font-weight:700">🔥${m.streak}</span></div>`).join('')}
+  </div>
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-alert-triangle"></i>특이사항</div>
+    ${members.filter(m=>m.warns.length).map(m=>`<div style="margin-bottom:8px"><div style="font-size:12px;font-weight:600;margin-bottom:3px">${m.name}</div>${m.warns.map(w=>`<span class="warn-pill"><i class="ti ti-alert-circle"></i>${w}</span>`).join('')}</div><div class="divider"></div>`).join('')}
+  </div>`; }
+
+function tMembers() { return `
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <input type="text" placeholder="회원 검색..." style="flex:1">
+    <button class="btn btn-acc" onclick="alert('회원 추가 기능')"><i class="ti ti-user-plus"></i>추가</button>
+  </div>
+  <div class="card">
+    ${members.map(m=>`<div class="mc"><div class="avatar" style="background:${m.bg};color:${m.tc}">${m.init}</div><div style="flex:1"><div class="mname">${m.name}</div><div class="msub">${m.goal} · ${m.week}주차 · ${m.sessions}회</div></div><div style="display:flex;align-items:center;gap:5px"><span class="tag tag-acc">Lv.${m.level}</span><span style="font-size:10px;color:#F43F5E;font-weight:700">🔥${m.streak}일</span></div></div>`).join('')}
+  </div>`; }
+
+function tSession() { return `
+  <div class="sticky-warn">
+    <div style="font-size:10px;font-weight:700;color:#9F1239;margin-bottom:4px"><i class="ti ti-alert-triangle"></i> 김민지 특이사항</div>
+    <span class="warn-pill">무릎 약함</span><span class="warn-pill">점프 동작 주의</span>
+    <div style="font-size:10px;color:var(--text3);margin-top:4px">근비대 · 7주차 · Lv.5 🔥 12일</div>
+  </div>
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-notebook"></i>수업 정보</div>
+    <div class="form-group"><label class="form-label">회원</label><select>${members.map(m=>`<option>${m.name}</option>`).join('')}</select></div>
+    <div class="grid-2" style="gap:8px">
+      <div class="form-group"><label class="form-label">날짜</label><input type="date" value="2026-05-14"></div>
+      <div class="form-group"><label class="form-label">컨디션</label><select><option>좋음 😊</option><option>보통 😐</option><option>피로 😔</option><option>통증 😣</option></select></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-barbell"></i>수행 운동</div>
+    <div id="ex-list">
+      <div class="ex-row"><span>스쿼트</span><span>60kg · 10회 · 4세트</span><i class="ti ti-trash" style="font-size:13px;color:var(--text3);cursor:pointer;margin-left:6px" onclick="this.closest('.ex-row').remove()"></i></div>
+      <div class="ex-row"><span>레그프레스</span><span>100kg · 12회 · 3세트</span><i class="ti ti-trash" style="font-size:13px;color:var(--text3);cursor:pointer;margin-left:6px" onclick="this.closest('.ex-row').remove()"></i></div>
+    </div>
+    <button class="btn btn-full" onclick="addEx()"><i class="ti ti-plus"></i>운동 추가</button>
+  </div>
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-message"></i>코칭 & 숙제</div>
+    <div class="form-group"><label class="form-label">코칭 포인트</label><textarea>스쿼트 시 무릎 정렬 재확인. 힙힌지 패턴 개선 중.</textarea></div>
+    <div class="form-group"><label class="form-label">주의사항</label><textarea placeholder="주의사항 입력"></textarea></div>
+    <div class="form-group"><label class="form-label">숙제</label><textarea>매일 폼롤러 허벅지·종아리 각 2분. 브리지 15회×3세트.</textarea></div>
+    <button class="btn btn-acc btn-full" onclick="doSave()"><i class="ti ti-device-floppy"></i>저장 후 AI 수업안 생성</button>
+  </div>`; }
+
+function tAI() { return `
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-robot"></i>AI 수업안 생성</div>
+    <div class="form-group"><label class="form-label">회원</label><select>${members.map(m=>`<option>${m.name}</option>`).join('')}</select></div>
+    <div class="grid-2" style="gap:8px">
+      <div class="form-group"><label class="form-label">목표</label><select><option>근비대</option><option>감량</option><option>재활</option></select></div>
+      <div class="form-group"><label class="form-label">주차</label><select><option>8주차</option><option>9주차</option></select></div>
+    </div>
+    <button class="btn btn-acc btn-full" id="gen-btn" onclick="genPlan()"><i class="ti ti-sparkles"></i>AI 수업안 자동 생성</button>
+  </div>
+  <div id="plan-result"></div>
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-history"></i>확정 이력</div>
+    ${[{n:'김민지',g:'근비대 7주차',d:'5월 12일'},{n:'이준혁',g:'감량 5주차',d:'5월 10일'},{n:'박서연',g:'재활 3주차',d:'5월 8일'}].map(h=>`<div class="session-item"><div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-size:13px;font-weight:600">${h.d}</span><span class="tag tag-g">공유완료</span></div><div style="font-size:11px;color:var(--text3)">${h.n} · ${h.g}</div></div>`).join('')}
+  </div>`; }
+
+function tInbody() { return `
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-chart-line"></i>데이터 입력</div>
+    <div class="form-group"><label class="form-label">회원</label><select>${members.map(m=>`<option>${m.name}</option>`).join('')}</select></div>
+    <div class="form-group"><label class="form-label">측정일</label><input type="date" value="2026-05-14"></div>
+    <div class="grid-2" style="gap:8px">
+      <div class="form-group"><label class="form-label">체중(kg)</label><input type="number" value="58.5"></div>
+      <div class="form-group"><label class="form-label">체지방률(%)</label><input type="number" value="22.3"></div>
+      <div class="form-group"><label class="form-label">골격근량(kg)</label><input type="number" value="24.1"></div>
+      <div class="form-group"><label class="form-label">BMI</label><input type="number" value="21.8"></div>
+    </div>
+    <button class="btn btn-acc btn-full"><i class="ti ti-device-floppy"></i>인바디 저장</button>
+  </div>
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-chart-area"></i>김민지 변화 추이</div>
+    <canvas id="inbody-chart" height="160"></canvas>
+  </div>
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-list"></i>최근 수치</div>
+    ${[['체중','58.5 kg','▼ 1.2kg',false],['체지방률','22.3%','▼ 2.1%',false],['골격근량','24.1 kg','▲ 0.8kg',true],['BMI','21.8','▼ 0.4',false]].map(([l,v,c,p])=>`<div class="inbody-row"><span style="font-size:13px;color:var(--text3)">${l}</span><div><span style="font-size:14px;font-weight:600">${v}</span><span class="${p?'pos':'neg'}" style="font-size:11px;margin-left:5px">${c}</span></div></div>`).join('')}
+  </div>`; }
+
+function tHomework() { return `
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-send"></i>숙제 완료 현황</div>
+    ${[['김민지','폼롤러 · 브리지 3세트',100,'tag-g','완료 ✓'],['이준혁','유산소 30분 · 스트레칭',60,'tag-y','진행중'],['박서연','코어 안정화 2세트',0,'tag-gr','미시작'],['최동우','무릎 강화 스트레칭',80,'tag-y','진행중']].map(([n,d,p,tc,st],i)=>`<div class="mc"><div class="avatar" style="background:${members[i].bg};color:${members[i].tc}">${members[i].init}</div><div style="flex:1"><div class="mname">${n}</div><div class="msub">${d}</div><div class="progress-bar" style="max-width:120px"><div class="progress-fill" style="width:${p}%"></div></div></div><span class="tag ${tc}">${st}</span></div>`).join('')}
+  </div>
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-eye"></i>회원 뷰 미리보기 — 김민지</div>
+    <div style="background:var(--acc-softer);border-radius:9px;padding:12px">
+      ${['폼롤러 허벅지·종아리 각 2분',true,'브리지 운동 15회 × 3세트',true,'힙힌지 패턴 연습 10회 × 3세트',false].reduce((a,item,i,arr)=>i%2===0?a+`<div class="check-item"><input type="checkbox" ${arr[i+1]?'checked':''}><span>${item}</span></div>`:a,'')}
+    </div>
+  </div>`; }
+
+function tNotice() { return `
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-edit"></i>공지 작성</div>
+    <div class="form-group"><label class="form-label">제목</label><input type="text" placeholder="공지 제목"></div>
+    <div class="form-group"><label class="form-label">내용</label><textarea placeholder="내용 입력..." style="min-height:90px"></textarea></div>
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px"><input type="checkbox" style="width:15px;height:15px;accent-color:var(--acc)"><label style="font-size:13px;color:var(--text2)">상단 고정</label></div>
+    <button class="btn btn-acc btn-full"><i class="ti ti-send"></i>공지 게시</button>
+  </div>
+  <div class="notice-card notice-pin"><div style="font-size:9px;color:#92400E;font-weight:700;margin-bottom:2px">📌 고정</div><div style="font-size:14px;font-weight:700;margin-bottom:3px">6월 휴무 안내</div><div style="font-size:13px;color:var(--text2)">6월 5일(수) 휴무. 수업은 전일 대체 진행.</div><div style="font-size:10px;color:var(--text3);margin-top:5px">2026.05.12</div></div>
+  <div class="notice-card"><div style="font-size:14px;font-weight:700;margin-bottom:3px">인바디 측정 이벤트</div><div style="font-size:13px;color:var(--text2)">5월 매주 토요일 무료 측정. 예약 필수!</div><div style="font-size:10px;color:var(--text3);margin-top:5px">2026.05.10</div></div>`; }
+
+// ══════════════════════════════════
+// MEMBER PAGES
+// ══════════════════════════════════
+function mHome() {
+  const m = members[0];
+  const done = missions.filter(x=>x.done).length;
+  return `
+  <div class="home-grid">
+    <div class="hm-card acc" onclick="showPage('m-missions')"><div class="hm-icon">🏆</div><div class="hm-title">미션 & 보상</div><div class="hm-sub">${missions.filter(x=>!x.done).length}개 진행 중</div></div>
+    <div class="hm-card acc" onclick="showPage('m-homework')"><div class="hm-icon">📋</div><div class="hm-title">오늘 숙제</div><div class="hm-sub">2/3 완료</div><div class="progress-bar" style="margin-top:6px"><div class="progress-fill" style="width:67%"></div></div></div>
+    <div class="hm-card" onclick="showPage('m-journal')"><div class="hm-icon">📖</div><div class="hm-title">수업 일지</div><div class="hm-sub">5월 14일</div></div>
+    <div class="hm-card" onclick="showPage('m-inbody')"><div class="hm-icon">📊</div><div class="hm-title">인바디 변화</div><div class="hm-sub" style="color:#059669;font-weight:600">체지방 ▼2.1%</div></div>
+    <div class="hm-card" onclick="showPage('m-notice')"><div class="hm-icon">📢</div><div class="hm-title">센터 공지</div><div class="hm-sub">새 공지 1건</div></div>
+    <div class="hm-card" onclick="showPage('m-settings')"><div class="hm-icon">🎨</div><div class="hm-title">테마 설정</div><div class="hm-sub">색상 바꾸기</div></div>
+  </div>
+  <div class="card">
+    <div class="grid-2">
+      <div><div style="font-size:11px;color:var(--text3)">연속 출석</div><div style="font-size:22px;font-weight:700;color:var(--acc2)">🔥 ${m.streak}일</div></div>
+      <div><div style="font-size:11px;color:var(--text3)">완료 미션</div><div style="font-size:22px;font-weight:700;color:var(--acc2)">${done}/${missions.length}</div></div>
+    </div>
+  </div>`;
+}
+
+function mJournal() { return `
+  <div class="card card-acc">
+    <div style="font-size:10px;color:var(--text3)">5월 14일 수업</div>
+    <div style="font-size:16px;font-weight:700;color:var(--acc2);margin-top:2px">근비대 · 7주차</div>
+  </div>
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-barbell"></i>오늘 운동</div>
+    <div class="ex-row"><span>스쿼트</span><span>60kg · 10회 · 4세트</span></div>
+    <div class="ex-row"><span>레그프레스</span><span>100kg · 12회 · 3세트</span></div>
+    <div class="ex-row"><span>힙 어브덕션</span><span>밴드 · 15회 · 3세트</span></div>
+  </div>
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-message"></i>트레이너 코칭</div>
+    <div style="background:var(--acc-softer);border-radius:9px;padding:12px;font-size:13px;line-height:1.65">스쿼트 시 무릎 정렬 잘 유지하고 있어요 👍 힙힌지 패턴이 점점 좋아지고 있습니다!</div>
+  </div>
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-alert-circle"></i>주의사항</div>
+    <div style="background:#FFF1F2;border-left:3px solid #F43F5E;border-radius:0 9px 9px 0;padding:10px 12px;font-size:13px">점프 동작 시 무릎 통증 유의. 통증 느껴지면 바로 말해주세요!</div>
+  </div>
+  <button class="btn btn-acc btn-full" onclick="doMarkMission()"><i class="ti ti-star"></i>수업 후기 남기기 (+50 XP)</button>`; }
+
+function mInbody() { return `
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-chart-line"></i>변화 그래프</div>
+    <canvas id="member-inbody-chart" height="160"></canvas>
+  </div>
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-list"></i>최근 수치</div>
+    ${[['체중','58.5 kg','▼ 1.2kg',false],['체지방률','22.3%','▼ 2.1%',false],['골격근량','24.1 kg','▲ 0.8kg',true],['BMI','21.8','▼ 0.4',false]].map(([l,v,c,p])=>`<div class="inbody-row"><span style="font-size:13px;color:var(--text3)">${l}</span><div><span style="font-size:14px;font-weight:600">${v}</span><span class="${p?'pos':'neg'}" style="font-size:11px;margin-left:5px">${c}</span></div></div>`).join('')}
+    <div style="margin-top:10px;background:var(--acc-softer);border-radius:9px;padding:10px">
+      <div style="font-size:11px;font-weight:700;color:var(--acc-text);margin-bottom:3px">📈 3개월 요약</div>
+      <div style="font-size:12px;color:var(--text2)">체지방 2.1% 감소, 근육량 0.8kg 증가. 목표 <strong style="color:var(--acc2)">68%</strong> 달성</div>
+      <div class="progress-bar" style="margin-top:6px"><div class="progress-fill" style="width:68%"></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-history"></i>측정 이력</div>
+    ${[['2026.05.14','58.5kg','22.3%','24.1kg'],['2026.04.14','59.2kg','23.5%','23.6kg'],['2026.03.14','59.7kg','24.4%','23.3kg']].map(([d,w,f,mu])=>`<div class="inbody-row"><span style="font-size:11px;color:var(--text3)">${d}</span><div style="display:flex;gap:8px;font-size:12px"><span>체중 <b>${w}</b></span><span>체지방 <b>${f}</b></span><span>근육 <b>${mu}</b></span></div></div>`).join('')}
+  </div>`; }
+
+function mMissions() {
+  const m = members[0];
+  return `
+  <div class="streak-card">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between">
+      <div><div class="streak-big">🔥 ${m.streak}일</div><div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px">연속 출석 중</div></div>
+      <div style="text-align:right"><div class="level-pill" style="margin-bottom:5px"><i class="ti ti-star"></i>Lv.${m.level}</div><div style="font-size:10px;color:rgba(255,255,255,0.45)">${m.xp}/${m.xpMax} XP</div></div>
+    </div>
+    <div class="streak-dots">${['월','화','수','목','금','토','일'].map((d,i)=>`<div class="s-dot ${i<4?'done':i===4?'today':''}">${d}</div>`).join('')}</div>
+  </div>
+  <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">진행 중</div>
+  ${missions.filter(x=>!x.done).map(ms=>`
+    <div class="mission-item ${ms.type}" onclick="completeMission(${ms.id})">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:22px;width:32px;text-align:center">${ms.icon}</div>
+        <div style="flex:1"><div class="mi-title">${ms.title}</div><div class="mi-desc">${ms.desc}</div><span class="xp-pill">+${ms.xp} XP</span></div>
+        <i class="ti ti-chevron-right" style="color:var(--text3)"></i>
+      </div>
+    </div>`).join('')}
+  <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">완료한 미션</div>
+  ${missions.filter(x=>x.done).map(ms=>`
+    <div class="mission-item done">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:22px;width:32px;text-align:center">${ms.icon}</div>
+        <div style="flex:1"><div class="mi-title">${ms.title}</div></div>
+        <i class="ti ti-circle-check" style="color:var(--acc);font-size:18px"></i>
+      </div>
+    </div>`).join('')}`;
+}
+
+function mHomework() { return `
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div class="sec-title" style="margin-bottom:0"><i class="ti ti-checklist"></i>이번 주 숙제</div><span class="tag tag-acc">2/3 완료</span></div>
+    ${['폼롤러 허벅지·종아리 각 2분 (매일)',true,'브리지 운동 15회 × 3세트',true,'힙힌지 패턴 연습 10회 × 3세트',false].reduce((a,item,i,arr)=>i%2===0?a+`<div class="check-item"><input type="checkbox" ${arr[i+1]?'checked':''}><span>${item}</span></div>`:a,'')}
+    <div style="margin-top:10px;padding:9px 10px;background:var(--acc-softer);border-radius:8px;font-size:11px;color:var(--acc-text);font-weight:500">✨ 오늘 숙제 완료 시 +30 XP!</div>
+  </div>
+  <div class="card">
+    <div style="background:#FFF1F2;border-left:3px solid #F43F5E;border-radius:0 9px 9px 0;padding:10px 12px">
+      <div style="font-size:10px;font-weight:700;color:#9F1239;margin-bottom:2px">⚠️ 주의사항</div>
+      <div style="font-size:13px;color:var(--text2)">스쿼트 시 무릎이 발끝보다 나오지 않게 주의. 통증 발생 시 즉시 중단!</div>
+    </div>
+  </div>`; }
+
+function mNotice() { return `
+  <div class="notice-card notice-pin"><div style="font-size:9px;color:#92400E;font-weight:700;margin-bottom:2px">📌 고정</div><div style="font-size:14px;font-weight:700;margin-bottom:3px">6월 휴무 안내</div><div style="font-size:13px;color:var(--text2)">6월 5일(수) 휴무. 수업은 전일 대체 진행.</div><div style="font-size:10px;color:var(--text3);margin-top:5px">2026.05.12</div></div>
+  <div class="notice-card"><div style="font-size:14px;font-weight:700;margin-bottom:3px">인바디 측정 이벤트</div><div style="font-size:13px;color:var(--text2)">5월 매주 토요일 무료 측정. 예약 필수!</div><div style="font-size:10px;color:var(--text3);margin-top:5px">2026.05.10</div></div>
+  <div class="notice-card"><div style="font-size:14px;font-weight:700;margin-bottom:3px">준비물 안내</div><div style="font-size:13px;color:var(--text2)">필라테스 리포머 수업 시 미끄럼 방지 양말 지참.</div><div style="font-size:10px;color:var(--text3);margin-top:5px">2026.05.01</div></div>`; }
+
+function mSettings() {
+  return `
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-palette"></i>테마 색상</div>
+    <p style="font-size:12px;color:var(--text3);margin-bottom:14px">내 취향에 맞게 앱 색상을 바꿔보세요!</p>
+    <div class="swatch-grid">
+      ${themes.map(t=>`
+        <div class="swatch-item ${t.id===curTheme?'active':''}" onclick="applyTheme('${t.id}');showPage('m-settings')">
+          <div class="swatch-circle" style="background:${t.color}"></div>
+          <div class="swatch-name">${t.name}</div>
+        </div>`).join('')}
+    </div>
+  </div>
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-bell"></i>알림 설정</div>
+    ${[['수업 일지 공유','켜짐'],['숙제 리마인더','켜짐'],['인바디 측정 알림','꺼짐'],['미션 달성 알림','켜짐']].map(([l,s])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--border)"><span style="font-size:13px">${l}</span><span style="font-size:12px;font-weight:600;color:${s==='켜짐'?'var(--acc2)':'var(--text3)'}">${s}</span></div>`).join('')}
+  </div>
+  <div class="card">
+    <div class="sec-title"><i class="ti ti-user"></i>내 정보</div>
+    <div style="display:flex;align-items:center;gap:12px;padding:4px 0">
+      <div style="width:44px;height:44px;border-radius:50%;background:var(--acc-soft);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--acc-text)">김</div>
+      <div>
+        <div style="font-size:15px;font-weight:700">김민지</div>
+        <div style="font-size:12px;color:var(--text3)">근비대 · 7주차</div>
+      </div>
+    </div>
+  </div>`; }
+
+// ── 인터랙션 ──
+function addEx() {
+  const list = document.getElementById('ex-list');
+  if (!list) return;
+  const names = ['런지','힙 쓰러스트','케이블 로우','숄더프레스','덤벨 컬'];
+  const row = document.createElement('div');
+  row.className = 'ex-row';
+  row.innerHTML = `<span>${names[Math.floor(Math.random()*names.length)]}</span><span>-- · -- 회 · -- 세트</span><i class="ti ti-trash" style="font-size:13px;color:var(--text3);cursor:pointer;margin-left:6px" onclick="this.closest('.ex-row').remove()"></i>`;
+  list.appendChild(row);
+}
+
+function doSave() {
+  const btn = event.target.closest('button');
+  btn.innerHTML = '<i class="ti ti-loader"></i> 저장 중...';
+  btn.disabled = true;
+  setTimeout(() => showPage('ai-plan'), 1200);
+}
+
+function genPlan() {
+  const btn = document.getElementById('gen-btn');
+  if (!btn) return;
+  btn.innerHTML = '<i class="ti ti-loader"></i> 분석 중...';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.innerHTML = '<i class="ti ti-sparkles"></i> AI 수업안 자동 생성';
+    btn.disabled = false;
+    const r = document.getElementById('plan-result');
+    if (!r) return;
+    r.innerHTML = `
+      <div class="sticky-warn" style="margin-bottom:10px">
+        <div style="font-size:10px;font-weight:700;color:#9F1239;margin-bottom:3px"><i class="ti ti-shield"></i> 안전 고려 반영</div>
+        <span class="warn-pill">점프 제외</span><span class="warn-pill">무릎 부하 최소화</span>
+      </div>
+      <div class="card">
+        <div class="sec-title"><i class="ti ti-list"></i>생성된 수업안</div>
+        ${[['ti-wave-sine','준비운동 10분',['폼롤러 허벅지·종아리','힙 서클 10회','바디웨이트 스쿼트 15회×2']],
+           ['ti-barbell','메인 35분',['백스쿼트 65kg · 8회·4세트 (↑5kg)','레그프레스 110kg · 10회·3세트','루마니안 데드리프트 50kg · 10회·3세트']],
+           ['ti-flame','보강 10분',['힙 어브덕션 밴드 · 15회×3','싱글레그 브리지 · 12회×3']],
+           ['ti-heart','쿨다운 5분',['하체 스트레칭 각 30초']]].map(([ic,title,exs])=>
+          `<div class="ai-block"><div class="ai-block-title"><i class="ti ${ic}"></i>${title}</div>${exs.map(e=>`<div class="ai-ex"><span>${e}</span></div>`).join('')}</div>`).join('')}
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn" style="flex:1"><i class="ti ti-edit"></i>수정</button>
+          <button class="btn btn-acc" style="flex:2" onclick="doConfirm(this)"><i class="ti ti-check"></i>확정 후 공유</button>
+        </div>
+      </div>`;
+    r.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }, 1800);
+}
+
+function doConfirm(btn) {
+  btn.innerHTML = '<i class="ti ti-check"></i> 확정 완료!';
+  btn.disabled = true;
+  setTimeout(() => showPage('homework'), 1000);
+}
+
+function completeMission(id) {
+  const m = missions.find(x => x.id === id);
+  if (m && !m.done) {
+    m.done = true;
+    members[0].xp = Math.min(members[0].xp + m.xp, members[0].xpMax);
+    const xpLabel = document.getElementById('xp-label-mob');
+    const xpBar = document.getElementById('xp-bar-mob');
+    if (xpLabel) xpLabel.textContent = `${members[0].xp} / ${members[0].xpMax} XP`;
+    if (xpBar) xpBar.style.width = Math.round(members[0].xp / members[0].xpMax * 100) + '%';
+  }
+  showPage('m-missions');
+}
+
+function doMarkMission() {
+  completeMission(4);
+  showPage('m-missions');
+}
+
+function drawChart(id) {
+  const cid = id === 'm-inbody' ? 'member-inbody-chart' : 'inbody-chart';
+  const canvas = document.getElementById(cid);
+  if (!canvas) return;
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+  chartInst = new Chart(canvas, {
+    type:'line',
+    data:{
+      labels:['3월','4월','5월초','5월 14일'],
+      datasets:[
+        {label:'체지방률(%)',data:[24.4,23.5,22.8,22.3],borderColor:'#F43F5E',backgroundColor:'rgba(244,63,94,0.06)',borderWidth:2,tension:.4,pointRadius:3,pointBackgroundColor:'#F43F5E',yAxisID:'y'},
+        {label:'골격근량(kg)',data:[23.3,23.6,23.9,24.1],borderColor:'#0EA5E9',backgroundColor:'rgba(14,165,233,0.06)',borderWidth:2,tension:.4,pointRadius:3,pointBackgroundColor:'#0EA5E9',yAxisID:'y1'},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:true,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{font:{size:10},color:'#94A3B8',boxWidth:10}}},
+      scales:{
+        x:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{font:{size:10},color:'#94A3B8'}},
+        y:{position:'left',grid:{color:'rgba(148,163,184,0.08)'},ticks:{font:{size:9},color:'#F43F5E'},title:{display:true,text:'체지방%',color:'#F43F5E',font:{size:9}}},
+        y1:{position:'right',grid:{drawOnChartArea:false},ticks:{font:{size:9},color:'#0EA5E9'},title:{display:true,text:'근육kg',color:'#0EA5E9',font:{size:9}}}
+      }
+    }
+  });
+}
+
+// ── 초기 실행 ──
+applyTheme('sky');
+showPage('dashboard');
+</script>
+</body>
+</html>
