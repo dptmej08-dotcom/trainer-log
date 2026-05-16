@@ -32,18 +32,17 @@
 
 html,body{height:100%;overflow:hidden;font-family:'Pretendard',sans-serif;background:var(--surface2);color:var(--text)}
 
-/* 로딩 */
 #loading{position:fixed;inset:0;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:999}
 #loading p{font-size:13px;color:rgba(255,255,255,0.4)}
 .spin{width:26px;height:26px;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--acc);border-radius:50%;animation:sp .8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 
-/* 로그인 */
 #login{position:fixed;inset:0;background:var(--navy);display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;z-index:998}
 .l-logo{font-size:50px;margin-bottom:6px}
 .l-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px}
 .l-sub{font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:28px;text-align:center;line-height:1.6}
 .l-box{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;width:100%;max-width:340px}
+.l-mode{font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:12px;text-align:center}
 .l-inp{width:100%;padding:12px 14px;border:1px solid rgba(255,255,255,0.15);border-radius:10px;background:rgba(255,255,255,0.07);color:#fff;font-size:14px;font-family:'Pretendard',sans-serif;margin-bottom:10px}
 .l-inp::placeholder{color:rgba(255,255,255,0.3)}
 .l-inp:focus{outline:none;border-color:var(--acc)}
@@ -53,13 +52,12 @@ html,body{height:100%;overflow:hidden;font-family:'Pretendard',sans-serif;backgr
 .l-toggle{font-size:12px;color:rgba(255,255,255,0.4);text-align:center;margin-top:12px;cursor:pointer}
 .l-toggle span{color:var(--acc);font-weight:600}
 
-/* 앱 레이아웃 */
+/* 초대 링크로 접속시 역할 자동 선택 안내 */
+.l-trainer-badge{background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.3);border-radius:10px;padding:8px 12px;font-size:12px;color:var(--acc);text-align:center;margin-bottom:10px;display:none}
+
 #app{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
 
-/* 모바일 헤더 */
 .hd{background:var(--navy);padding:max(44px,env(safe-area-inset-top,44px)) 16px 12px;display:flex;align-items:flex-end;justify-content:space-between;flex-shrink:0}
-.hd-name{font-size:16px;font-weight:700;color:#fff}
-.hd-sub{font-size:10px;color:rgba(255,255,255,0.4);margin-top:1px}
 .hd-member{background:var(--navy);padding:max(44px,env(safe-area-inset-top,44px)) 16px 14px;flex-shrink:0}
 .hd-mname{font-size:18px;font-weight:700;color:var(--acc)}
 .hd-msub{font-size:11px;color:rgba(255,255,255,0.4);margin-top:1px}
@@ -68,17 +66,14 @@ html,body{height:100%;overflow:hidden;font-family:'Pretendard',sans-serif;backgr
 .xp-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:10px;transition:width .5s}
 .chip{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.1);border:0.5px solid rgba(255,255,255,0.15);border-radius:20px;padding:5px 10px;font-size:11px;color:rgba(255,255,255,0.7);cursor:pointer;font-weight:500;white-space:nowrap}
 
-/* 콘텐츠 */
 .content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:14px 14px calc(68px + var(--sb));background:var(--surface2)}
 
-/* 탭바 */
 .tabs{background:var(--surface);border-top:0.5px solid var(--border2);display:flex;padding-bottom:var(--sb);flex-shrink:0;z-index:10}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:8px 4px 6px}
 .tab i{font-size:22px;color:var(--text3)}
 .tab span{font-size:9px;color:var(--text3);font-weight:500}
 .tab.on i,.tab.on span{color:var(--acc2)}
 
-/* 태블릿 사이드바 */
 @media(min-width:768px){
   #app{flex-direction:row}
   .hd,.hd-member{display:none}
@@ -107,7 +102,6 @@ html,body{height:100%;overflow:hidden;font-family:'Pretendard',sans-serif;backgr
   .topbar{display:none}
 }
 
-/* 공통 */
 .card{background:var(--surface);border:0.5px solid var(--border2);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:10px}
 .card-acc{background:var(--acc-softer);border-color:rgba(0,0,0,0.05)}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -123,13 +117,11 @@ html,body{height:100%;overflow:hidden;font-family:'Pretendard',sans-serif;backgr
 .tag-a{background:var(--acc-soft);color:var(--acc-text)}
 .tag-g{background:#DCFCE7;color:#14532D}
 .tag-y{background:#FEF9C3;color:#713F12}
-.tag-r{background:#FEE2E2;color:#7F1D1D}
 .tag-gr{background:var(--surface3);color:var(--text3)}
 .wp{background:#FFF1F2;border:0.5px solid rgba(244,63,94,0.2);color:#9F1239;font-size:10px;padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:3px;margin-right:4px;margin-bottom:4px;font-weight:500}
 .ex{display:flex;align-items:center;gap:7px;padding:6px 10px;background:var(--surface2);border-radius:8px;margin:3px 0;border:0.5px solid var(--border)}
 .ex span:first-child{font-size:12px;font-weight:500;flex:1}
 .ex span:last-of-type{font-size:11px;color:var(--text3)}
-.div{height:0.5px;background:var(--border);margin:10px 0}
 .pb{height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;margin-top:4px}
 .pf{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:3px}
 .lv{display:inline-flex;align-items:center;gap:3px;background:var(--acc-soft);color:var(--acc-text);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
@@ -146,10 +138,8 @@ textarea{resize:vertical;min-height:70px}
 .btn-d{background:#FEE2E2;color:#7F1D1D;border-color:#FEE2E2}
 .si{padding:10px 0;border-bottom:0.5px solid var(--border)}
 .si:last-child{border-bottom:none}
-.sw{background:#FFF1F2;border:0.5px solid rgba(244,63,94,0.2);border-left:3px solid #F43F5E;border-radius:0 10px 10px 0;padding:10px 12px;margin-bottom:12px}
 .ir{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:0.5px solid var(--border)}
 .ir:last-child{border-bottom:none}
-.pos{color:#059669;font-weight:600}.neg{color:#DC2626;font-weight:600}
 .nc{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:var(--shadow)}
 .np{border-left:3px solid #EAB308;background:#FFFBEB;border-radius:0 12px 12px 0}
 .sc{background:var(--navy2);border-radius:14px;padding:14px 16px;color:#fff;margin-bottom:12px}
@@ -173,17 +163,14 @@ textarea{resize:vertical;min-height:70px}
 .hc-i{font-size:22px;margin-bottom:7px}
 .hc-t{font-size:13px;font-weight:700;margin-bottom:2px}
 .hc-s{font-size:11px;color:var(--text3)}
-.ci{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:13px}
-.ci:last-child{border-bottom:none}
-.ci input{width:16px;height:16px;accent-color:var(--acc);cursor:pointer;flex-shrink:0;margin-top:1px}
 .ab{background:var(--acc-softer);border:0.5px solid var(--border2);border-radius:10px;padding:11px 13px;margin-bottom:8px}
 .ab-t{font-size:10px;font-weight:700;color:var(--acc2);margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:4px}
 .ae{font-size:12px;padding:5px 0;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;gap:8px}
 .ae:last-child{border-bottom:none}
 .sg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.sw2{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 6px;border-radius:12px;cursor:pointer;border:2px solid var(--border2);background:var(--surface);transition:all .15s}
-.sw2.on{border-color:var(--acc);background:var(--acc-softer)}
-.sw2:active{transform:scale(0.95)}
+.sw{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 6px;border-radius:12px;cursor:pointer;border:2px solid var(--border2);background:var(--surface);transition:all .15s}
+.sw.on{border-color:var(--acc);background:var(--acc-softer)}
+.sw:active{transform:scale(0.95)}
 .sc2{width:30px;height:30px;border-radius:50%}
 .sn{font-size:11px;font-weight:600;color:var(--text2)}
 .es{text-align:center;padding:36px 20px;color:var(--text3)}
@@ -205,9 +192,10 @@ textarea{resize:vertical;min-height:70px}
 <div id="login">
   <div class="l-logo">⚡</div>
   <div class="l-title">PT Manager AI</div>
-  <div class="l-sub">트레이너와 회원을 위한<br>AI 수업 관리 시스템</div>
+  <div class="l-sub" id="l-sub">트레이너와 회원을 위한<br>AI 수업 관리 시스템</div>
   <div class="l-box">
-    <div id="l-mode" style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:12px;text-align:center">로그인</div>
+    <div class="l-trainer-badge" id="l-badge">🔗 트레이너 초대 링크로 접속했어요</div>
+    <div class="l-mode" id="l-mode">로그인</div>
     <input class="l-inp" type="email" id="l-email" placeholder="이메일">
     <input class="l-inp" type="password" id="l-pw" placeholder="비밀번호">
     <input class="l-inp" type="text" id="l-name" placeholder="이름" style="display:none">
@@ -222,7 +210,6 @@ textarea{resize:vertical;min-height:70px}
 </div>
 
 <div id="app" class="t-sky" style="display:none">
-  <!-- 사이드바 -->
   <div class="sb" id="sb">
     <div class="sb-logo">
       <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 9px;margin-bottom:8px">
@@ -242,16 +229,14 @@ textarea{resize:vertical;min-height:70px}
     </div>
   </div>
 
-  <!-- 메인 -->
   <div class="main">
-    <div class="topbar"><h2 id="tb-title">대시보드</h2><div id="tb-act"></div></div>
+    <div class="topbar"><h2 id="tb-title">대시보드</h2></div>
 
-    <!-- 트레이너 모바일 헤더 -->
     <div id="hd-t" style="display:none">
       <div class="hd">
         <div>
           <div style="font-size:10px;color:rgba(255,255,255,0.4)">⚡ PT Manager AI</div>
-          <div class="hd-name" id="hd-page">대시보드</div>
+          <div style="font-size:16px;font-weight:700;color:#fff" id="hd-page">대시보드</div>
         </div>
         <div style="display:flex;gap:6px">
           <div class="chip" onclick="toggleRole()"><i class="ti ti-switch-horizontal"></i>회원뷰</div>
@@ -260,7 +245,6 @@ textarea{resize:vertical;min-height:70px}
       </div>
     </div>
 
-    <!-- 회원 모바일 헤더 -->
     <div id="hd-m" style="display:none">
       <div class="hd-member">
         <div style="display:flex;align-items:flex-start;justify-content:space-between">
@@ -285,13 +269,20 @@ textarea{resize:vertical;min-height:70px}
 </div>
 
 <script>
-// ── Supabase ──
 const SB = supabase.createClient(
   'https://vljmjxkqnzxsawdstdcl.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZsam1qeGtxbnp4c2F3ZHN0ZGNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3OTkyNjAsImV4cCI6MjA5NDM3NTI2MH0.tP40JvDzeenxeWcKyLgZCSkzkHPyot3RyEJZsCj4Zio'
 );
 
-// ── 상태 ──
+// URL에서 트레이너 ID 추출
+const URL_PARAMS = new URLSearchParams(window.location.search);
+const TRAINER_ID_FROM_URL = URL_PARAMS.get('trainer');
+
+// 초대 링크로 접속한 경우 배지 표시
+if (TRAINER_ID_FROM_URL) {
+  document.getElementById('l-badge').style.display = 'block';
+}
+
 let role='trainer', page='dashboard', theme='sky', chart=null;
 let user=null, prof=null, mprof=null;
 let members=[], sessions=[], inbodys=[], notices=[], missions=[];
@@ -320,8 +311,7 @@ const MISSIONS=[
 const PT={
   dashboard:'대시보드',members:'회원 관리',session:'수업 일지',
   'ai-plan':'AI 수업안',inbody:'인바디 변화',homework:'숙제 공유',notice:'센터 공지',
-  'mh':'홈','mj':'수업 일지','mi2':'인바디','mm':'미션 & 보상',
-  'mhw':'숙제','mn':'공지','ms':'설정',
+  mh:'홈',mj:'수업 일지',mi2:'인바디',mm:'미션 & 보상',mhw:'숙제',mn:'공지',ms:'설정',
 };
 
 // ── 인증 ──
@@ -353,7 +343,10 @@ function toggleMode(){
   document.getElementById('l-btn').textContent=isSignup?'가입하기':'로그인';
   document.getElementById('l-tog').textContent=isSignup?'로그인':'회원가입';
   document.getElementById('l-name').style.display=isSignup?'block':'none';
-  document.getElementById('l-role').style.display=isSignup?'block':'none';
+  // 초대 링크로 왔으면 역할 선택 숨기기 (자동으로 회원)
+  if(!TRAINER_ID_FROM_URL){
+    document.getElementById('l-role').style.display=isSignup?'block':'none';
+  }
 }
 
 async function doAuth(){
@@ -368,28 +361,49 @@ async function doAuth(){
   try{
     if(isSignup){
       const name=document.getElementById('l-name').value.trim();
-      const r=document.getElementById('l-role').value;
       if(!name){err.textContent='이름을 입력하세요';btn.textContent='가입하기';btn.disabled=false;return;}
+
+      // 초대 링크로 접속한 경우 자동으로 회원, 아니면 선택값 사용
+      const r = TRAINER_ID_FROM_URL ? 'member' : document.getElementById('l-role').value;
+
       const {data,error}=await SB.auth.signUp({email,password:pw});
-      if(error)throw error;
-      await SB.from('users').insert({id:data.user.id,name,role:r,theme:'sky',
-        invite_token:r==='member'?name.replace(/\s/g,'')+'_'+Math.random().toString(36).slice(2,8):null});
-      if(r==='member') await SB.from('members').insert({user_id:data.user.id});
-      user=data.user;await loadProf();showApp();
+      if(error) throw error;
+
+      // users 테이블에 저장 — 초대 링크가 있으면 trainer_id 자동 연결
+      await SB.from('users').insert({
+        id: data.user.id,
+        name,
+        role: r,
+        theme: 'sky',
+        trainer_id: r==='member' ? TRAINER_ID_FROM_URL : null,
+        invite_token: r==='trainer' ? Math.random().toString(36).slice(2,10) : null,
+      });
+
+      // 회원이면 members 테이블에도 추가
+      if(r==='member'){
+        await SB.from('members').insert({user_id: data.user.id});
+      }
+
+      user=data.user;
+      await loadProf();
+      showApp();
     }else{
       const {data,error}=await SB.auth.signInWithPassword({email,password:pw});
-      if(error)throw error;
-      user=data.user;await loadProf();showApp();
+      if(error) throw error;
+      user=data.user;
+      await loadProf();
+      showApp();
     }
   }catch(e){
     err.textContent=isSignup?e.message:'이메일 또는 비밀번호가 틀렸어요';
-    btn.textContent=isSignup?'가입하기':'로그인';btn.disabled=false;
+    btn.textContent=isSignup?'가입하기':'로그인';
+    btn.disabled=false;
   }
 }
 
 async function doLogout(){await SB.auth.signOut();location.reload();}
 
-// ── 데이터 ──
+// ── 데이터 로딩 ──
 async function loadProf(){
   const {data}=await SB.from('users').select('*').eq('id',user.id).single();
   prof=data;
@@ -400,13 +414,18 @@ async function loadProf(){
 }
 
 async function loadMembers(){
-  const {data}=await SB.from('members').select('*,user:users(name,theme,invite_token)').order('created_at');
+  // 트레이너는 본인 회원만 조회
+  const {data}=await SB.from('members')
+    .select('*,user:users!members_user_id_fkey(name,theme,invite_token)')
+    .eq('user.trainer_id', prof?.id)
+    .order('created_at');
   members=data||[];
 }
 
 async function loadSessions(mid=null){
   let q=SB.from('sessions').select('*').order('session_date',{ascending:false}).limit(20);
   if(mid) q=q.eq('member_id',mid);
+  else q=q.eq('trainer_id',prof?.id);
   const {data}=await q;
   sessions=data||[];
 }
@@ -419,7 +438,9 @@ async function loadInbody(mid=null){
 }
 
 async function loadNotices(){
-  const {data}=await SB.from('notices').select('*').order('is_pinned',{ascending:false}).order('created_at',{ascending:false});
+  const {data}=await SB.from('notices').select('*')
+    .order('is_pinned',{ascending:false})
+    .order('created_at',{ascending:false});
   notices=data||[];
 }
 
@@ -454,23 +475,18 @@ function renderSw(){
 const TN=[
   {id:'dashboard',i:'ti-layout-dashboard',l:'대시보드'},
   {id:'members',i:'ti-users',l:'회원 관리'},
-  {s:'수업'},
-  {id:'session',i:'ti-notebook',l:'수업 일지'},
+  {s:'수업'},{id:'session',i:'ti-notebook',l:'수업 일지'},
   {id:'ai-plan',i:'ti-robot',l:'AI 수업안'},
-  {s:'데이터'},
-  {id:'inbody',i:'ti-chart-line',l:'인바디 변화'},
-  {s:'공유'},
-  {id:'homework',i:'ti-checklist',l:'숙제 공유'},
+  {s:'데이터'},{id:'inbody',i:'ti-chart-line',l:'인바디 변화'},
+  {s:'공유'},{id:'homework',i:'ti-checklist',l:'숙제 공유'},
   {id:'notice',i:'ti-speakerphone',l:'센터 공지'},
 ];
 const MN=[
   {id:'mh',i:'ti-home',l:'홈'},
   {id:'mj',i:'ti-notebook',l:'수업 일지'},
   {id:'mi2',i:'ti-chart-line',l:'인바디'},
-  {s:'게임'},
-  {id:'mm',i:'ti-trophy',l:'미션',b:'!'},
-  {s:'기타'},
-  {id:'mhw',i:'ti-checklist',l:'숙제'},
+  {s:'게임'},{id:'mm',i:'ti-trophy',l:'미션',b:'!'},
+  {s:'기타'},{id:'mhw',i:'ti-checklist',l:'숙제'},
   {id:'mn',i:'ti-speakerphone',l:'공지'},
   {id:'ms',i:'ti-palette',l:'설정'},
 ];
@@ -582,13 +598,15 @@ function pDash(){
   </div>
   <div class="card">
     <div class="st"><i class="ti ti-users"></i>회원 현황</div>
-    ${members.length===0?`<div class="es"><i class="ti ti-users"></i><p>등록된 회원이 없어요</p></div>`:
-      members.slice(0,5).map(m=>`<div class="row"><div class="av">${m.user?.name?.charAt(0)||'?'}</div><div><div style="font-size:13px;font-weight:600">${m.user?.name||'-'}</div><div style="font-size:11px;color:var(--text3)">${m.goal||'-'} · ${m.current_week||1}주차</div></div><div style="margin-left:auto;display:flex;align-items:center;gap:5px"><span class="tag tag-a">Lv.${m.level||1}</span><span style="font-size:10px;color:#F43F5E;font-weight:700">🔥${m.streak||0}일</span></div></div>`).join('')}
+    ${members.length===0
+      ?`<div class="es"><i class="ti ti-users"></i><p>등록된 회원이 없어요<br>회원 관리에서 초대 링크를 보내세요</p></div>`
+      :members.slice(0,5).map(m=>`<div class="row"><div class="av">${m.user?.name?.charAt(0)||'?'}</div><div><div style="font-size:13px;font-weight:600">${m.user?.name||'-'}</div><div style="font-size:11px;color:var(--text3)">${m.goal||'-'} · ${m.current_week||1}주차</div></div><div style="margin-left:auto;display:flex;align-items:center;gap:5px"><span class="tag tag-a">Lv.${m.level||1}</span><span style="font-size:10px;color:#F43F5E;font-weight:700">🔥${m.streak||0}일</span></div></div>`).join('')}
   </div>
   <div class="card">
     <div class="st"><i class="ti ti-notebook"></i>최근 수업 일지</div>
-    ${sessions.length===0?`<div class="es"><i class="ti ti-notebook"></i><p>수업 일지가 없어요</p></div>`:
-      sessions.slice(0,3).map(s=>`<div class="si"><div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-size:13px;font-weight:600">${s.session_date}</span><span class="tag ${s.is_shared?'tag-g':'tag-y'}">${s.is_shared?'공유됨':'비공개'}</span></div><div style="font-size:11px;color:var(--text3)">${s.coaching_note||'-'}</div></div>`).join('')}
+    ${sessions.length===0
+      ?`<div class="es"><i class="ti ti-notebook"></i><p>수업 일지가 없어요</p></div>`
+      :sessions.slice(0,3).map(s=>`<div class="si"><div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-size:13px;font-weight:600">${s.session_date}</span><span class="tag ${s.is_shared?'tag-g':'tag-y'}">${s.is_shared?'공유됨':'비공개'}</span></div><div style="font-size:11px;color:var(--text3)">${s.coaching_note||'-'}</div></div>`).join('')}
   </div>`;
 }
 
@@ -599,12 +617,13 @@ function pMembers(){
     <button class="btn btn-a" onclick="copyInvite()"><i class="ti ti-link"></i>초대 링크</button>
   </div>
   <div class="card">
-    ${members.length===0?`<div class="es"><i class="ti ti-users"></i><p>등록된 회원이 없어요<br>초대 링크를 카카오톡으로 보내세요</p></div>`:
-      members.map(m=>`<div class="row"><div class="av">${m.user?.name?.charAt(0)||'?'}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${m.user?.name||'-'}</div><div style="font-size:11px;color:var(--text3)">${m.goal||'-'} · ${m.current_week||1}주차</div>${(m.warnings||[]).length?`<div style="margin-top:3px">${m.warnings.map(w=>`<span class="wp">${w}</span>`).join('')}</div>`:''}</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><span class="tag tag-a">Lv.${m.level||1}</span><span style="font-size:10px;color:#F43F5E;font-weight:700">🔥${m.streak||0}일</span></div></div>`).join('')}
+    ${members.length===0
+      ?`<div class="es"><i class="ti ti-users"></i><p>등록된 회원이 없어요<br>초대 링크를 카카오톡으로 보내세요</p></div>`
+      :members.map(m=>`<div class="row"><div class="av">${m.user?.name?.charAt(0)||'?'}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${m.user?.name||'-'}</div><div style="font-size:11px;color:var(--text3)">${m.goal||'-'} · ${m.current_week||1}주차</div>${(m.warnings||[]).length?`<div style="margin-top:3px">${m.warnings.map(w=>`<span class="wp">${w}</span>`).join('')}</div>`:''}</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><span class="tag tag-a">Lv.${m.level||1}</span><span style="font-size:10px;color:#F43F5E;font-weight:700">🔥${m.streak||0}일</span></div></div>`).join('')}
   </div>
   <div class="card card-acc">
     <div class="st"><i class="ti ti-link"></i>카카오톡 초대 링크</div>
-    <p style="font-size:12px;color:var(--text2);margin-bottom:10px">회원이 이 링크로 가입하면 자동으로 연결돼요.</p>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:10px">회원이 이 링크로 가입하면 자동으로 연결돼요!</p>
     <div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:8px;padding:9px 11px;font-size:11px;color:var(--acc2);font-family:monospace;margin-bottom:8px;word-break:break-all">${window.location.origin}?trainer=${prof?.id}</div>
     <button class="btn btn-a btn-w" onclick="copyInvite()"><i class="ti ti-copy"></i>링크 복사</button>
   </div>`;
@@ -642,8 +661,9 @@ function pSession(){
   </div>
   <div class="card">
     <div class="st"><i class="ti ti-history"></i>최근 수업 일지</div>
-    ${sessions.length===0?`<div class="es"><i class="ti ti-notebook"></i><p>수업 일지가 없어요</p></div>`:
-      sessions.slice(0,5).map(s=>`<div class="si"><div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-size:13px;font-weight:600">${s.session_date}</span><span class="tag ${s.is_shared?'tag-g':'tag-y'}">${s.is_shared?'공유됨':'비공개'}</span></div><div style="font-size:11px;color:var(--text3)">${s.coaching_note||'-'}</div></div>`).join('')}
+    ${sessions.length===0
+      ?`<div class="es"><i class="ti ti-notebook"></i><p>수업 일지가 없어요</p></div>`
+      :sessions.slice(0,5).map(s=>`<div class="si"><div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-size:13px;font-weight:600">${s.session_date}</span><span class="tag ${s.is_shared?'tag-g':'tag-y'}">${s.is_shared?'공유됨':'비공개'}</span></div><div style="font-size:11px;color:var(--text3)">${s.coaching_note||'-'}</div></div>`).join('')}
   </div>`;
 }
 
@@ -727,8 +747,9 @@ function pInbody(){
   </div>
   <div class="card">
     <div class="st"><i class="ti ti-history"></i>측정 이력 (${inbodys.length}건)</div>
-    ${inbodys.length===0?`<div class="es"><i class="ti ti-chart-line"></i><p>인바디 기록이 없어요</p></div>`:
-      inbodys.slice(0,6).map(r=>`<div class="ir"><span style="font-size:12px;color:var(--text3)">${r.measured_at}</span><div style="display:flex;gap:8px;font-size:12px"><span>체중 <b>${r.weight}kg</b></span><span>체지방 <b>${r.body_fat_pct}%</b></span><span>근육 <b>${r.muscle_mass}kg</b></span></div></div>`).join('')}
+    ${inbodys.length===0
+      ?`<div class="es"><i class="ti ti-chart-line"></i><p>인바디 기록이 없어요</p></div>`
+      :inbodys.slice(0,6).map(r=>`<div class="ir"><span style="font-size:12px;color:var(--text3)">${r.measured_at}</span><div style="display:flex;gap:8px;font-size:12px"><span>체중 <b>${r.weight}kg</b></span><span>체지방 <b>${r.body_fat_pct}%</b></span><span>근육 <b>${r.muscle_mass}kg</b></span></div></div>`).join('')}
   </div>`;
 }
 
@@ -749,8 +770,9 @@ async function saveInbody(){
 function pHomework(){
   const sh=sessions.filter(s=>s.is_shared);
   return `<div class="card"><div class="st"><i class="ti ti-send"></i>공유된 수업 일지 (${sh.length}건)</div>
-    ${sh.length===0?`<div class="es"><i class="ti ti-send"></i><p>공유된 수업 일지가 없어요</p></div>`:
-      sh.slice(0,5).map(s=>`<div class="si"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:13px;font-weight:600">${s.session_date}</span><span class="tag tag-g">공유됨</span></div><div style="font-size:12px;color:var(--text2)">${s.homework||'숙제 없음'}</div></div>`).join('')}
+    ${sh.length===0
+      ?`<div class="es"><i class="ti ti-send"></i><p>공유된 수업 일지가 없어요</p></div>`
+      :sh.slice(0,5).map(s=>`<div class="si"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:13px;font-weight:600">${s.session_date}</span><span class="tag tag-g">공유됨</span></div><div style="font-size:12px;color:var(--text2)">${s.homework||'숙제 없음'}</div></div>`).join('')}
   </div>`;
 }
 
@@ -807,8 +829,9 @@ function mInbody(){
     ${inbodys.length===0?`<div class="es"><i class="ti ti-chart-line"></i><p>인바디 기록이 없어요</p></div>`:`<canvas id="m-ib-chart" height="160"></canvas>`}
   </div>
   <div class="card"><div class="st"><i class="ti ti-list"></i>측정 이력 (${inbodys.length}건)</div>
-    ${inbodys.length===0?`<div class="es"><i class="ti ti-chart-line"></i><p>기록이 없어요</p></div>`:
-      inbodys.map(r=>`<div class="ir"><span style="font-size:11px;color:var(--text3)">${r.measured_at}</span><div style="display:flex;gap:8px;font-size:12px"><span>체중 <b>${r.weight}kg</b></span><span>체지방 <b>${r.body_fat_pct}%</b></span><span>근육 <b>${r.muscle_mass}kg</b></span></div></div>`).join('')}
+    ${inbodys.length===0
+      ?`<div class="es"><i class="ti ti-chart-line"></i><p>기록이 없어요</p></div>`
+      :inbodys.map(r=>`<div class="ir"><span style="font-size:11px;color:var(--text3)">${r.measured_at}</span><div style="display:flex;gap:8px;font-size:12px"><span>체중 <b>${r.weight}kg</b></span><span>체지방 <b>${r.body_fat_pct}%</b></span><span>근육 <b>${r.muscle_mass}kg</b></span></div></div>`).join('')}
   </div>`;
 }
 
@@ -839,8 +862,9 @@ async function completeMission(key,xp){
 function mHomework(){
   const sh=sessions.filter(s=>s.is_shared&&s.homework);
   return `<div class="card">
-    ${sh.length===0?`<div class="es"><i class="ti ti-checklist"></i><p>아직 숙제가 없어요<br>트레이너가 수업 후 공유해줄 거예요!</p></div>`:
-      `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div class="st" style="margin-bottom:0"><i class="ti ti-checklist"></i>최근 숙제</div><span class="tag tag-a">${sh[0].session_date}</span></div>
+    ${sh.length===0
+      ?`<div class="es"><i class="ti ti-checklist"></i><p>아직 숙제가 없어요<br>트레이너가 수업 후 공유해줄 거예요!</p></div>`
+      :`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div class="st" style="margin-bottom:0"><i class="ti ti-checklist"></i>최근 숙제</div><span class="tag tag-a">${sh[0].session_date}</span></div>
       <div style="background:var(--acc-softer);border-radius:9px;padding:12px;font-size:13px;line-height:1.8;white-space:pre-line">${sh[0].homework}</div>
       <div style="margin-top:10px;padding:9px 10px;background:var(--acc-softer);border-radius:8px;font-size:11px;color:var(--acc-text);font-weight:500">✨ 숙제 완료 시 미션에서 XP 획득!</div>`}
   </div>
@@ -858,7 +882,7 @@ function mSettings(){
   <div class="card">
     <div class="st"><i class="ti ti-palette"></i>테마 색상</div>
     <p style="font-size:12px;color:var(--text3);margin-bottom:14px">내 취향에 맞게 앱 색상을 바꿔보세요!</p>
-    <div class="sg">${THEMES.map(t=>`<div class="sw2 ${t.id===theme?'on':''}" onclick="chTheme('${t.id}')"><div class="sc2" style="background:${t.color}"></div><div class="sn">${t.name}</div></div>`).join('')}</div>
+    <div class="sg">${THEMES.map(t=>`<div class="sw ${t.id===theme?'on':''}" onclick="chTheme('${t.id}')"><div class="sc2" style="background:${t.color}"></div><div class="sn">${t.name}</div></div>`).join('')}</div>
   </div>
   <div class="card">
     <div class="st"><i class="ti ti-user"></i>내 정보</div>
