@@ -92,6 +92,8 @@ html,body{height:100%;overflow:hidden;font-family:'Pretendard',sans-serif;backgr
   .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
   .topbar{display:none}
 }
+
+/* 공통 */
 .card{background:var(--surface);border:0.5px solid var(--border2);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:10px}
 .card-acc{background:var(--acc-softer);border-color:rgba(0,0,0,0.05)}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -107,9 +109,6 @@ html,body{height:100%;overflow:hidden;font-family:'Pretendard',sans-serif;backgr
 .tag-g{background:#DCFCE7;color:#14532D}
 .tag-y{background:#FEF9C3;color:#713F12}
 .wp{background:#FFF1F2;border:0.5px solid rgba(244,63,94,0.2);color:#9F1239;font-size:10px;padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:3px;margin-right:4px;margin-bottom:4px;font-weight:500}
-.ex{display:flex;align-items:center;gap:7px;padding:6px 10px;background:var(--surface2);border-radius:8px;margin:3px 0;border:0.5px solid var(--border)}
-.ex span:first-child{font-size:12px;font-weight:500;flex:1}
-.ex span:last-of-type{font-size:11px;color:var(--text3)}
 .lv{display:inline-flex;align-items:center;gap:3px;background:var(--acc-soft);color:var(--acc-text);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
 .xpp{background:var(--acc-soft);color:var(--acc-text);font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;display:inline-block;margin-top:5px}
 .fg{margin-bottom:11px}
@@ -169,12 +168,37 @@ textarea{resize:vertical;min-height:70px}
 /* 회원 카드 */
 .member-card{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:14px;margin-bottom:8px;box-shadow:var(--shadow)}
 .member-card-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.member-card-info{flex:1}
-.member-card-name{font-size:14px;font-weight:700}
-.member-card-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.member-card-name{font-size:14px;font-weight:700;flex:1}
 .member-card-body{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.goal-select{padding:7px 9px;font-size:12px}
-.week-select{padding:7px 9px;font-size:12px}
+
+/* ══ 수업일지 표 ══ */
+.ex-wrap{overflow-x:auto;margin-bottom:8px;border-radius:9px;border:0.5px solid var(--border2)}
+.ex-table{width:100%;border-collapse:collapse;font-size:12px;min-width:520px}
+.ex-table th{background:var(--surface2);padding:8px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--text3);border-bottom:0.5px solid var(--border2);white-space:nowrap;letter-spacing:.4px;text-transform:uppercase}
+.ex-table th:first-child{width:28px;text-align:center}
+.ex-table th:nth-child(2){min-width:90px}
+.ex-table th:nth-child(3){min-width:110px}
+.ex-table td{padding:4px 6px;border-bottom:0.5px solid var(--border);vertical-align:top}
+.ex-table tr:last-child td{border-bottom:none}
+.ex-table tr.drag-over{border-top:2px solid var(--acc)}
+.ex-table tr.dragging{opacity:0.3}
+.ex-inp{width:100%;border:none;background:transparent;font-size:12px;font-family:'Pretendard',sans-serif;color:var(--text);padding:5px 4px;resize:none;line-height:1.5}
+.ex-inp:focus{outline:2px solid var(--acc);border-radius:4px;background:var(--acc-softer)}
+.ex-inp.set-inp{text-align:center}
+.drag-handle{cursor:grab;color:var(--text3);font-size:16px;display:flex;align-items:center;justify-content:center;height:32px;padding:0 4px}
+.drag-handle:active{cursor:grabbing;color:var(--acc)}
+.del-btn{cursor:pointer;color:var(--text3);font-size:14px;display:flex;align-items:center;justify-content:center;height:32px;padding:0 4px}
+.del-btn:hover{color:#F43F5E}
+
+/* ══ 식단 사진 ══ */
+.diet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.diet-item{aspect-ratio:1;border-radius:10px;overflow:hidden;position:relative;background:var(--surface3)}
+.diet-item img{width:100%;height:100%;object-fit:cover;display:block}
+.diet-del{position:absolute;top:4px;right:4px;width:20px;height:20px;background:rgba(0,0,0,0.55);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:10px}
+.diet-upload{aspect-ratio:1;border-radius:10px;border:1.5px dashed var(--border2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;background:var(--surface2);transition:all .15s}
+.diet-upload:hover{border-color:var(--acc);background:var(--acc-softer)}
+.diet-upload i{font-size:24px;color:var(--text3)}
+.diet-upload span{font-size:10px;color:var(--text3)}
 </style>
 </head>
 <body>
@@ -277,7 +301,9 @@ if(TRAINER_ID_FROM_URL) document.getElementById('l-badge').style.display='block'
 let role='trainer', page='dashboard', theme='sky', chart=null;
 let user=null, prof=null, mprof=null;
 let members=[], sessions=[], inbodys=[], notices=[], missions=[];
+let dietPhotos=[];
 let isSignup=false;
+let dragSrc=null;
 
 const THEMES=[
   {id:'sky',name:'스카이',color:'#38BDF8',cls:'t-sky'},
@@ -300,13 +326,12 @@ const MISSIONS=[
 ];
 
 const GOALS=['근력향상','다이어트','재활','체형교정'];
-// DB에 이미 저장된 '근비대','감량' 등 구버전 값도 표시될 수 있으니 select에서 처리
 const WEEKS=[...Array(24)].map((_,i)=>`${i+1}주차`);
 
 const PT={
   dashboard:'대시보드',members:'회원 관리',session:'수업 일지',
   'ai-plan':'AI 수업안',inbody:'인바디 변화',homework:'숙제 공유',notice:'센터 공지',
-  mh:'홈',mj:'수업 일지',mi2:'인바디',mm:'미션 & 보상',mhw:'숙제',mn:'공지',ms:'설정',
+  mh:'홈',mj:'수업 일지',mi2:'인바디',mm:'미션 & 보상',mhw:'숙제',mn:'공지',ms:'설정',mdiet:'식단 사진',
 };
 
 // ── 인증 ──
@@ -317,12 +342,10 @@ async function init(){
     else showLogin();
   }catch(e){showLogin();}
 }
-
 function showLogin(){
   document.getElementById('loading').style.display='none';
   document.getElementById('login').style.display='flex';
 }
-
 function showApp(){
   document.getElementById('loading').style.display='none';
   document.getElementById('login').style.display='none';
@@ -331,7 +354,6 @@ function showApp(){
   role=prof?.role||'trainer';
   go(role==='member'?'mh':'dashboard');
 }
-
 function toggleMode(){
   isSignup=!isSignup;
   document.getElementById('l-mode').textContent=isSignup?'회원가입':'로그인';
@@ -340,7 +362,6 @@ function toggleMode(){
   document.getElementById('l-name').style.display=isSignup?'block':'none';
   if(!TRAINER_ID_FROM_URL) document.getElementById('l-role').style.display=isSignup?'block':'none';
 }
-
 async function doAuth(){
   const email=document.getElementById('l-email').value.trim();
   const pw=document.getElementById('l-pw').value.trim();
@@ -357,7 +378,7 @@ async function doAuth(){
       const {data,error}=await SB.auth.signUp({email,password:pw});
       if(error) throw error;
       await SB.from('users').insert({
-        id:data.user.id, name, role:r, theme:'sky',
+        id:data.user.id,name,role:r,theme:'sky',
         trainer_id:r==='member'?TRAINER_ID_FROM_URL:null,
         invite_token:r==='trainer'?Math.random().toString(36).slice(2,10):null,
       });
@@ -373,7 +394,6 @@ async function doAuth(){
     btn.textContent=isSignup?'가입하기':'로그인';btn.disabled=false;
   }
 }
-
 async function doLogout(){await SB.auth.signOut();location.reload();}
 
 // ── 데이터 ──
@@ -385,45 +405,44 @@ async function loadProf(){
     mprof=mp;
   }
 }
-
 async function loadMembers(){
-  // users 테이블에서 trainer_id로 먼저 회원 목록을 가져옴
-  const {data:userList}=await SB.from('users').select('*').eq('trainer_id',prof?.id).eq('role','member');
-  if(!userList||userList.length===0){members=[];return;}
-  const userIds=userList.map(u=>u.id);
-  const {data:memberList}=await SB.from('members').select('*').in('user_id',userIds);
-  // 합치기
-  members=(memberList||[]).map(m=>({
-    ...m,
-    user: userList.find(u=>u.id===m.user_id)
-  }));
+  const {data:ul}=await SB.from('users').select('*').eq('trainer_id',prof?.id).eq('role','member');
+  if(!ul||ul.length===0){members=[];return;}
+  const {data:ml}=await SB.from('members').select('*').in('user_id',ul.map(u=>u.id));
+  members=(ml||[]).map(m=>({...m,user:ul.find(u=>u.id===m.user_id)}));
 }
-
 async function loadSessions(mid=null){
   let q=SB.from('sessions').select('*').order('session_date',{ascending:false}).limit(20);
   if(mid) q=q.eq('member_id',mid);
   else q=q.eq('trainer_id',prof?.id);
-  const {data}=await q;
-  sessions=data||[];
+  const {data}=await q;sessions=data||[];
 }
-
 async function loadInbody(mid=null){
   let q=SB.from('inbody_records').select('*').order('measured_at',{ascending:false}).limit(20);
   if(mid) q=q.eq('member_id',mid);
-  const {data}=await q;
-  inbodys=data||[];
+  const {data}=await q;inbodys=data||[];
 }
-
 async function loadNotices(){
   const {data}=await SB.from('notices').select('*')
     .order('is_pinned',{ascending:false}).order('created_at',{ascending:false});
   notices=data||[];
 }
-
 async function loadMissions(){
   if(!mprof) return;
   const {data}=await SB.from('mission_progress').select('*').eq('member_id',mprof.id);
   missions=data||[];
+}
+async function loadDietPhotos(){
+  if(!mprof) return;
+  try{
+    const {data}=await SB.storage.from('diet-photos').list(`${mprof.id}/`,{limit:20,sortBy:{column:'created_at',order:'desc'}});
+    if(data){
+      dietPhotos=data.filter(f=>f.name!=='.emptyFolderPlaceholder').map(f=>{
+        const {data:url}=SB.storage.from('diet-photos').getPublicUrl(`${mprof.id}/${f.name}`);
+        return{name:f.name,url:url.publicUrl};
+      });
+    }
+  }catch(e){dietPhotos=[];}
 }
 
 // ── 테마 ──
@@ -434,11 +453,7 @@ function setTheme(id){
   app.classList.add(THEMES.find(x=>x.id===id)?.cls||'t-sky');
   renderSw();
 }
-async function chTheme(id){
-  setTheme(id);
-  await SB.from('users').update({theme:id}).eq('id',user.id);
-  go('ms');
-}
+async function chTheme(id){setTheme(id);await SB.from('users').update({theme:id}).eq('id',user.id);go('ms');}
 function renderSw(){
   const el=document.getElementById('sb-sw');if(!el) return;
   el.innerHTML=THEMES.map(t=>`<div onclick="chTheme('${t.id}')" style="width:22px;height:22px;border-radius:50%;background:${t.color};cursor:pointer;border:2px solid ${t.id===theme?'#fff':'transparent'}"></div>`).join('');
@@ -460,6 +475,7 @@ const MN=[
   {id:'mi2',i:'ti-chart-line',l:'인바디'},
   {s:'게임'},{id:'mm',i:'ti-trophy',l:'미션',b:'!'},
   {s:'기타'},{id:'mhw',i:'ti-checklist',l:'숙제'},
+  {id:'mdiet',i:'ti-salad',l:'식단 사진'},
   {id:'mn',i:'ti-speakerphone',l:'공지'},
   {id:'ms',i:'ti-palette',l:'설정'},
 ];
@@ -474,7 +490,7 @@ const MT=[
   {id:'mh',i:'ti-home',l:'홈'},
   {id:'mm',i:'ti-trophy',l:'미션'},
   {id:'mj',i:'ti-notebook',l:'일지'},
-  {id:'mhw',i:'ti-checklist',l:'숙제'},
+  {id:'mdiet',i:'ti-salad',l:'식단'},
   {id:'ms',i:'ti-user',l:'설정'},
 ];
 
@@ -522,13 +538,16 @@ async function go(id){
   if(id==='mj') await loadSessions(mprof?.id);
   if(id==='mi2') await loadInbody(mprof?.id);
   if(id==='mhw') await loadSessions(mprof?.id);
+  if(id==='mdiet') await loadDietPhotos();
   if(id==='mh'){await loadSessions(mprof?.id);await loadInbody(mprof?.id);await loadNotices();}
   const d=document.createElement('div');
   d.className='pe';d.innerHTML=html(id);
   c.innerHTML='';c.appendChild(d);
-  setTimeout(()=>{if(id==='inbody'||id==='mi2') drawChart(id);},100);
+  setTimeout(()=>{
+    if(id==='inbody'||id==='mi2') drawChart(id);
+    if(id==='session') initDrag();
+  },100);
 }
-
 function toggleRole(){role=role==='trainer'?'member':'trainer';go(role==='member'?'mh':'dashboard');}
 
 function html(id){
@@ -541,13 +560,14 @@ function html(id){
     if(id==='homework')  return pHomework();
     if(id==='notice')    return pNotice();
   }else{
-    if(id==='mh')  return mHome();
-    if(id==='mj')  return mJournal();
-    if(id==='mi2') return mInbody();
-    if(id==='mm')  return mMissions();
-    if(id==='mhw') return mHomework();
-    if(id==='mn')  return mNotice();
-    if(id==='ms')  return mSettings();
+    if(id==='mh')    return mHome();
+    if(id==='mj')    return mJournal();
+    if(id==='mi2')   return mInbody();
+    if(id==='mm')    return mMissions();
+    if(id==='mhw')   return mHomework();
+    if(id==='mdiet') return mDiet();
+    if(id==='mn')    return mNotice();
+    if(id==='ms')    return mSettings();
   }
   return '';
 }
@@ -565,32 +585,14 @@ function pDash(){
   <div class="card">
     <div class="st"><i class="ti ti-users"></i>회원 현황</div>
     ${members.length===0
-      ?`<div class="es"><i class="ti ti-users"></i><p>등록된 회원이 없어요<br>회원 관리에서 초대 링크를 보내세요</p></div>`
-      :members.slice(0,5).map(m=>`
-        <div class="row">
-          <div class="av">${m.user?.name?.charAt(0)||'?'}</div>
-          <div>
-            <div style="font-size:13px;font-weight:600">${m.user?.name||'-'}</div>
-            <div style="font-size:11px;color:var(--text3)">${m.goal||'-'} · ${m.current_week||1}주차</div>
-          </div>
-          <div style="margin-left:auto;display:flex;align-items:center;gap:5px">
-            <span class="tag tag-a">Lv.${m.level||1}</span>
-            <span style="font-size:10px;color:#F43F5E;font-weight:700">🔥${m.streak||0}일</span>
-          </div>
-        </div>`).join('')}
+      ?`<div class="es"><i class="ti ti-users"></i><p>등록된 회원이 없어요</p></div>`
+      :members.slice(0,5).map(m=>`<div class="row"><div class="av">${m.user?.name?.charAt(0)||'?'}</div><div><div style="font-size:13px;font-weight:600">${m.user?.name||'-'}</div><div style="font-size:11px;color:var(--text3)">${m.goal||'-'} · ${m.current_week||1}주차</div></div><div style="margin-left:auto;display:flex;align-items:center;gap:5px"><span class="tag tag-a">Lv.${m.level||1}</span><span style="font-size:10px;color:#F43F5E;font-weight:700">🔥${m.streak||0}일</span></div></div>`).join('')}
   </div>
   <div class="card">
     <div class="st"><i class="ti ti-notebook"></i>최근 수업 일지</div>
     ${sessions.length===0
       ?`<div class="es"><i class="ti ti-notebook"></i><p>수업 일지가 없어요</p></div>`
-      :sessions.slice(0,3).map(s=>`
-        <div class="si">
-          <div style="display:flex;justify-content:space-between;margin-bottom:2px">
-            <span style="font-size:13px;font-weight:600">${s.session_date}</span>
-            <span class="tag ${s.is_shared?'tag-g':'tag-y'}">${s.is_shared?'공유됨':'비공개'}</span>
-          </div>
-          <div style="font-size:11px;color:var(--text3)">${s.coaching_note||'-'}</div>
-        </div>`).join('')}
+      :sessions.slice(0,3).map(s=>`<div class="si"><div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-size:13px;font-weight:600">${s.session_date}</span><span class="tag ${s.is_shared?'tag-g':'tag-y'}">${s.is_shared?'공유됨':'비공개'}</span></div><div style="font-size:11px;color:var(--text3)">${s.coaching_note||'-'}</div></div>`).join('')}
   </div>`;
 }
 
@@ -601,16 +603,13 @@ function pMembers(){
     <button class="btn btn-a" onclick="copyInvite()"><i class="ti ti-link"></i>초대 링크</button>
   </div>
   ${members.length===0
-    ?`<div class="card"><div class="es"><i class="ti ti-users"></i><p>등록된 회원이 없어요<br>초대 링크를 카카오톡으로 보내세요</p></div></div>`
+    ?`<div class="card"><div class="es"><i class="ti ti-users"></i><p>등록된 회원이 없어요</p></div></div>`
     :members.map(m=>`
       <div class="member-card">
         <div class="member-card-top">
           <div class="av" style="width:42px;height:42px;font-size:16px">${m.user?.name?.charAt(0)||'?'}</div>
-          <div class="member-card-info">
-            <div class="member-card-name">${m.user?.name||'-'}</div>
-            <div class="member-card-sub">${m.user?.email||''}</div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+          <div class="member-card-name">${m.user?.name||'-'}</div>
+          <div style="display:flex;align-items:center;gap:5px">
             <span class="tag tag-a">Lv.${m.level||1}</span>
             <span style="font-size:10px;color:#F43F5E;font-weight:700">🔥${m.streak||0}일</span>
           </div>
@@ -618,20 +617,20 @@ function pMembers(){
         <div class="member-card-body">
           <div>
             <div class="fl" style="margin-bottom:4px">목표</div>
-            <select class="goal-select" onchange="updateMember('${m.id}','goal',this.value)">
+            <select style="font-size:12px;padding:7px 9px" onchange="updateMember('${m.id}','goal',this.value)">
               ${GOALS.map(g=>`<option ${m.goal===g?'selected':''}>${g}</option>`).join('')}
             </select>
           </div>
           <div>
             <div class="fl" style="margin-bottom:4px">주차</div>
-            <select class="week-select" onchange="updateMember('${m.id}','current_week',parseInt(this.value))">
+            <select style="font-size:12px;padding:7px 9px" onchange="updateMember('${m.id}','current_week',parseInt(this.value))">
               ${WEEKS.map((w,i)=>`<option value="${i+1}" ${m.current_week===(i+1)?'selected':''}>${w}</option>`).join('')}
             </select>
           </div>
         </div>
         ${(m.warnings||[]).length?`<div style="margin-top:8px">${m.warnings.map(w=>`<span class="wp">${w}</span>`).join('')}</div>`:''}
       </div>`).join('')}
-  <div class="card card-acc" style="margin-top:4px">
+  <div class="card card-acc">
     <div class="st"><i class="ti ti-link"></i>카카오톡 초대 링크</div>
     <p style="font-size:12px;color:var(--text2);margin-bottom:10px">회원이 이 링크로 가입하면 자동으로 연결돼요!</p>
     <div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:8px;padding:9px 11px;font-size:11px;color:var(--acc2);font-family:monospace;margin-bottom:8px;word-break:break-all">${window.location.origin}?trainer=${prof?.id}</div>
@@ -644,14 +643,13 @@ function copyInvite(){
     .then(()=>alert('링크 복사 완료! 카카오톡으로 보내주세요 😊'));
 }
 
-async function updateMember(memberId, field, value){
-  const {error}=await SB.from('members').update({[field]:value}).eq('id',memberId);
-  if(error){alert('저장 실패: '+error.message);return;}
-  // 로컬 업데이트
-  const m=members.find(x=>x.id===memberId);
+async function updateMember(id,field,value){
+  await SB.from('members').update({[field]:value}).eq('id',id);
+  const m=members.find(x=>x.id===id);
   if(m) m[field]=value;
 }
 
+// ── 수업 일지 표 ──
 function pSession(){
   return `
   <div class="card">
@@ -666,13 +664,59 @@ function pSession(){
       </div>
     </div>
   </div>
+
   <div class="card">
-    <div class="st"><i class="ti ti-barbell"></i>수행 운동</div>
-    <div id="ex-list">
-      <div class="ex"><span contenteditable="true">스쿼트</span><span contenteditable="true">60kg · 10회 · 4세트</span><i class="ti ti-trash" style="font-size:13px;color:var(--text3);cursor:pointer;margin-left:6px" onclick="this.closest('.ex').remove()"></i></div>
+    <div class="st" style="justify-content:space-between">
+      <span><i class="ti ti-barbell"></i>수행 운동</span>
+      <span style="font-size:10px;color:var(--text3);font-weight:400">↕ 드래그로 순서 변경</span>
     </div>
-    <button class="btn btn-w" onclick="addEx()"><i class="ti ti-plus"></i>운동 추가</button>
+    <div class="ex-wrap">
+      <table class="ex-table" id="ex-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>운동명</th>
+            <th>코멘트</th>
+            <th style="text-align:center">1set</th>
+            <th style="text-align:center">2set</th>
+            <th style="text-align:center">3set</th>
+            <th style="text-align:center">4set</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="ex-body">
+          <tr draggable="true">
+            <td><div class="drag-handle"><i class="ti ti-grip-vertical"></i></div></td>
+            <td><textarea class="ex-inp" placeholder="운동명" rows="1">스쿼트</textarea></td>
+            <td><textarea class="ex-inp" placeholder="코멘트" rows="1"></textarea></td>
+            <td><textarea class="ex-inp set-inp" placeholder="60kg\n10회" rows="2"></textarea></td>
+            <td><textarea class="ex-inp set-inp" placeholder="60kg\n10회" rows="2"></textarea></td>
+            <td><textarea class="ex-inp set-inp" placeholder="60kg\n10회" rows="2"></textarea></td>
+            <td><textarea class="ex-inp set-inp" placeholder="-" rows="2"></textarea></td>
+            <td><div class="del-btn" onclick="delRow(this)"><i class="ti ti-trash"></i></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <button class="btn btn-w" onclick="addRow()"><i class="ti ti-plus"></i>운동 추가</button>
   </div>
+
+  <div class="card">
+    <div class="st"><i class="ti ti-video"></i>수업 영상</div>
+    <p style="font-size:12px;color:var(--text3);margin-bottom:10px">오늘 수업 영상을 올리면 회원도 확인할 수 있어요.</p>
+    <div id="video-preview" style="display:none;margin-bottom:10px">
+      <video id="preview-player" controls style="width:100%;border-radius:10px;max-height:220px;background:#000"></video>
+      <div style="font-size:11px;color:var(--text3);margin-top:5px" id="video-filename"></div>
+    </div>
+    <label style="display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:10px;border:1.5px dashed var(--border2);cursor:pointer;font-size:13px;color:var(--text3);background:var(--surface2)" id="video-label">
+      <i class="ti ti-upload" style="font-size:18px"></i>영상 파일 선택 (mp4, mov)
+      <input type="file" id="video-file" accept="video/*" style="display:none" onchange="previewVideo(this)">
+    </label>
+    <div id="video-uploading" style="display:none;text-align:center;padding:12px;font-size:13px;color:var(--text3)">
+      <div class="spin" style="margin:0 auto 6px;border-top-color:var(--acc2)"></div>업로드 중... (파일 크기에 따라 시간이 걸릴 수 있어요)
+    </div>
+  </div>
+
   <div class="card">
     <div class="st"><i class="ti ti-message"></i>코칭 & 숙제</div>
     <div class="fg"><label class="fl">코칭 포인트</label><textarea id="s-coach" placeholder="오늘 코칭 포인트"></textarea></div>
@@ -683,39 +727,159 @@ function pSession(){
       <button class="btn btn-a btn-w" style="flex:2" onclick="saveSession(true)"><i class="ti ti-send"></i>저장 & 공유</button>
     </div>
   </div>
+
   <div class="card">
     <div class="st"><i class="ti ti-history"></i>최근 수업 일지</div>
     ${sessions.length===0
       ?`<div class="es"><i class="ti ti-notebook"></i><p>수업 일지가 없어요</p></div>`
-      :sessions.slice(0,5).map(s=>`
-        <div class="si">
-          <div style="display:flex;justify-content:space-between;margin-bottom:2px">
-            <span style="font-size:13px;font-weight:600">${s.session_date}</span>
+      :sessions.map(s=>{
+        const ex=s.exercises||[];
+        const mName=members.find(m=>m.id===s.member_id)?.user?.name||'알 수 없음';
+        return `<div class="si">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <div>
+              <span style="font-size:13px;font-weight:600">${s.session_date}</span>
+              <span style="font-size:11px;color:var(--text3);margin-left:6px">${mName}</span>
+            </div>
             <span class="tag ${s.is_shared?'tag-g':'tag-y'}">${s.is_shared?'공유됨':'비공개'}</span>
           </div>
-          <div style="font-size:11px;color:var(--text3)">${s.coaching_note||'-'}</div>
-        </div>`).join('')}
+          <div style="font-size:11px;color:var(--text3);margin-bottom:6px">${s.condition||''} · 운동 ${ex.length}종목</div>
+          <div style="display:flex;gap:6px">
+            <button class="btn" style="font-size:11px;padding:5px 10px;flex:1" onclick="viewSession('${s.id}')"><i class="ti ti-eye"></i>보기</button>
+            <button class="btn" style="font-size:11px;padding:5px 10px;flex:1" onclick="editSession('${s.id}')"><i class="ti ti-edit"></i>수정</button>
+            <button class="btn" style="font-size:11px;padding:5px 10px;color:${s.is_shared?'#059669':'var(--acc-text)'};background:${s.is_shared?'#DCFCE7':'var(--acc-soft)'};border-color:transparent" onclick="toggleShare('${s.id}',${s.is_shared})">${s.is_shared?'공유 취소':'공유하기'}</button>
+          </div>
+        </div>`;
+      }).join('')}
   </div>`;
+}
+
+// 영상 미리보기
+function previewVideo(input){
+  const file=input.files[0];
+  if(!file) return;
+  const url=URL.createObjectURL(file);
+  const player=document.getElementById('preview-player');
+  const preview=document.getElementById('video-preview');
+  const fname=document.getElementById('video-filename');
+  const label=document.getElementById('video-label');
+  if(player&&preview&&fname){
+    player.src=url;
+    preview.style.display='block';
+    fname.textContent=`📁 ${file.name} (${(file.size/1024/1024).toFixed(1)}MB)`;
+    if(label) label.style.display='none';
+  }
+}
+
+// 세션 저장 시 영상 업로드
+async function uploadSessionVideo(sessionId){
+  const input=document.getElementById('video-file');
+  if(!input||!input.files[0]) return null;
+  const file=input.files[0];
+  const ext=file.name.split('.').pop();
+  const fname=`${sessionId}.${ext}`;
+  document.getElementById('video-uploading').style.display='block';
+  const {error}=await SB.storage.from('session-videos').upload(fname,file,{cacheControl:'3600',upsert:true});
+  document.getElementById('video-uploading').style.display='none';
+  if(error){console.error('영상 업로드 실패:',error.message);return null;}
+  const {data:url}=SB.storage.from('session-videos').getPublicUrl(fname);
+  return url.publicUrl;
+}
+
+// 드래그 순서 변경
+function initDrag(){
+  const tbody=document.getElementById('ex-body');
+  if(!tbody) return;
+  tbody.addEventListener('dragstart',e=>{
+    dragSrc=e.target.closest('tr');
+    if(dragSrc) dragSrc.classList.add('dragging');
+  });
+  tbody.addEventListener('dragover',e=>{
+    e.preventDefault();
+    const tr=e.target.closest('tr');
+    if(tr&&tr!==dragSrc){
+      tbody.querySelectorAll('tr').forEach(r=>r.classList.remove('drag-over'));
+      tr.classList.add('drag-over');
+    }
+  });
+  tbody.addEventListener('drop',e=>{
+    e.preventDefault();
+    const tr=e.target.closest('tr');
+    if(tr&&tr!==dragSrc){
+      const rows=[...tbody.querySelectorAll('tr')];
+      const si=rows.indexOf(dragSrc);
+      const ti=rows.indexOf(tr);
+      if(si<ti) tr.after(dragSrc);
+      else tr.before(dragSrc);
+    }
+    tbody.querySelectorAll('tr').forEach(r=>r.classList.remove('drag-over','dragging'));
+  });
+  tbody.addEventListener('dragend',()=>{
+    tbody.querySelectorAll('tr').forEach(r=>r.classList.remove('dragging','drag-over'));
+  });
+}
+
+function addRow(){
+  const tbody=document.getElementById('ex-body');
+  if(!tbody) return;
+  const tr=document.createElement('tr');
+  tr.setAttribute('draggable','true');
+  tr.innerHTML=`
+    <td><div class="drag-handle"><i class="ti ti-grip-vertical"></i></div></td>
+    <td><textarea class="ex-inp" placeholder="운동명" rows="1"></textarea></td>
+    <td><textarea class="ex-inp" placeholder="코멘트" rows="1"></textarea></td>
+    <td><textarea class="ex-inp set-inp" placeholder="무게\n횟수" rows="2"></textarea></td>
+    <td><textarea class="ex-inp set-inp" placeholder="무게\n횟수" rows="2"></textarea></td>
+    <td><textarea class="ex-inp set-inp" placeholder="무게\n횟수" rows="2"></textarea></td>
+    <td><textarea class="ex-inp set-inp" placeholder="-" rows="2"></textarea></td>
+    <td><div class="del-btn" onclick="delRow(this)"><i class="ti ti-trash"></i></div></td>`;
+  tbody.appendChild(tr);
+  initDrag();
+}
+
+function delRow(btn){
+  const tr=btn.closest('tr');
+  if(document.querySelectorAll('#ex-body tr').length>1) tr.remove();
+  else alert('운동이 최소 1개 이상 있어야 해요');
 }
 
 async function saveSession(shared){
   const mid=document.getElementById('sel-m')?.value;
   if(!mid){alert('회원을 선택해주세요');return;}
-  const exs=Array.from(document.querySelectorAll('#ex-list .ex')).map(r=>({
-    name:r.querySelectorAll('span')[0]?.textContent,
-    detail:r.querySelectorAll('span')[1]?.textContent
-  }));
-  const {error}=await SB.from('sessions').insert({
-    member_id:mid, trainer_id:user.id,
+  const rows=document.querySelectorAll('#ex-body tr');
+  const exercises=Array.from(rows).map(tr=>{
+    const ta=tr.querySelectorAll('textarea');
+    return{
+      name:ta[0]?.value||'',
+      comment:ta[1]?.value||'',
+      set1:ta[2]?.value||'',
+      set2:ta[3]?.value||'',
+      set3:ta[4]?.value||'',
+      set4:ta[5]?.value||'',
+    };
+  });
+  // 먼저 세션 저장
+  const {data:sessionData,error}=await SB.from('sessions').insert({
+    member_id:mid,trainer_id:user.id,
     session_date:document.getElementById('s-date')?.value,
     condition:document.getElementById('s-cond')?.value,
-    exercises:exs,
+    exercises,
     coaching_note:document.getElementById('s-coach')?.value||'',
     caution:document.getElementById('s-caut')?.value||'',
     homework:document.getElementById('s-hw')?.value||'',
     is_shared:shared,
-  });
+    video_url:null,
+  }).select().single();
   if(error){alert('저장 실패: '+error.message);return;}
+
+  // 영상 있으면 업로드 후 video_url 업데이트
+  const input=document.getElementById('video-file');
+  if(input&&input.files[0]&&sessionData){
+    const videoUrl=await uploadSessionVideo(sessionData.id);
+    if(videoUrl){
+      await SB.from('sessions').update({video_url:videoUrl}).eq('id',sessionData.id);
+    }
+  }
   alert(shared?'저장 완료! 회원에게 공유됐어요 ✅':'저장 완료!');
   go('session');
 }
@@ -728,12 +892,8 @@ function pAI(){
       <select id="ai-m"><option value="">회원 선택</option>${members.map(m=>`<option value="${m.id}">${m.user?.name}</option>`).join('')}</select>
     </div>
     <div class="g2" style="gap:8px">
-      <div class="fg"><label class="fl">목표</label>
-        <select id="ai-g">${GOALS.map(g=>`<option>${g}</option>`).join('')}</select>
-      </div>
-      <div class="fg"><label class="fl">주차</label>
-        <select id="ai-w">${WEEKS.map(w=>`<option>${w}</option>`).join('')}</select>
-      </div>
+      <div class="fg"><label class="fl">목표</label><select id="ai-g">${GOALS.map(g=>`<option>${g}</option>`).join('')}</select></div>
+      <div class="fg"><label class="fl">주차</label><select id="ai-w">${WEEKS.map(w=>`<option>${w}</option>`).join('')}</select></div>
     </div>
     <button class="btn btn-a btn-w" id="gen-btn" onclick="genPlan()"><i class="ti ti-sparkles"></i>AI 수업안 자동 생성</button>
   </div>
@@ -746,9 +906,7 @@ function genPlan(){
   setTimeout(()=>{
     btn.innerHTML='<i class="ti ti-sparkles"></i> AI 수업안 자동 생성';btn.disabled=false;
     const r=document.getElementById('plan-result');if(!r) return;
-    const g=document.getElementById('ai-g')?.value;
-    const w=document.getElementById('ai-w')?.value;
-    r.innerHTML=`<div class="card"><div class="st"><i class="ti ti-list"></i>${g} ${w} 수업안</div>
+    r.innerHTML=`<div class="card"><div class="st"><i class="ti ti-list"></i>추천 수업안</div>
       ${[['ti-wave-sine','준비운동 10분',['폼롤러 전신','동적 스트레칭 10회','바디웨이트 스쿼트 15회×2']],
          ['ti-barbell','메인 35분',['메인 A · 8회·4세트','메인 B · 10회·3세트','메인 C · 12회·3세트']],
          ['ti-flame','보강 10분',['보강 A · 15회×3','보강 B · 12회×3']],
@@ -766,10 +924,7 @@ async function savePlan(btn){
   const mid=document.getElementById('ai-m')?.value;
   if(!mid){alert('회원을 선택해주세요');return;}
   btn.innerHTML='<i class="ti ti-check"></i> 저장 완료!';btn.disabled=true;
-  await SB.from('ai_plans').insert({
-    member_id:mid, trainer_id:user.id,
-    plan_content:{note:'자동생성'}, is_confirmed:true, confirmed_at:new Date().toISOString()
-  });
+  await SB.from('ai_plans').insert({member_id:mid,trainer_id:user.id,plan_content:{note:'자동생성'},is_confirmed:true,confirmed_at:new Date().toISOString()});
   setTimeout(()=>go('homework'),1000);
 }
 
@@ -793,15 +948,7 @@ function pInbody(){
     <div class="st"><i class="ti ti-history"></i>측정 이력 (${inbodys.length}건)</div>
     ${inbodys.length===0
       ?`<div class="es"><i class="ti ti-chart-line"></i><p>인바디 기록이 없어요</p></div>`
-      :inbodys.slice(0,6).map(r=>`
-        <div class="ir">
-          <span style="font-size:12px;color:var(--text3)">${r.measured_at}</span>
-          <div style="display:flex;gap:8px;font-size:12px">
-            <span>체중 <b>${r.weight}kg</b></span>
-            <span>체지방 <b>${r.body_fat_pct}%</b></span>
-            <span>근육 <b>${r.muscle_mass}kg</b></span>
-          </div>
-        </div>`).join('')}
+      :inbodys.slice(0,6).map(r=>`<div class="ir"><span style="font-size:12px;color:var(--text3)">${r.measured_at}</span><div style="display:flex;gap:8px;font-size:12px"><span>체중 <b>${r.weight}kg</b></span><span>체지방 <b>${r.body_fat_pct}%</b></span><span>근육 <b>${r.muscle_mass}kg</b></span></div></div>`).join('')}
   </div>`;
 }
 
@@ -809,7 +956,7 @@ async function saveInbody(){
   const mid=document.getElementById('ib-m')?.value;
   if(!mid){alert('회원을 선택해주세요');return;}
   const {error}=await SB.from('inbody_records').insert({
-    member_id:mid, measured_at:document.getElementById('ib-d')?.value,
+    member_id:mid,measured_at:document.getElementById('ib-d')?.value,
     weight:parseFloat(document.getElementById('ib-w')?.value)||null,
     body_fat_pct:parseFloat(document.getElementById('ib-f')?.value)||null,
     muscle_mass:parseFloat(document.getElementById('ib-mu')?.value)||null,
@@ -824,14 +971,7 @@ function pHomework(){
   return `<div class="card"><div class="st"><i class="ti ti-send"></i>공유된 수업 일지 (${sh.length}건)</div>
     ${sh.length===0
       ?`<div class="es"><i class="ti ti-send"></i><p>공유된 수업 일지가 없어요</p></div>`
-      :sh.slice(0,5).map(s=>`
-        <div class="si">
-          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
-            <span style="font-size:13px;font-weight:600">${s.session_date}</span>
-            <span class="tag tag-g">공유됨</span>
-          </div>
-          <div style="font-size:12px;color:var(--text2)">${s.homework||'숙제 없음'}</div>
-        </div>`).join('')}
+      :sh.slice(0,5).map(s=>`<div class="si"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:13px;font-weight:600">${s.session_date}</span><span class="tag tag-g">공유됨</span></div><div style="font-size:12px;color:var(--text2)">${s.homework||'숙제 없음'}</div></div>`).join('')}
   </div>`;
 }
 
@@ -847,23 +987,19 @@ function pNotice(){
     </div>
     <button class="btn btn-a btn-w" onclick="saveNotice()"><i class="ti ti-send"></i>공지 게시</button>
   </div>
-  ${notices.map(n=>`
-    <div class="nc ${n.is_pinned?'np':''}">
-      ${n.is_pinned?`<div style="font-size:9px;color:#92400E;font-weight:700;margin-bottom:2px">📌 고정</div>`:''}
-      <div style="font-size:14px;font-weight:700;margin-bottom:3px">${n.title}</div>
-      <div style="font-size:13px;color:var(--text2)">${n.body}</div>
-      <div style="font-size:10px;color:var(--text3);margin-top:5px">${new Date(n.created_at).toLocaleDateString('ko-KR')}</div>
-    </div>`).join('')}`;
+  ${notices.map(n=>`<div class="nc ${n.is_pinned?'np':''}">
+    ${n.is_pinned?`<div style="font-size:9px;color:#92400E;font-weight:700;margin-bottom:2px">📌 고정</div>`:''}
+    <div style="font-size:14px;font-weight:700;margin-bottom:3px">${n.title}</div>
+    <div style="font-size:13px;color:var(--text2)">${n.body}</div>
+    <div style="font-size:10px;color:var(--text3);margin-top:5px">${new Date(n.created_at).toLocaleDateString('ko-KR')}</div>
+  </div>`).join('')}`;
 }
 
 async function saveNotice(){
   const t=document.getElementById('n-t')?.value?.trim();
   const b=document.getElementById('n-b')?.value?.trim();
   if(!t||!b){alert('제목과 내용을 입력해주세요');return;}
-  const {error}=await SB.from('notices').insert({
-    trainer_id:user.id, title:t, body:b,
-    is_pinned:document.getElementById('n-p')?.checked||false
-  });
+  const {error}=await SB.from('notices').insert({trainer_id:user.id,title:t,body:b,is_pinned:document.getElementById('n-p')?.checked||false});
   if(error){alert('저장 실패: '+error.message);return;}
   alert('공지 게시 완료! ✅');go('notice');
 }
@@ -878,8 +1014,8 @@ function mHome(){
     <div class="hc acc" onclick="go('mhw')"><div class="hc-i">📋</div><div class="hc-t">오늘 숙제</div><div class="hc-s">${sh.length>0&&sh[0].homework?sh[0].homework.slice(0,16)+'...':'숙제 없음'}</div></div>
     <div class="hc" onclick="go('mj')"><div class="hc-i">📖</div><div class="hc-t">수업 일지</div><div class="hc-s">${sh.length>0?sh[0].session_date:'없음'}</div></div>
     <div class="hc" onclick="go('mi2')"><div class="hc-i">📊</div><div class="hc-t">인바디</div><div class="hc-s">${inbodys.length>0?inbodys[0].weight+'kg':'기록 없음'}</div></div>
+    <div class="hc" onclick="go('mdiet')"><div class="hc-i">🥗</div><div class="hc-t">식단 사진</div><div class="hc-s">기록하기</div></div>
     <div class="hc" onclick="go('mn')"><div class="hc-i">📢</div><div class="hc-t">공지</div><div class="hc-s">${notices.length}건</div></div>
-    <div class="hc" onclick="go('ms')"><div class="hc-i">🎨</div><div class="hc-t">테마 설정</div><div class="hc-s">색상 바꾸기</div></div>
   </div>
   <div class="card"><div class="g2">
     <div><div style="font-size:11px;color:var(--text3)">연속 출석</div><div style="font-size:22px;font-weight:700;color:var(--acc2)">🔥 ${mprof?.streak||0}일</div></div>
@@ -891,16 +1027,34 @@ function mJournal(){
   const sh=sessions.filter(s=>s.is_shared);
   return sh.length===0
     ?`<div class="card"><div class="es"><i class="ti ti-notebook"></i><p>아직 공유된 수업 일지가 없어요<br>트레이너가 수업 후 공유해줄 거예요!</p></div></div>`
-    :sh.map(s=>`
-      <div class="card">
+    :sh.map(s=>{
+      const exs=s.exercises||[];
+      return `<div class="card">
         <div style="background:var(--acc-softer);border-radius:9px;padding:10px 12px;margin-bottom:10px">
           <div style="font-size:10px;color:var(--text3)">${s.session_date}</div>
           <div style="font-size:15px;font-weight:700;color:var(--acc2);margin-top:1px">${s.condition||''}</div>
         </div>
+        ${exs.length>0?`
+          <div class="st"><i class="ti ti-barbell"></i>운동 내용</div>
+          <div class="ex-wrap" style="margin-bottom:10px">
+            <table class="ex-table">
+              <thead><tr><th>운동명</th><th>코멘트</th><th style="text-align:center">1set</th><th style="text-align:center">2set</th><th style="text-align:center">3set</th><th style="text-align:center">4set</th></tr></thead>
+              <tbody>${exs.map(e=>`<tr>
+                <td style="padding:7px 10px;font-size:12px;font-weight:600">${e.name||''}</td>
+                <td style="padding:7px 10px;font-size:11px;color:var(--text2)">${e.comment||''}</td>
+                <td style="padding:7px 10px;font-size:11px;text-align:center;white-space:pre-line">${e.set1||'-'}</td>
+                <td style="padding:7px 10px;font-size:11px;text-align:center;white-space:pre-line">${e.set2||'-'}</td>
+                <td style="padding:7px 10px;font-size:11px;text-align:center;white-space:pre-line">${e.set3||'-'}</td>
+                <td style="padding:7px 10px;font-size:11px;text-align:center;white-space:pre-line">${e.set4||'-'}</td>
+              </tr>`).join('')}</tbody>
+            </table>
+          </div>`:''} 
+        ${s.video_url?`<div class="st"><i class="ti ti-video"></i>수업 영상</div><video controls src="${s.video_url}" style="width:100%;border-radius:10px;max-height:220px;background:#000;margin-bottom:10px" playsinline></video>`:''}
         ${s.coaching_note?`<div class="st"><i class="ti ti-message"></i>코칭 포인트</div><div style="background:var(--acc-softer);border-radius:9px;padding:12px;font-size:13px;line-height:1.65;margin-bottom:10px">${s.coaching_note}</div>`:''}
         ${s.caution?`<div class="st"><i class="ti ti-alert-circle"></i>주의사항</div><div style="background:#FFF1F2;border-left:3px solid #F43F5E;border-radius:0 9px 9px 0;padding:10px 12px;font-size:13px;margin-bottom:10px">${s.caution}</div>`:''}
         ${s.homework?`<div class="st"><i class="ti ti-checklist"></i>숙제</div><div style="background:var(--surface2);border-radius:9px;padding:11px;font-size:13px">${s.homework}</div>`:''}
-      </div>`).join('');
+      </div>`;
+    }).join('');
 }
 
 function mInbody(){
@@ -911,15 +1065,7 @@ function mInbody(){
   <div class="card"><div class="st"><i class="ti ti-list"></i>측정 이력 (${inbodys.length}건)</div>
     ${inbodys.length===0
       ?`<div class="es"><i class="ti ti-chart-line"></i><p>기록이 없어요</p></div>`
-      :inbodys.map(r=>`
-        <div class="ir">
-          <span style="font-size:11px;color:var(--text3)">${r.measured_at}</span>
-          <div style="display:flex;gap:8px;font-size:12px">
-            <span>체중 <b>${r.weight}kg</b></span>
-            <span>체지방 <b>${r.body_fat_pct}%</b></span>
-            <span>근육 <b>${r.muscle_mass}kg</b></span>
-          </div>
-        </div>`).join('')}
+      :inbodys.map(r=>`<div class="ir"><span style="font-size:11px;color:var(--text3)">${r.measured_at}</span><div style="display:flex;gap:8px;font-size:12px"><span>체중 <b>${r.weight}kg</b></span><span>체지방 <b>${r.body_fat_pct}%</b></span><span>근육 <b>${r.muscle_mass}kg</b></span></div></div>`).join('')}
   </div>`;
 }
 
@@ -929,10 +1075,7 @@ function mMissions(){
   <div class="sc">
     <div style="display:flex;align-items:flex-start;justify-content:space-between">
       <div><div class="sb2">🔥 ${mprof?.streak||0}일</div><div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px">연속 출석 중</div></div>
-      <div style="text-align:right">
-        <div class="lv" style="margin-bottom:5px"><i class="ti ti-star"></i>Lv.${mprof?.level||1}</div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.45)">${mprof?.xp||0} XP</div>
-      </div>
+      <div style="text-align:right"><div class="lv" style="margin-bottom:5px"><i class="ti ti-star"></i>Lv.${mprof?.level||1}</div><div style="font-size:10px;color:rgba(255,255,255,0.45)">${mprof?.xp||0} XP</div></div>
     </div>
     <div class="dots">${['월','화','수','목','금','토','일'].map((d,i)=>`<div class="dot ${i<(mprof?.streak||0)%7?'on':i===Math.min((mprof?.streak||0)%7,6)?'td':''}">${d}</div>`).join('')}</div>
   </div>
@@ -941,30 +1084,24 @@ function mMissions(){
     <div class="mi ${m.type}" onclick="completeMission('${m.key}',${m.xp})">
       <div style="display:flex;align-items:center;gap:10px">
         <div style="font-size:22px;width:32px;text-align:center">${m.icon}</div>
-        <div style="flex:1">
-          <div style="font-size:13px;font-weight:600;margin-bottom:2px">${m.title}</div>
-          <div style="font-size:11px;color:var(--text3)">${m.desc}</div>
-          <span class="xpp">+${m.xp} XP</span>
-        </div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:600;margin-bottom:2px">${m.title}</div><div style="font-size:11px;color:var(--text3)">${m.desc}</div><span class="xpp">+${m.xp} XP</span></div>
         <i class="ti ti-chevron-right" style="color:var(--text3)"></i>
       </div>
     </div>`).join('')}
   ${MISSIONS.filter(m=>dk.has(m.key)).length>0?`
     <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 8px">완료한 미션</div>
     ${MISSIONS.filter(m=>dk.has(m.key)).map(m=>`
-      <div class="mi done">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div style="font-size:22px;width:32px;text-align:center">${m.icon}</div>
-          <div style="flex:1;font-size:13px;font-weight:600">${m.title}</div>
-          <i class="ti ti-circle-check" style="color:var(--acc);font-size:18px"></i>
-        </div>
-      </div>`).join('')}`:''}`;
+      <div class="mi done"><div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:22px;width:32px;text-align:center">${m.icon}</div>
+        <div style="flex:1;font-size:13px;font-weight:600">${m.title}</div>
+        <i class="ti ti-circle-check" style="color:var(--acc);font-size:18px"></i>
+      </div></div>`).join('')}`:''}`;
 }
 
 async function completeMission(key,xp){
   if(!mprof) return;
   await SB.from('mission_progress').upsert(
-    {member_id:mprof.id, mission_key:key, is_done:true, done_at:new Date().toISOString()},
+    {member_id:mprof.id,mission_key:key,is_done:true,done_at:new Date().toISOString()},
     {onConflict:'member_id,mission_key'}
   );
   const nx=(mprof.xp||0)+xp;
@@ -985,25 +1122,65 @@ function mHomework(){
         <div style="background:var(--acc-softer);border-radius:9px;padding:12px;font-size:13px;line-height:1.8;white-space:pre-line">${sh[0].homework}</div>
         <div style="margin-top:10px;padding:9px 10px;background:var(--acc-softer);border-radius:8px;font-size:11px;color:var(--acc-text);font-weight:500">✨ 숙제 완료 시 미션에서 XP 획득!</div>`}
   </div>
-  ${sh[0]?.caution?`
-    <div class="card">
-      <div style="background:#FFF1F2;border-left:3px solid #F43F5E;border-radius:0 9px 9px 0;padding:10px 12px">
-        <div style="font-size:10px;font-weight:700;color:#9F1239;margin-bottom:2px">⚠️ 주의사항</div>
-        <div style="font-size:13px;color:var(--text2)">${sh[0].caution}</div>
+  ${sh[0]?.caution?`<div class="card"><div style="background:#FFF1F2;border-left:3px solid #F43F5E;border-radius:0 9px 9px 0;padding:10px 12px"><div style="font-size:10px;font-weight:700;color:#9F1239;margin-bottom:2px">⚠️ 주의사항</div><div style="font-size:13px;color:var(--text2)">${sh[0].caution}</div></div></div>`:''}`;
+}
+
+// ── 식단 사진 ──
+function mDiet(){
+  return `
+  <div class="card">
+    <div class="st"><i class="ti ti-salad"></i>식단 사진</div>
+    <p style="font-size:12px;color:var(--text3);margin-bottom:12px">오늘 먹은 식단 사진을 올려보세요! 트레이너도 확인할 수 있어요.</p>
+    <div class="diet-grid" id="diet-grid">
+      ${dietPhotos.map(p=>`
+        <div class="diet-item">
+          <img src="${p.url}" alt="식단">
+          <div class="diet-del" onclick="deleteDiet('${p.name}')"><i class="ti ti-x"></i></div>
+        </div>`).join('')}
+      <div class="diet-upload" onclick="document.getElementById('diet-file').click()">
+        <i class="ti ti-plus"></i>
+        <span>사진 추가</span>
       </div>
-    </div>`:''}`;
+    </div>
+    <input type="file" id="diet-file" accept="image/*" style="display:none" onchange="uploadDiet(this)">
+    <div id="diet-uploading" style="display:none;text-align:center;padding:12px;font-size:13px;color:var(--text3)">
+      <div class="spin" style="margin:0 auto 6px"></div>업로드 중...
+    </div>
+  </div>
+  <div class="card card-acc">
+    <div style="font-size:12px;color:var(--acc-text)">🥗 식단 사진을 꾸준히 올리면 <strong>미션 XP +30</strong>을 받을 수 있어요!</div>
+  </div>`;
+}
+
+async function uploadDiet(input){
+  const file=input.files[0];
+  if(!file||!mprof) return;
+  document.getElementById('diet-uploading').style.display='block';
+  const ext=file.name.split('.').pop();
+  const fname=`${Date.now()}.${ext}`;
+  const {error}=await SB.storage.from('diet-photos').upload(`${mprof.id}/${fname}`,file,{cacheControl:'3600',upsert:false});
+  document.getElementById('diet-uploading').style.display='none';
+  if(error){alert('업로드 실패: '+error.message);return;}
+  await loadDietPhotos();
+  go('mdiet');
+}
+
+async function deleteDiet(name){
+  if(!confirm('삭제하시겠어요?')) return;
+  await SB.storage.from('diet-photos').remove([`${mprof.id}/${name}`]);
+  await loadDietPhotos();
+  go('mdiet');
 }
 
 function mNotice(){
   return notices.length===0
     ?`<div class="card"><div class="es"><i class="ti ti-speakerphone"></i><p>아직 공지가 없어요</p></div></div>`
-    :notices.map(n=>`
-      <div class="nc ${n.is_pinned?'np':''}">
-        ${n.is_pinned?`<div style="font-size:9px;color:#92400E;font-weight:700;margin-bottom:2px">📌 고정</div>`:''}
-        <div style="font-size:14px;font-weight:700;margin-bottom:3px">${n.title}</div>
-        <div style="font-size:13px;color:var(--text2)">${n.body}</div>
-        <div style="font-size:10px;color:var(--text3);margin-top:5px">${new Date(n.created_at).toLocaleDateString('ko-KR')}</div>
-      </div>`).join('');
+    :notices.map(n=>`<div class="nc ${n.is_pinned?'np':''}">
+      ${n.is_pinned?`<div style="font-size:9px;color:#92400E;font-weight:700;margin-bottom:2px">📌 고정</div>`:''}
+      <div style="font-size:14px;font-weight:700;margin-bottom:3px">${n.title}</div>
+      <div style="font-size:13px;color:var(--text2)">${n.body}</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:5px">${new Date(n.created_at).toLocaleDateString('ko-KR')}</div>
+    </div>`).join('');
 }
 
 function mSettings(){
@@ -1011,37 +1188,151 @@ function mSettings(){
   <div class="card">
     <div class="st"><i class="ti ti-palette"></i>테마 색상</div>
     <p style="font-size:12px;color:var(--text3);margin-bottom:14px">내 취향에 맞게 앱 색상을 바꿔보세요!</p>
-    <div class="sg">
-      ${THEMES.map(t=>`
-        <div class="sw ${t.id===theme?'on':''}" onclick="chTheme('${t.id}')">
-          <div class="sc2" style="background:${t.color}"></div>
-          <div class="sn">${t.name}</div>
-        </div>`).join('')}
-    </div>
+    <div class="sg">${THEMES.map(t=>`<div class="sw ${t.id===theme?'on':''}" onclick="chTheme('${t.id}')"><div class="sc2" style="background:${t.color}"></div><div class="sn">${t.name}</div></div>`).join('')}</div>
   </div>
   <div class="card">
     <div class="st"><i class="ti ti-user"></i>내 정보</div>
     <div style="display:flex;align-items:center;gap:12px;padding:4px 0">
       <div style="width:44px;height:44px;border-radius:50%;background:var(--acc-soft);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--acc-text)">${prof?.name?.charAt(0)||'?'}</div>
-      <div>
-        <div style="font-size:15px;font-weight:700">${prof?.name||''}</div>
-        <div style="font-size:12px;color:var(--text3)">${mprof?.goal||''} · ${mprof?.current_week||1}주차</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:1px">${user?.email||''}</div>
-      </div>
+      <div><div style="font-size:15px;font-weight:700">${prof?.name||''}</div><div style="font-size:12px;color:var(--text3)">${mprof?.goal||''} · ${mprof?.current_week||1}주차</div><div style="font-size:11px;color:var(--text3);margin-top:1px">${user?.email||''}</div></div>
     </div>
     <button class="btn btn-d btn-w" style="margin-top:12px" onclick="doLogout()"><i class="ti ti-logout"></i>로그아웃</button>
   </div>`;
 }
 
-// ── 기타 ──
-function addEx(){
-  const list=document.getElementById('ex-list');if(!list) return;
-  const names=['런지','힙 쓰러스트','케이블 로우','숄더프레스','덤벨 컬','플랭크'];
-  const row=document.createElement('div');row.className='ex';
-  row.innerHTML=`<span contenteditable="true">${names[Math.floor(Math.random()*names.length)]}</span><span contenteditable="true">-- · -- 회 · -- 세트</span><i class="ti ti-trash" style="font-size:13px;color:var(--text3);cursor:pointer;margin-left:6px" onclick="this.closest('.ex').remove()"></i>`;
-  list.appendChild(row);
+// ── 수업 일지 보기 ──
+function viewSession(id){
+  const s=sessions.find(x=>x.id===id);
+  if(!s) return;
+  const ex=s.exercises||[];
+  const mName=members.find(m=>m.id===s.member_id)?.user?.name||'알 수 없음';
+  const c=document.getElementById('content');
+  const d=document.createElement('div');
+  d.className='pe';
+  d.innerHTML=`
+    <button class="btn" style="margin-bottom:12px" onclick="go('session')"><i class="ti ti-arrow-left"></i>목록으로</button>
+    <div class="card" style="background:var(--acc-softer)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:16px;font-weight:700">${s.session_date}</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px">${mName} · ${s.condition||''}</div>
+        </div>
+        <span class="tag ${s.is_shared?'tag-g':'tag-y'}">${s.is_shared?'공유됨':'비공개'}</span>
+      </div>
+    </div>
+    ${ex.length>0?`
+    <div class="card">
+      <div class="st"><i class="ti ti-barbell"></i>운동 내용</div>
+      <div class="ex-wrap">
+        <table class="ex-table">
+          <thead><tr><th>운동명</th><th>코멘트</th><th style="text-align:center">1set</th><th style="text-align:center">2set</th><th style="text-align:center">3set</th><th style="text-align:center">4set</th></tr></thead>
+          <tbody>${ex.map(e=>`<tr>
+            <td style="padding:8px 10px;font-size:12px;font-weight:600">${e.name||''}</td>
+            <td style="padding:8px 10px;font-size:11px;color:var(--text2)">${e.comment||''}</td>
+            <td style="padding:8px 10px;font-size:11px;text-align:center;white-space:pre-line">${e.set1||'-'}</td>
+            <td style="padding:8px 10px;font-size:11px;text-align:center;white-space:pre-line">${e.set2||'-'}</td>
+            <td style="padding:8px 10px;font-size:11px;text-align:center;white-space:pre-line">${e.set3||'-'}</td>
+            <td style="padding:8px 10px;font-size:11px;text-align:center;white-space:pre-line">${e.set4||'-'}</td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </div>`:''}
+    ${s.video_url?`<div class="card"><div class="st"><i class="ti ti-video"></i>수업 영상</div><video controls src="${s.video_url}" style="width:100%;border-radius:10px;max-height:240px;background:#000" playsinline></video></div>`:''}
+    ${s.coaching_note?`<div class="card"><div class="st"><i class="ti ti-message"></i>코칭 포인트</div><div style="font-size:13px;line-height:1.7;color:var(--text)">${s.coaching_note}</div></div>`:''}
+    ${s.caution?`<div class="card"><div class="st"><i class="ti ti-alert-circle"></i>주의사항</div><div style="background:#FFF1F2;border-left:3px solid #F43F5E;border-radius:0 9px 9px 0;padding:10px 12px;font-size:13px">${s.caution}</div></div>`:''}
+    ${s.homework?`<div class="card"><div class="st"><i class="ti ti-checklist"></i>숙제</div><div style="background:var(--surface2);border-radius:9px;padding:12px;font-size:13px;line-height:1.7">${s.homework}</div></div>`:''}
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn" style="flex:1" onclick="editSession('${s.id}')"><i class="ti ti-edit"></i>수정하기</button>
+      <button class="btn btn-a" style="flex:1" onclick="toggleShare('${s.id}',${s.is_shared})">${s.is_shared?'공유 취소':'회원에게 공유'}</button>
+    </div>`;
+  c.innerHTML='';c.appendChild(d);
 }
 
+// ── 수업 일지 수정 ──
+function editSession(id){
+  const s=sessions.find(x=>x.id===id);
+  if(!s) return;
+  const ex=s.exercises||[];
+  const c=document.getElementById('content');
+  const d=document.createElement('div');
+  d.className='pe';
+  d.innerHTML=`
+    <button class="btn" style="margin-bottom:12px" onclick="go('session')"><i class="ti ti-arrow-left"></i>목록으로</button>
+    <div class="card">
+      <div class="st"><i class="ti ti-edit"></i>수업 일지 수정</div>
+      <div class="fg"><label class="fl">날짜</label><input type="date" id="e-date" value="${s.session_date}"></div>
+      <div class="fg"><label class="fl">컨디션</label>
+        <select id="e-cond">
+          <option ${s.condition==='좋음 😊'?'selected':''}>좋음 😊</option>
+          <option ${s.condition==='보통 😐'?'selected':''}>보통 😐</option>
+          <option ${s.condition==='피로 😔'?'selected':''}>피로 😔</option>
+          <option ${s.condition==='통증 😣'?'selected':''}>통증 😣</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      <div class="st" style="justify-content:space-between"><span><i class="ti ti-barbell"></i>수행 운동</span><span style="font-size:10px;color:var(--text3);font-weight:400">↕ 드래그로 순서 변경</span></div>
+      <div class="ex-wrap">
+        <table class="ex-table" id="ex-table">
+          <thead><tr><th></th><th>운동명</th><th>코멘트</th><th style="text-align:center">1set</th><th style="text-align:center">2set</th><th style="text-align:center">3set</th><th style="text-align:center">4set</th><th></th></tr></thead>
+          <tbody id="ex-body">
+            ${ex.map(e=>`<tr draggable="true">
+              <td><div class="drag-handle"><i class="ti ti-grip-vertical"></i></div></td>
+              <td><textarea class="ex-inp" placeholder="운동명" rows="1">${e.name||''}</textarea></td>
+              <td><textarea class="ex-inp" placeholder="코멘트" rows="1">${e.comment||''}</textarea></td>
+              <td><textarea class="ex-inp set-inp" placeholder="무게\n횟수" rows="2">${e.set1||''}</textarea></td>
+              <td><textarea class="ex-inp set-inp" placeholder="무게\n횟수" rows="2">${e.set2||''}</textarea></td>
+              <td><textarea class="ex-inp set-inp" placeholder="무게\n횟수" rows="2">${e.set3||''}</textarea></td>
+              <td><textarea class="ex-inp set-inp" placeholder="-" rows="2">${e.set4||''}</textarea></td>
+              <td><div class="del-btn" onclick="delRow(this)"><i class="ti ti-trash"></i></div></td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+      <button class="btn btn-w" onclick="addRow()"><i class="ti ti-plus"></i>운동 추가</button>
+    </div>
+    <div class="card">
+      <div class="st"><i class="ti ti-message"></i>코칭 & 숙제</div>
+      <div class="fg"><label class="fl">코칭 포인트</label><textarea id="e-coach" placeholder="코칭 포인트">${s.coaching_note||''}</textarea></div>
+      <div class="fg"><label class="fl">주의사항</label><textarea id="e-caut" placeholder="주의사항">${s.caution||''}</textarea></div>
+      <div class="fg"><label class="fl">숙제</label><textarea id="e-hw" placeholder="숙제">${s.homework||''}</textarea></div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn btn-w" style="flex:1" onclick="updateSession('${id}',false)"><i class="ti ti-device-floppy"></i>저장</button>
+        <button class="btn btn-a btn-w" style="flex:2" onclick="updateSession('${id}',true)"><i class="ti ti-send"></i>저장 & 공유</button>
+      </div>
+    </div>`;
+  c.innerHTML='';c.appendChild(d);
+  setTimeout(()=>initDrag(),100);
+}
+
+async function updateSession(id, shared){
+  const rows=document.querySelectorAll('#ex-body tr');
+  const exercises=Array.from(rows).map(tr=>{
+    const ta=tr.querySelectorAll('textarea');
+    return{name:ta[0]?.value||'',comment:ta[1]?.value||'',set1:ta[2]?.value||'',set2:ta[3]?.value||'',set3:ta[4]?.value||'',set4:ta[5]?.value||''};
+  });
+  const {error}=await SB.from('sessions').update({
+    session_date:document.getElementById('e-date')?.value,
+    condition:document.getElementById('e-cond')?.value,
+    exercises,
+    coaching_note:document.getElementById('e-coach')?.value||'',
+    caution:document.getElementById('e-caut')?.value||'',
+    homework:document.getElementById('e-hw')?.value||'',
+    is_shared:shared,
+  }).eq('id',id);
+  if(error){alert('수정 실패: '+error.message);return;}
+  alert(shared?'수정 완료! 회원에게 공유됐어요 ✅':'수정 완료!');
+  go('session');
+}
+
+async function toggleShare(id, currentShared){
+  const {error}=await SB.from('sessions').update({is_shared:!currentShared}).eq('id',id);
+  if(error){alert('변경 실패: '+error.message);return;}
+  await loadSessions();
+  go('session');
+}
+
+// ── 기타 ──
 function drawChart(id){
   const cid=id==='mi2'?'m-ib-chart':'ib-chart';
   const canvas=document.getElementById(cid);
