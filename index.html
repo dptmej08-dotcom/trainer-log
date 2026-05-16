@@ -31,17 +31,16 @@
 .t-mint  {--acc:#2DD4BF;--acc2:#14B8A6;--acc-soft:#CCFBF1;--acc-softer:#F0FFFE;--acc-text:#134E4A}
 
 html,body{height:100%;overflow:hidden;font-family:'Pretendard',sans-serif;background:var(--surface2);color:var(--text)}
-
 #loading{position:fixed;inset:0;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:999}
 #loading p{font-size:13px;color:rgba(255,255,255,0.4)}
 .spin{width:26px;height:26px;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--acc);border-radius:50%;animation:sp .8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
-
 #login{position:fixed;inset:0;background:var(--navy);display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;z-index:998}
 .l-logo{font-size:50px;margin-bottom:6px}
 .l-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px}
 .l-sub{font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:28px;text-align:center;line-height:1.6}
 .l-box{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;width:100%;max-width:340px}
+.l-badge{background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.3);border-radius:10px;padding:8px 12px;font-size:12px;color:var(--acc);text-align:center;margin-bottom:10px;display:none}
 .l-mode{font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:12px;text-align:center}
 .l-inp{width:100%;padding:12px 14px;border:1px solid rgba(255,255,255,0.15);border-radius:10px;background:rgba(255,255,255,0.07);color:#fff;font-size:14px;font-family:'Pretendard',sans-serif;margin-bottom:10px}
 .l-inp::placeholder{color:rgba(255,255,255,0.3)}
@@ -51,12 +50,7 @@ html,body{height:100%;overflow:hidden;font-family:'Pretendard',sans-serif;backgr
 .l-err{font-size:12px;color:#F87171;text-align:center;min-height:16px;margin-top:8px}
 .l-toggle{font-size:12px;color:rgba(255,255,255,0.4);text-align:center;margin-top:12px;cursor:pointer}
 .l-toggle span{color:var(--acc);font-weight:600}
-
-/* 초대 링크로 접속시 역할 자동 선택 안내 */
-.l-trainer-badge{background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.3);border-radius:10px;padding:8px 12px;font-size:12px;color:var(--acc);text-align:center;margin-bottom:10px;display:none}
-
 #app{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
-
 .hd{background:var(--navy);padding:max(44px,env(safe-area-inset-top,44px)) 16px 12px;display:flex;align-items:flex-end;justify-content:space-between;flex-shrink:0}
 .hd-member{background:var(--navy);padding:max(44px,env(safe-area-inset-top,44px)) 16px 14px;flex-shrink:0}
 .hd-mname{font-size:18px;font-weight:700;color:var(--acc)}
@@ -65,15 +59,12 @@ html,body{height:100%;overflow:hidden;font-family:'Pretendard',sans-serif;backgr
 .xp-track{background:rgba(255,255,255,0.12);border-radius:10px;height:6px;overflow:hidden}
 .xp-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:10px;transition:width .5s}
 .chip{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.1);border:0.5px solid rgba(255,255,255,0.15);border-radius:20px;padding:5px 10px;font-size:11px;color:rgba(255,255,255,0.7);cursor:pointer;font-weight:500;white-space:nowrap}
-
 .content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:14px 14px calc(68px + var(--sb));background:var(--surface2)}
-
 .tabs{background:var(--surface);border-top:0.5px solid var(--border2);display:flex;padding-bottom:var(--sb);flex-shrink:0;z-index:10}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:8px 4px 6px}
 .tab i{font-size:22px;color:var(--text3)}
 .tab span{font-size:9px;color:var(--text3);font-weight:500}
 .tab.on i,.tab.on span{color:var(--acc2)}
-
 @media(min-width:768px){
   #app{flex-direction:row}
   .hd,.hd-member{display:none}
@@ -101,14 +92,12 @@ html,body{height:100%;overflow:hidden;font-family:'Pretendard',sans-serif;backgr
   .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
   .topbar{display:none}
 }
-
 .card{background:var(--surface);border:0.5px solid var(--border2);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:10px}
 .card-acc{background:var(--acc-softer);border-color:rgba(0,0,0,0.05)}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .met{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
 .met-l{font-size:11px;color:var(--text3);margin-bottom:3px;font-weight:500}
 .met-v{font-size:22px;font-weight:700;color:var(--acc2)}
-.met-s{font-size:10px;color:var(--text3);margin-top:1px}
 .st{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:4px}
 .row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border)}
 .row:last-child{border-bottom:none}
@@ -117,13 +106,10 @@ html,body{height:100%;overflow:hidden;font-family:'Pretendard',sans-serif;backgr
 .tag-a{background:var(--acc-soft);color:var(--acc-text)}
 .tag-g{background:#DCFCE7;color:#14532D}
 .tag-y{background:#FEF9C3;color:#713F12}
-.tag-gr{background:var(--surface3);color:var(--text3)}
 .wp{background:#FFF1F2;border:0.5px solid rgba(244,63,94,0.2);color:#9F1239;font-size:10px;padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:3px;margin-right:4px;margin-bottom:4px;font-weight:500}
 .ex{display:flex;align-items:center;gap:7px;padding:6px 10px;background:var(--surface2);border-radius:8px;margin:3px 0;border:0.5px solid var(--border)}
 .ex span:first-child{font-size:12px;font-weight:500;flex:1}
 .ex span:last-of-type{font-size:11px;color:var(--text3)}
-.pb{height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;margin-top:4px}
-.pf{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:3px}
 .lv{display:inline-flex;align-items:center;gap:3px;background:var(--acc-soft);color:var(--acc-text);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
 .xpp{background:var(--acc-soft);color:var(--acc-text);font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;display:inline-block;margin-top:5px}
 .fg{margin-bottom:11px}
@@ -179,6 +165,16 @@ textarea{resize:vertical;min-height:70px}
 ::-webkit-scrollbar{display:none}
 .pe{animation:pi .2s ease}
 @keyframes pi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* 회원 카드 */
+.member-card{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:14px;margin-bottom:8px;box-shadow:var(--shadow)}
+.member-card-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.member-card-info{flex:1}
+.member-card-name{font-size:14px;font-weight:700}
+.member-card-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.member-card-body{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.goal-select{padding:7px 9px;font-size:12px}
+.week-select{padding:7px 9px;font-size:12px}
 </style>
 </head>
 <body>
@@ -192,9 +188,9 @@ textarea{resize:vertical;min-height:70px}
 <div id="login">
   <div class="l-logo">⚡</div>
   <div class="l-title">PT Manager AI</div>
-  <div class="l-sub" id="l-sub">트레이너와 회원을 위한<br>AI 수업 관리 시스템</div>
+  <div class="l-sub">트레이너와 회원을 위한<br>AI 수업 관리 시스템</div>
   <div class="l-box">
-    <div class="l-trainer-badge" id="l-badge">🔗 트레이너 초대 링크로 접속했어요</div>
+    <div class="l-badge" id="l-badge">🔗 트레이너 초대 링크로 접속했어요</div>
     <div class="l-mode" id="l-mode">로그인</div>
     <input class="l-inp" type="email" id="l-email" placeholder="이메일">
     <input class="l-inp" type="password" id="l-pw" placeholder="비밀번호">
@@ -274,14 +270,9 @@ const SB = supabase.createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZsam1qeGtxbnp4c2F3ZHN0ZGNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3OTkyNjAsImV4cCI6MjA5NDM3NTI2MH0.tP40JvDzeenxeWcKyLgZCSkzkHPyot3RyEJZsCj4Zio'
 );
 
-// URL에서 트레이너 ID 추출
 const URL_PARAMS = new URLSearchParams(window.location.search);
 const TRAINER_ID_FROM_URL = URL_PARAMS.get('trainer');
-
-// 초대 링크로 접속한 경우 배지 표시
-if (TRAINER_ID_FROM_URL) {
-  document.getElementById('l-badge').style.display = 'block';
-}
+if(TRAINER_ID_FROM_URL) document.getElementById('l-badge').style.display='block';
 
 let role='trainer', page='dashboard', theme='sky', chart=null;
 let user=null, prof=null, mprof=null;
@@ -307,6 +298,9 @@ const MISSIONS=[
   {key:'month',title:'한 달 개근',desc:'한 달 모든 수업 참석',xp:500,type:'hard',icon:'👑'},
   {key:'diet',title:'건강 식단 인증',desc:'식단 사진을 트레이너에게 전송',xp:30,type:'mid',icon:'🥗'},
 ];
+
+const GOALS=['근비대','감량','재활','체력향상','다이어트','체형교정'];
+const WEEKS=[...Array(24)].map((_,i)=>`${i+1}주차`);
 
 const PT={
   dashboard:'대시보드',members:'회원 관리',session:'수업 일지',
@@ -343,10 +337,7 @@ function toggleMode(){
   document.getElementById('l-btn').textContent=isSignup?'가입하기':'로그인';
   document.getElementById('l-tog').textContent=isSignup?'로그인':'회원가입';
   document.getElementById('l-name').style.display=isSignup?'block':'none';
-  // 초대 링크로 왔으면 역할 선택 숨기기 (자동으로 회원)
-  if(!TRAINER_ID_FROM_URL){
-    document.getElementById('l-role').style.display=isSignup?'block':'none';
-  }
+  if(!TRAINER_ID_FROM_URL) document.getElementById('l-role').style.display=isSignup?'block':'none';
 }
 
 async function doAuth(){
@@ -357,53 +348,34 @@ async function doAuth(){
   err.textContent='';
   if(!email||!pw){err.textContent='이메일과 비밀번호를 입력하세요';return;}
   btn.textContent='처리 중...';btn.disabled=true;
-
   try{
     if(isSignup){
       const name=document.getElementById('l-name').value.trim();
       if(!name){err.textContent='이름을 입력하세요';btn.textContent='가입하기';btn.disabled=false;return;}
-
-      // 초대 링크로 접속한 경우 자동으로 회원, 아니면 선택값 사용
-      const r = TRAINER_ID_FROM_URL ? 'member' : document.getElementById('l-role').value;
-
+      const r=TRAINER_ID_FROM_URL?'member':document.getElementById('l-role').value;
       const {data,error}=await SB.auth.signUp({email,password:pw});
       if(error) throw error;
-
-      // users 테이블에 저장 — 초대 링크가 있으면 trainer_id 자동 연결
       await SB.from('users').insert({
-        id: data.user.id,
-        name,
-        role: r,
-        theme: 'sky',
-        trainer_id: r==='member' ? TRAINER_ID_FROM_URL : null,
-        invite_token: r==='trainer' ? Math.random().toString(36).slice(2,10) : null,
+        id:data.user.id, name, role:r, theme:'sky',
+        trainer_id:r==='member'?TRAINER_ID_FROM_URL:null,
+        invite_token:r==='trainer'?Math.random().toString(36).slice(2,10):null,
       });
-
-      // 회원이면 members 테이블에도 추가
-      if(r==='member'){
-        await SB.from('members').insert({user_id: data.user.id});
-      }
-
-      user=data.user;
-      await loadProf();
-      showApp();
+      if(r==='member') await SB.from('members').insert({user_id:data.user.id});
+      user=data.user;await loadProf();showApp();
     }else{
       const {data,error}=await SB.auth.signInWithPassword({email,password:pw});
       if(error) throw error;
-      user=data.user;
-      await loadProf();
-      showApp();
+      user=data.user;await loadProf();showApp();
     }
   }catch(e){
     err.textContent=isSignup?e.message:'이메일 또는 비밀번호가 틀렸어요';
-    btn.textContent=isSignup?'가입하기':'로그인';
-    btn.disabled=false;
+    btn.textContent=isSignup?'가입하기':'로그인';btn.disabled=false;
   }
 }
 
 async function doLogout(){await SB.auth.signOut();location.reload();}
 
-// ── 데이터 로딩 ──
+// ── 데이터 ──
 async function loadProf(){
   const {data}=await SB.from('users').select('*').eq('id',user.id).single();
   prof=data;
@@ -414,12 +386,16 @@ async function loadProf(){
 }
 
 async function loadMembers(){
-  // 트레이너는 본인 회원만 조회
-  const {data}=await SB.from('members')
-    .select('*,user:users!members_user_id_fkey(name,theme,invite_token)')
-    .eq('user.trainer_id', prof?.id)
-    .order('created_at');
-  members=data||[];
+  // users 테이블에서 trainer_id로 먼저 회원 목록을 가져옴
+  const {data:userList}=await SB.from('users').select('*').eq('trainer_id',prof?.id).eq('role','member');
+  if(!userList||userList.length===0){members=[];return;}
+  const userIds=userList.map(u=>u.id);
+  const {data:memberList}=await SB.from('members').select('*').in('user_id',userIds);
+  // 합치기
+  members=(memberList||[]).map(m=>({
+    ...m,
+    user: userList.find(u=>u.id===m.user_id)
+  }));
 }
 
 async function loadSessions(mid=null){
@@ -439,8 +415,7 @@ async function loadInbody(mid=null){
 
 async function loadNotices(){
   const {data}=await SB.from('notices').select('*')
-    .order('is_pinned',{ascending:false})
-    .order('created_at',{ascending:false});
+    .order('is_pinned',{ascending:false}).order('created_at',{ascending:false});
   notices=data||[];
 }
 
@@ -458,16 +433,13 @@ function setTheme(id){
   app.classList.add(THEMES.find(x=>x.id===id)?.cls||'t-sky');
   renderSw();
 }
-
 async function chTheme(id){
   setTheme(id);
   await SB.from('users').update({theme:id}).eq('id',user.id);
   go('ms');
 }
-
 function renderSw(){
-  const el=document.getElementById('sb-sw');
-  if(!el) return;
+  const el=document.getElementById('sb-sw');if(!el) return;
   el.innerHTML=THEMES.map(t=>`<div onclick="chTheme('${t.id}')" style="width:22px;height:22px;border-radius:50%;background:${t.color};cursor:pointer;border:2px solid ${t.id===theme?'#fff':'transparent'}"></div>`).join('');
 }
 
@@ -518,15 +490,12 @@ function renderNav(){
   document.getElementById('rb-txt').textContent=role==='trainer'?'회원 뷰로 전환':'트레이너 뷰로 전환';
   document.getElementById('sb-theme').style.display=role==='member'?'block':'none';
   renderSw();
-
   const tabs=role==='trainer'?TT:MT;
   document.getElementById('tabs').innerHTML=tabs.map(t=>`<div class="tab ${t.id===page?'on':''}" onclick="go('${t.id}')"><i class="ti ${t.i}"></i><span>${t.l}</span></div>`).join('');
-
   document.getElementById('hd-t').style.display=(role==='trainer'&&mob)?'block':'none';
   document.getElementById('hd-m').style.display=(role==='member'&&mob)?'block':'none';
   document.getElementById('tb-title').textContent=PT[page]||'';
   if(mob&&role==='trainer') document.getElementById('hd-page').textContent=PT[page]||'';
-
   if(role==='member'&&mprof){
     document.getElementById('hd-mname').textContent=(prof?.name||'')+'님';
     document.getElementById('hd-msub').textContent=`${mprof.goal||''} · ${mprof.current_week||1}주차`;
@@ -539,12 +508,11 @@ function renderNav(){
 
 // ── 페이지 이동 ──
 async function go(id){
-  page=id; renderNav();
+  page=id;renderNav();
   if(chart){chart.destroy();chart=null;}
   const c=document.getElementById('content');
   c.innerHTML=`<div style="display:flex;justify-content:center;padding:48px"><div class="spin" style="border-top-color:var(--acc2)"></div></div>`;
   c.scrollTop=0;
-
   if(['dashboard','members'].includes(id)) await loadMembers();
   if(['session','dashboard','homework'].includes(id)) await loadSessions();
   if(id==='inbody') await loadInbody();
@@ -554,17 +522,14 @@ async function go(id){
   if(id==='mi2') await loadInbody(mprof?.id);
   if(id==='mhw') await loadSessions(mprof?.id);
   if(id==='mh'){await loadSessions(mprof?.id);await loadInbody(mprof?.id);await loadNotices();}
-
   const d=document.createElement('div');
-  d.className='pe';
-  d.innerHTML=html(id);
+  d.className='pe';d.innerHTML=html(id);
   c.innerHTML='';c.appendChild(d);
   setTimeout(()=>{if(id==='inbody'||id==='mi2') drawChart(id);},100);
 }
 
 function toggleRole(){role=role==='trainer'?'member':'trainer';go(role==='member'?'mh':'dashboard');}
 
-// ── HTML ──
 function html(id){
   if(role==='trainer'){
     if(id==='dashboard') return pDash();
@@ -600,13 +565,31 @@ function pDash(){
     <div class="st"><i class="ti ti-users"></i>회원 현황</div>
     ${members.length===0
       ?`<div class="es"><i class="ti ti-users"></i><p>등록된 회원이 없어요<br>회원 관리에서 초대 링크를 보내세요</p></div>`
-      :members.slice(0,5).map(m=>`<div class="row"><div class="av">${m.user?.name?.charAt(0)||'?'}</div><div><div style="font-size:13px;font-weight:600">${m.user?.name||'-'}</div><div style="font-size:11px;color:var(--text3)">${m.goal||'-'} · ${m.current_week||1}주차</div></div><div style="margin-left:auto;display:flex;align-items:center;gap:5px"><span class="tag tag-a">Lv.${m.level||1}</span><span style="font-size:10px;color:#F43F5E;font-weight:700">🔥${m.streak||0}일</span></div></div>`).join('')}
+      :members.slice(0,5).map(m=>`
+        <div class="row">
+          <div class="av">${m.user?.name?.charAt(0)||'?'}</div>
+          <div>
+            <div style="font-size:13px;font-weight:600">${m.user?.name||'-'}</div>
+            <div style="font-size:11px;color:var(--text3)">${m.goal||'-'} · ${m.current_week||1}주차</div>
+          </div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:5px">
+            <span class="tag tag-a">Lv.${m.level||1}</span>
+            <span style="font-size:10px;color:#F43F5E;font-weight:700">🔥${m.streak||0}일</span>
+          </div>
+        </div>`).join('')}
   </div>
   <div class="card">
     <div class="st"><i class="ti ti-notebook"></i>최근 수업 일지</div>
     ${sessions.length===0
       ?`<div class="es"><i class="ti ti-notebook"></i><p>수업 일지가 없어요</p></div>`
-      :sessions.slice(0,3).map(s=>`<div class="si"><div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-size:13px;font-weight:600">${s.session_date}</span><span class="tag ${s.is_shared?'tag-g':'tag-y'}">${s.is_shared?'공유됨':'비공개'}</span></div><div style="font-size:11px;color:var(--text3)">${s.coaching_note||'-'}</div></div>`).join('')}
+      :sessions.slice(0,3).map(s=>`
+        <div class="si">
+          <div style="display:flex;justify-content:space-between;margin-bottom:2px">
+            <span style="font-size:13px;font-weight:600">${s.session_date}</span>
+            <span class="tag ${s.is_shared?'tag-g':'tag-y'}">${s.is_shared?'공유됨':'비공개'}</span>
+          </div>
+          <div style="font-size:11px;color:var(--text3)">${s.coaching_note||'-'}</div>
+        </div>`).join('')}
   </div>`;
 }
 
@@ -616,12 +599,38 @@ function pMembers(){
     <input type="text" placeholder="회원 검색..." style="flex:1">
     <button class="btn btn-a" onclick="copyInvite()"><i class="ti ti-link"></i>초대 링크</button>
   </div>
-  <div class="card">
-    ${members.length===0
-      ?`<div class="es"><i class="ti ti-users"></i><p>등록된 회원이 없어요<br>초대 링크를 카카오톡으로 보내세요</p></div>`
-      :members.map(m=>`<div class="row"><div class="av">${m.user?.name?.charAt(0)||'?'}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${m.user?.name||'-'}</div><div style="font-size:11px;color:var(--text3)">${m.goal||'-'} · ${m.current_week||1}주차</div>${(m.warnings||[]).length?`<div style="margin-top:3px">${m.warnings.map(w=>`<span class="wp">${w}</span>`).join('')}</div>`:''}</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><span class="tag tag-a">Lv.${m.level||1}</span><span style="font-size:10px;color:#F43F5E;font-weight:700">🔥${m.streak||0}일</span></div></div>`).join('')}
-  </div>
-  <div class="card card-acc">
+  ${members.length===0
+    ?`<div class="card"><div class="es"><i class="ti ti-users"></i><p>등록된 회원이 없어요<br>초대 링크를 카카오톡으로 보내세요</p></div></div>`
+    :members.map(m=>`
+      <div class="member-card">
+        <div class="member-card-top">
+          <div class="av" style="width:42px;height:42px;font-size:16px">${m.user?.name?.charAt(0)||'?'}</div>
+          <div class="member-card-info">
+            <div class="member-card-name">${m.user?.name||'-'}</div>
+            <div class="member-card-sub">${m.user?.email||''}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+            <span class="tag tag-a">Lv.${m.level||1}</span>
+            <span style="font-size:10px;color:#F43F5E;font-weight:700">🔥${m.streak||0}일</span>
+          </div>
+        </div>
+        <div class="member-card-body">
+          <div>
+            <div class="fl" style="margin-bottom:4px">목표</div>
+            <select class="goal-select" onchange="updateMember('${m.id}','goal',this.value)">
+              ${GOALS.map(g=>`<option ${m.goal===g?'selected':''}>${g}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <div class="fl" style="margin-bottom:4px">주차</div>
+            <select class="week-select" onchange="updateMember('${m.id}','current_week',parseInt(this.value))">
+              ${WEEKS.map((w,i)=>`<option value="${i+1}" ${m.current_week===(i+1)?'selected':''}>${w}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        ${(m.warnings||[]).length?`<div style="margin-top:8px">${m.warnings.map(w=>`<span class="wp">${w}</span>`).join('')}</div>`:''}
+      </div>`).join('')}
+  <div class="card card-acc" style="margin-top:4px">
     <div class="st"><i class="ti ti-link"></i>카카오톡 초대 링크</div>
     <p style="font-size:12px;color:var(--text2);margin-bottom:10px">회원이 이 링크로 가입하면 자동으로 연결돼요!</p>
     <div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:8px;padding:9px 11px;font-size:11px;color:var(--acc2);font-family:monospace;margin-bottom:8px;word-break:break-all">${window.location.origin}?trainer=${prof?.id}</div>
@@ -634,19 +643,33 @@ function copyInvite(){
     .then(()=>alert('링크 복사 완료! 카카오톡으로 보내주세요 😊'));
 }
 
+async function updateMember(memberId, field, value){
+  const {error}=await SB.from('members').update({[field]:value}).eq('id',memberId);
+  if(error){alert('저장 실패: '+error.message);return;}
+  // 로컬 업데이트
+  const m=members.find(x=>x.id===memberId);
+  if(m) m[field]=value;
+}
+
 function pSession(){
   return `
   <div class="card">
     <div class="st"><i class="ti ti-notebook"></i>수업 정보</div>
-    <div class="fg"><label class="fl">회원</label><select id="sel-m"><option value="">회원 선택</option>${members.map(m=>`<option value="${m.id}">${m.user?.name||'-'}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">회원</label>
+      <select id="sel-m"><option value="">회원 선택</option>${members.map(m=>`<option value="${m.id}">${m.user?.name||'-'}</option>`).join('')}</select>
+    </div>
     <div class="g2" style="gap:8px">
       <div class="fg"><label class="fl">날짜</label><input type="date" id="s-date" value="${new Date().toISOString().split('T')[0]}"></div>
-      <div class="fg"><label class="fl">컨디션</label><select id="s-cond"><option>좋음 😊</option><option>보통 😐</option><option>피로 😔</option><option>통증 😣</option></select></div>
+      <div class="fg"><label class="fl">컨디션</label>
+        <select id="s-cond"><option>좋음 😊</option><option>보통 😐</option><option>피로 😔</option><option>통증 😣</option></select>
+      </div>
     </div>
   </div>
   <div class="card">
     <div class="st"><i class="ti ti-barbell"></i>수행 운동</div>
-    <div id="ex-list"><div class="ex"><span contenteditable="true">스쿼트</span><span contenteditable="true">60kg · 10회 · 4세트</span><i class="ti ti-trash" style="font-size:13px;color:var(--text3);cursor:pointer;margin-left:6px" onclick="this.closest('.ex').remove()"></i></div></div>
+    <div id="ex-list">
+      <div class="ex"><span contenteditable="true">스쿼트</span><span contenteditable="true">60kg · 10회 · 4세트</span><i class="ti ti-trash" style="font-size:13px;color:var(--text3);cursor:pointer;margin-left:6px" onclick="this.closest('.ex').remove()"></i></div>
+    </div>
     <button class="btn btn-w" onclick="addEx()"><i class="ti ti-plus"></i>운동 추가</button>
   </div>
   <div class="card">
@@ -663,16 +686,26 @@ function pSession(){
     <div class="st"><i class="ti ti-history"></i>최근 수업 일지</div>
     ${sessions.length===0
       ?`<div class="es"><i class="ti ti-notebook"></i><p>수업 일지가 없어요</p></div>`
-      :sessions.slice(0,5).map(s=>`<div class="si"><div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-size:13px;font-weight:600">${s.session_date}</span><span class="tag ${s.is_shared?'tag-g':'tag-y'}">${s.is_shared?'공유됨':'비공개'}</span></div><div style="font-size:11px;color:var(--text3)">${s.coaching_note||'-'}</div></div>`).join('')}
+      :sessions.slice(0,5).map(s=>`
+        <div class="si">
+          <div style="display:flex;justify-content:space-between;margin-bottom:2px">
+            <span style="font-size:13px;font-weight:600">${s.session_date}</span>
+            <span class="tag ${s.is_shared?'tag-g':'tag-y'}">${s.is_shared?'공유됨':'비공개'}</span>
+          </div>
+          <div style="font-size:11px;color:var(--text3)">${s.coaching_note||'-'}</div>
+        </div>`).join('')}
   </div>`;
 }
 
 async function saveSession(shared){
   const mid=document.getElementById('sel-m')?.value;
   if(!mid){alert('회원을 선택해주세요');return;}
-  const exs=Array.from(document.querySelectorAll('#ex-list .ex')).map(r=>({name:r.querySelectorAll('span')[0]?.textContent,detail:r.querySelectorAll('span')[1]?.textContent}));
+  const exs=Array.from(document.querySelectorAll('#ex-list .ex')).map(r=>({
+    name:r.querySelectorAll('span')[0]?.textContent,
+    detail:r.querySelectorAll('span')[1]?.textContent
+  }));
   const {error}=await SB.from('sessions').insert({
-    member_id:mid,trainer_id:user.id,
+    member_id:mid, trainer_id:user.id,
     session_date:document.getElementById('s-date')?.value,
     condition:document.getElementById('s-cond')?.value,
     exercises:exs,
@@ -690,10 +723,16 @@ function pAI(){
   return `
   <div class="card">
     <div class="st"><i class="ti ti-robot"></i>AI 수업안 생성</div>
-    <div class="fg"><label class="fl">회원</label><select id="ai-m"><option value="">회원 선택</option>${members.map(m=>`<option value="${m.id}">${m.user?.name}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">회원</label>
+      <select id="ai-m"><option value="">회원 선택</option>${members.map(m=>`<option value="${m.id}">${m.user?.name}</option>`).join('')}</select>
+    </div>
     <div class="g2" style="gap:8px">
-      <div class="fg"><label class="fl">목표</label><select id="ai-g"><option>근비대</option><option>감량</option><option>재활</option></select></div>
-      <div class="fg"><label class="fl">주차</label><select id="ai-w">${[...Array(12)].map((_,i)=>`<option>${i+1}주차</option>`).join('')}</select></div>
+      <div class="fg"><label class="fl">목표</label>
+        <select id="ai-g">${GOALS.map(g=>`<option>${g}</option>`).join('')}</select>
+      </div>
+      <div class="fg"><label class="fl">주차</label>
+        <select id="ai-w">${WEEKS.map(w=>`<option>${w}</option>`).join('')}</select>
+      </div>
     </div>
     <button class="btn btn-a btn-w" id="gen-btn" onclick="genPlan()"><i class="ti ti-sparkles"></i>AI 수업안 자동 생성</button>
   </div>
@@ -701,8 +740,7 @@ function pAI(){
 }
 
 function genPlan(){
-  const btn=document.getElementById('gen-btn');
-  if(!btn) return;
+  const btn=document.getElementById('gen-btn');if(!btn) return;
   btn.innerHTML='<i class="ti ti-loader"></i> 분석 중...';btn.disabled=true;
   setTimeout(()=>{
     btn.innerHTML='<i class="ti ti-sparkles"></i> AI 수업안 자동 생성';btn.disabled=false;
@@ -727,7 +765,10 @@ async function savePlan(btn){
   const mid=document.getElementById('ai-m')?.value;
   if(!mid){alert('회원을 선택해주세요');return;}
   btn.innerHTML='<i class="ti ti-check"></i> 저장 완료!';btn.disabled=true;
-  await SB.from('ai_plans').insert({member_id:mid,trainer_id:user.id,plan_content:{note:'자동생성'},is_confirmed:true,confirmed_at:new Date().toISOString()});
+  await SB.from('ai_plans').insert({
+    member_id:mid, trainer_id:user.id,
+    plan_content:{note:'자동생성'}, is_confirmed:true, confirmed_at:new Date().toISOString()
+  });
   setTimeout(()=>go('homework'),1000);
 }
 
@@ -735,7 +776,9 @@ function pInbody(){
   return `
   <div class="card">
     <div class="st"><i class="ti ti-chart-line"></i>인바디 입력</div>
-    <div class="fg"><label class="fl">회원</label><select id="ib-m"><option value="">회원 선택</option>${members.map(m=>`<option value="${m.id}">${m.user?.name}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">회원</label>
+      <select id="ib-m"><option value="">회원 선택</option>${members.map(m=>`<option value="${m.id}">${m.user?.name}</option>`).join('')}</select>
+    </div>
     <div class="fg"><label class="fl">측정일</label><input type="date" id="ib-d" value="${new Date().toISOString().split('T')[0]}"></div>
     <div class="g2" style="gap:8px">
       <div class="fg"><label class="fl">체중(kg)</label><input type="number" id="ib-w" step="0.1" placeholder="0.0"></div>
@@ -749,7 +792,15 @@ function pInbody(){
     <div class="st"><i class="ti ti-history"></i>측정 이력 (${inbodys.length}건)</div>
     ${inbodys.length===0
       ?`<div class="es"><i class="ti ti-chart-line"></i><p>인바디 기록이 없어요</p></div>`
-      :inbodys.slice(0,6).map(r=>`<div class="ir"><span style="font-size:12px;color:var(--text3)">${r.measured_at}</span><div style="display:flex;gap:8px;font-size:12px"><span>체중 <b>${r.weight}kg</b></span><span>체지방 <b>${r.body_fat_pct}%</b></span><span>근육 <b>${r.muscle_mass}kg</b></span></div></div>`).join('')}
+      :inbodys.slice(0,6).map(r=>`
+        <div class="ir">
+          <span style="font-size:12px;color:var(--text3)">${r.measured_at}</span>
+          <div style="display:flex;gap:8px;font-size:12px">
+            <span>체중 <b>${r.weight}kg</b></span>
+            <span>체지방 <b>${r.body_fat_pct}%</b></span>
+            <span>근육 <b>${r.muscle_mass}kg</b></span>
+          </div>
+        </div>`).join('')}
   </div>`;
 }
 
@@ -757,7 +808,7 @@ async function saveInbody(){
   const mid=document.getElementById('ib-m')?.value;
   if(!mid){alert('회원을 선택해주세요');return;}
   const {error}=await SB.from('inbody_records').insert({
-    member_id:mid,measured_at:document.getElementById('ib-d')?.value,
+    member_id:mid, measured_at:document.getElementById('ib-d')?.value,
     weight:parseFloat(document.getElementById('ib-w')?.value)||null,
     body_fat_pct:parseFloat(document.getElementById('ib-f')?.value)||null,
     muscle_mass:parseFloat(document.getElementById('ib-mu')?.value)||null,
@@ -772,7 +823,14 @@ function pHomework(){
   return `<div class="card"><div class="st"><i class="ti ti-send"></i>공유된 수업 일지 (${sh.length}건)</div>
     ${sh.length===0
       ?`<div class="es"><i class="ti ti-send"></i><p>공유된 수업 일지가 없어요</p></div>`
-      :sh.slice(0,5).map(s=>`<div class="si"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:13px;font-weight:600">${s.session_date}</span><span class="tag tag-g">공유됨</span></div><div style="font-size:12px;color:var(--text2)">${s.homework||'숙제 없음'}</div></div>`).join('')}
+      :sh.slice(0,5).map(s=>`
+        <div class="si">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:13px;font-weight:600">${s.session_date}</span>
+            <span class="tag tag-g">공유됨</span>
+          </div>
+          <div style="font-size:12px;color:var(--text2)">${s.homework||'숙제 없음'}</div>
+        </div>`).join('')}
   </div>`;
 }
 
@@ -782,17 +840,29 @@ function pNotice(){
     <div class="st"><i class="ti ti-edit"></i>공지 작성</div>
     <div class="fg"><label class="fl">제목</label><input type="text" id="n-t" placeholder="공지 제목"></div>
     <div class="fg"><label class="fl">내용</label><textarea id="n-b" placeholder="공지 내용..." style="min-height:90px"></textarea></div>
-    <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px"><input type="checkbox" id="n-p" style="width:15px;height:15px;accent-color:var(--acc)"><label for="n-p" style="font-size:13px;color:var(--text2)">상단 고정</label></div>
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px">
+      <input type="checkbox" id="n-p" style="width:15px;height:15px;accent-color:var(--acc)">
+      <label for="n-p" style="font-size:13px;color:var(--text2)">상단 고정</label>
+    </div>
     <button class="btn btn-a btn-w" onclick="saveNotice()"><i class="ti ti-send"></i>공지 게시</button>
   </div>
-  ${notices.map(n=>`<div class="nc ${n.is_pinned?'np':''}">${n.is_pinned?`<div style="font-size:9px;color:#92400E;font-weight:700;margin-bottom:2px">📌 고정</div>`:''}<div style="font-size:14px;font-weight:700;margin-bottom:3px">${n.title}</div><div style="font-size:13px;color:var(--text2)">${n.body}</div><div style="font-size:10px;color:var(--text3);margin-top:5px">${new Date(n.created_at).toLocaleDateString('ko-KR')}</div></div>`).join('')}`;
+  ${notices.map(n=>`
+    <div class="nc ${n.is_pinned?'np':''}">
+      ${n.is_pinned?`<div style="font-size:9px;color:#92400E;font-weight:700;margin-bottom:2px">📌 고정</div>`:''}
+      <div style="font-size:14px;font-weight:700;margin-bottom:3px">${n.title}</div>
+      <div style="font-size:13px;color:var(--text2)">${n.body}</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:5px">${new Date(n.created_at).toLocaleDateString('ko-KR')}</div>
+    </div>`).join('')}`;
 }
 
 async function saveNotice(){
   const t=document.getElementById('n-t')?.value?.trim();
   const b=document.getElementById('n-b')?.value?.trim();
   if(!t||!b){alert('제목과 내용을 입력해주세요');return;}
-  const {error}=await SB.from('notices').insert({trainer_id:user.id,title:t,body:b,is_pinned:document.getElementById('n-p')?.checked||false});
+  const {error}=await SB.from('notices').insert({
+    trainer_id:user.id, title:t, body:b,
+    is_pinned:document.getElementById('n-p')?.checked||false
+  });
   if(error){alert('저장 실패: '+error.message);return;}
   alert('공지 게시 완료! ✅');go('notice');
 }
@@ -820,7 +890,16 @@ function mJournal(){
   const sh=sessions.filter(s=>s.is_shared);
   return sh.length===0
     ?`<div class="card"><div class="es"><i class="ti ti-notebook"></i><p>아직 공유된 수업 일지가 없어요<br>트레이너가 수업 후 공유해줄 거예요!</p></div></div>`
-    :sh.map(s=>`<div class="card"><div style="background:var(--acc-softer);border-radius:9px;padding:10px 12px;margin-bottom:10px"><div style="font-size:10px;color:var(--text3)">${s.session_date}</div><div style="font-size:15px;font-weight:700;color:var(--acc2);margin-top:1px">${s.condition||''}</div></div>${s.coaching_note?`<div class="st"><i class="ti ti-message"></i>코칭 포인트</div><div style="background:var(--acc-softer);border-radius:9px;padding:12px;font-size:13px;line-height:1.65;margin-bottom:10px">${s.coaching_note}</div>`:''} ${s.caution?`<div class="st"><i class="ti ti-alert-circle"></i>주의사항</div><div style="background:#FFF1F2;border-left:3px solid #F43F5E;border-radius:0 9px 9px 0;padding:10px 12px;font-size:13px;margin-bottom:10px">${s.caution}</div>`:''} ${s.homework?`<div class="st"><i class="ti ti-checklist"></i>숙제</div><div style="background:var(--surface2);border-radius:9px;padding:11px;font-size:13px">${s.homework}</div>`:''}</div>`).join('');
+    :sh.map(s=>`
+      <div class="card">
+        <div style="background:var(--acc-softer);border-radius:9px;padding:10px 12px;margin-bottom:10px">
+          <div style="font-size:10px;color:var(--text3)">${s.session_date}</div>
+          <div style="font-size:15px;font-weight:700;color:var(--acc2);margin-top:1px">${s.condition||''}</div>
+        </div>
+        ${s.coaching_note?`<div class="st"><i class="ti ti-message"></i>코칭 포인트</div><div style="background:var(--acc-softer);border-radius:9px;padding:12px;font-size:13px;line-height:1.65;margin-bottom:10px">${s.coaching_note}</div>`:''}
+        ${s.caution?`<div class="st"><i class="ti ti-alert-circle"></i>주의사항</div><div style="background:#FFF1F2;border-left:3px solid #F43F5E;border-radius:0 9px 9px 0;padding:10px 12px;font-size:13px;margin-bottom:10px">${s.caution}</div>`:''}
+        ${s.homework?`<div class="st"><i class="ti ti-checklist"></i>숙제</div><div style="background:var(--surface2);border-radius:9px;padding:11px;font-size:13px">${s.homework}</div>`:''}
+      </div>`).join('');
 }
 
 function mInbody(){
@@ -831,7 +910,15 @@ function mInbody(){
   <div class="card"><div class="st"><i class="ti ti-list"></i>측정 이력 (${inbodys.length}건)</div>
     ${inbodys.length===0
       ?`<div class="es"><i class="ti ti-chart-line"></i><p>기록이 없어요</p></div>`
-      :inbodys.map(r=>`<div class="ir"><span style="font-size:11px;color:var(--text3)">${r.measured_at}</span><div style="display:flex;gap:8px;font-size:12px"><span>체중 <b>${r.weight}kg</b></span><span>체지방 <b>${r.body_fat_pct}%</b></span><span>근육 <b>${r.muscle_mass}kg</b></span></div></div>`).join('')}
+      :inbodys.map(r=>`
+        <div class="ir">
+          <span style="font-size:11px;color:var(--text3)">${r.measured_at}</span>
+          <div style="display:flex;gap:8px;font-size:12px">
+            <span>체중 <b>${r.weight}kg</b></span>
+            <span>체지방 <b>${r.body_fat_pct}%</b></span>
+            <span>근육 <b>${r.muscle_mass}kg</b></span>
+          </div>
+        </div>`).join('')}
   </div>`;
 }
 
@@ -841,18 +928,44 @@ function mMissions(){
   <div class="sc">
     <div style="display:flex;align-items:flex-start;justify-content:space-between">
       <div><div class="sb2">🔥 ${mprof?.streak||0}일</div><div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px">연속 출석 중</div></div>
-      <div style="text-align:right"><div class="lv" style="margin-bottom:5px"><i class="ti ti-star"></i>Lv.${mprof?.level||1}</div><div style="font-size:10px;color:rgba(255,255,255,0.45)">${mprof?.xp||0} XP</div></div>
+      <div style="text-align:right">
+        <div class="lv" style="margin-bottom:5px"><i class="ti ti-star"></i>Lv.${mprof?.level||1}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.45)">${mprof?.xp||0} XP</div>
+      </div>
     </div>
     <div class="dots">${['월','화','수','목','금','토','일'].map((d,i)=>`<div class="dot ${i<(mprof?.streak||0)%7?'on':i===Math.min((mprof?.streak||0)%7,6)?'td':''}">${d}</div>`).join('')}</div>
   </div>
   <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">진행 중인 미션</div>
-  ${MISSIONS.filter(m=>!dk.has(m.key)).map(m=>`<div class="mi ${m.type}" onclick="completeMission('${m.key}',${m.xp})"><div style="display:flex;align-items:center;gap:10px"><div style="font-size:22px;width:32px;text-align:center">${m.icon}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;margin-bottom:2px">${m.title}</div><div style="font-size:11px;color:var(--text3)">${m.desc}</div><span class="xpp">+${m.xp} XP</span></div><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>`).join('')}
-  ${MISSIONS.filter(m=>dk.has(m.key)).length>0?`<div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 8px">완료한 미션</div>${MISSIONS.filter(m=>dk.has(m.key)).map(m=>`<div class="mi done"><div style="display:flex;align-items:center;gap:10px"><div style="font-size:22px;width:32px;text-align:center">${m.icon}</div><div style="flex:1;font-size:13px;font-weight:600">${m.title}</div><i class="ti ti-circle-check" style="color:var(--acc);font-size:18px"></i></div></div>`).join('')}`:''}`;
+  ${MISSIONS.filter(m=>!dk.has(m.key)).map(m=>`
+    <div class="mi ${m.type}" onclick="completeMission('${m.key}',${m.xp})">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:22px;width:32px;text-align:center">${m.icon}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600;margin-bottom:2px">${m.title}</div>
+          <div style="font-size:11px;color:var(--text3)">${m.desc}</div>
+          <span class="xpp">+${m.xp} XP</span>
+        </div>
+        <i class="ti ti-chevron-right" style="color:var(--text3)"></i>
+      </div>
+    </div>`).join('')}
+  ${MISSIONS.filter(m=>dk.has(m.key)).length>0?`
+    <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 8px">완료한 미션</div>
+    ${MISSIONS.filter(m=>dk.has(m.key)).map(m=>`
+      <div class="mi done">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="font-size:22px;width:32px;text-align:center">${m.icon}</div>
+          <div style="flex:1;font-size:13px;font-weight:600">${m.title}</div>
+          <i class="ti ti-circle-check" style="color:var(--acc);font-size:18px"></i>
+        </div>
+      </div>`).join('')}`:''}`;
 }
 
 async function completeMission(key,xp){
   if(!mprof) return;
-  await SB.from('mission_progress').upsert({member_id:mprof.id,mission_key:key,is_done:true,done_at:new Date().toISOString()},{onConflict:'member_id,mission_key'});
+  await SB.from('mission_progress').upsert(
+    {member_id:mprof.id, mission_key:key, is_done:true, done_at:new Date().toISOString()},
+    {onConflict:'member_id,mission_key'}
+  );
   const nx=(mprof.xp||0)+xp;
   await SB.from('members').update({xp:nx}).eq('id',mprof.id);
   mprof.xp=nx;
@@ -864,17 +977,32 @@ function mHomework(){
   return `<div class="card">
     ${sh.length===0
       ?`<div class="es"><i class="ti ti-checklist"></i><p>아직 숙제가 없어요<br>트레이너가 수업 후 공유해줄 거예요!</p></div>`
-      :`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div class="st" style="margin-bottom:0"><i class="ti ti-checklist"></i>최근 숙제</div><span class="tag tag-a">${sh[0].session_date}</span></div>
-      <div style="background:var(--acc-softer);border-radius:9px;padding:12px;font-size:13px;line-height:1.8;white-space:pre-line">${sh[0].homework}</div>
-      <div style="margin-top:10px;padding:9px 10px;background:var(--acc-softer);border-radius:8px;font-size:11px;color:var(--acc-text);font-weight:500">✨ 숙제 완료 시 미션에서 XP 획득!</div>`}
+      :`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div class="st" style="margin-bottom:0"><i class="ti ti-checklist"></i>최근 숙제</div>
+          <span class="tag tag-a">${sh[0].session_date}</span>
+        </div>
+        <div style="background:var(--acc-softer);border-radius:9px;padding:12px;font-size:13px;line-height:1.8;white-space:pre-line">${sh[0].homework}</div>
+        <div style="margin-top:10px;padding:9px 10px;background:var(--acc-softer);border-radius:8px;font-size:11px;color:var(--acc-text);font-weight:500">✨ 숙제 완료 시 미션에서 XP 획득!</div>`}
   </div>
-  ${sh[0]?.caution?`<div class="card"><div style="background:#FFF1F2;border-left:3px solid #F43F5E;border-radius:0 9px 9px 0;padding:10px 12px"><div style="font-size:10px;font-weight:700;color:#9F1239;margin-bottom:2px">⚠️ 주의사항</div><div style="font-size:13px;color:var(--text2)">${sh[0].caution}</div></div></div>`:''}`;
+  ${sh[0]?.caution?`
+    <div class="card">
+      <div style="background:#FFF1F2;border-left:3px solid #F43F5E;border-radius:0 9px 9px 0;padding:10px 12px">
+        <div style="font-size:10px;font-weight:700;color:#9F1239;margin-bottom:2px">⚠️ 주의사항</div>
+        <div style="font-size:13px;color:var(--text2)">${sh[0].caution}</div>
+      </div>
+    </div>`:''}`;
 }
 
 function mNotice(){
   return notices.length===0
     ?`<div class="card"><div class="es"><i class="ti ti-speakerphone"></i><p>아직 공지가 없어요</p></div></div>`
-    :notices.map(n=>`<div class="nc ${n.is_pinned?'np':''}">${n.is_pinned?`<div style="font-size:9px;color:#92400E;font-weight:700;margin-bottom:2px">📌 고정</div>`:''}<div style="font-size:14px;font-weight:700;margin-bottom:3px">${n.title}</div><div style="font-size:13px;color:var(--text2)">${n.body}</div><div style="font-size:10px;color:var(--text3);margin-top:5px">${new Date(n.created_at).toLocaleDateString('ko-KR')}</div></div>`).join('');
+    :notices.map(n=>`
+      <div class="nc ${n.is_pinned?'np':''}">
+        ${n.is_pinned?`<div style="font-size:9px;color:#92400E;font-weight:700;margin-bottom:2px">📌 고정</div>`:''}
+        <div style="font-size:14px;font-weight:700;margin-bottom:3px">${n.title}</div>
+        <div style="font-size:13px;color:var(--text2)">${n.body}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:5px">${new Date(n.created_at).toLocaleDateString('ko-KR')}</div>
+      </div>`).join('');
 }
 
 function mSettings(){
@@ -882,13 +1010,23 @@ function mSettings(){
   <div class="card">
     <div class="st"><i class="ti ti-palette"></i>테마 색상</div>
     <p style="font-size:12px;color:var(--text3);margin-bottom:14px">내 취향에 맞게 앱 색상을 바꿔보세요!</p>
-    <div class="sg">${THEMES.map(t=>`<div class="sw ${t.id===theme?'on':''}" onclick="chTheme('${t.id}')"><div class="sc2" style="background:${t.color}"></div><div class="sn">${t.name}</div></div>`).join('')}</div>
+    <div class="sg">
+      ${THEMES.map(t=>`
+        <div class="sw ${t.id===theme?'on':''}" onclick="chTheme('${t.id}')">
+          <div class="sc2" style="background:${t.color}"></div>
+          <div class="sn">${t.name}</div>
+        </div>`).join('')}
+    </div>
   </div>
   <div class="card">
     <div class="st"><i class="ti ti-user"></i>내 정보</div>
     <div style="display:flex;align-items:center;gap:12px;padding:4px 0">
       <div style="width:44px;height:44px;border-radius:50%;background:var(--acc-soft);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--acc-text)">${prof?.name?.charAt(0)||'?'}</div>
-      <div><div style="font-size:15px;font-weight:700">${prof?.name||''}</div><div style="font-size:12px;color:var(--text3)">${mprof?.goal||''} · ${mprof?.current_week||1}주차</div><div style="font-size:11px;color:var(--text3);margin-top:1px">${user?.email||''}</div></div>
+      <div>
+        <div style="font-size:15px;font-weight:700">${prof?.name||''}</div>
+        <div style="font-size:12px;color:var(--text3)">${mprof?.goal||''} · ${mprof?.current_week||1}주차</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:1px">${user?.email||''}</div>
+      </div>
     </div>
     <button class="btn btn-d btn-w" style="margin-top:12px" onclick="doLogout()"><i class="ti ti-logout"></i>로그아웃</button>
   </div>`;
@@ -917,9 +1055,11 @@ function drawChart(id){
     ]
   },options:{responsive:true,maintainAspectRatio:true,interaction:{mode:'index',intersect:false},
     plugins:{legend:{labels:{font:{size:10},color:'#94A3B8',boxWidth:10}}},
-    scales:{x:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{font:{size:10},color:'#94A3B8'}},
+    scales:{
+      x:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{font:{size:10},color:'#94A3B8'}},
       y:{position:'left',grid:{color:'rgba(148,163,184,0.08)'},ticks:{font:{size:9},color:'#F43F5E'}},
-      y1:{position:'right',grid:{drawOnChartArea:false},ticks:{font:{size:9},color:'#0EA5E9'}}}}});
+      y1:{position:'right',grid:{drawOnChartArea:false},ticks:{font:{size:9},color:'#0EA5E9'}}
+    }}});
 }
 
 init();
