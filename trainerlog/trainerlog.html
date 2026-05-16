@@ -10,6 +10,8 @@
 <title>PT Manager AI</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -17,1123 +19,895 @@
   --navy:#0F172A;--navy2:#1E293B;
   --surface:#fff;--surface2:#F8FAFC;--surface3:#F1F5F9;
   --text:#0F172A;--text2:#475569;--text3:#94A3B8;
-  --border:rgba(148,163,184,0.18);--border2:rgba(148,163,184,0.32);
+  --border:rgba(148,163,184,0.2);--border2:rgba(148,163,184,0.35);
   --r:14px;--shadow:0 2px 12px rgba(15,23,42,0.07);
-  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --sb:env(safe-area-inset-bottom,0px);
 }
-.t-sky{--acc:#38BDF8;--acc2:#0EA5E9;--acc-soft:#E0F5FF;--acc-softer:#F0FAFF;--acc-text:#0C4A6E}
-.t-pink{--acc:#F472B6;--acc2:#EC4899;--acc-soft:#FDE7F3;--acc-softer:#FFF0F8;--acc-text:#831843}
-.t-lime{--acc:#84CC16;--acc2:#65A30D;--acc-soft:#ECFCCB;--acc-softer:#F7FFED;--acc-text:#2D5016}
+.t-sky   {--acc:#38BDF8;--acc2:#0EA5E9;--acc-soft:#E0F5FF;--acc-softer:#F0FAFF;--acc-text:#0C4A6E}
+.t-pink  {--acc:#F472B6;--acc2:#EC4899;--acc-soft:#FDE7F3;--acc-softer:#FFF0F8;--acc-text:#831843}
+.t-lime  {--acc:#84CC16;--acc2:#65A30D;--acc-soft:#ECFCCB;--acc-softer:#F7FFED;--acc-text:#2D5016}
 .t-purple{--acc:#A78BFA;--acc2:#8B5CF6;--acc-soft:#EDE9FE;--acc-softer:#F5F3FF;--acc-text:#3B0764}
-.t-peach{--acc:#FB923C;--acc2:#F97316;--acc-soft:#FFEDD5;--acc-softer:#FFF7ED;--acc-text:#7C2D12}
-.t-mint{--acc:#2DD4BF;--acc2:#14B8A6;--acc-soft:#CCFBF1;--acc-softer:#F0FFFE;--acc-text:#134E4A}
+.t-peach {--acc:#FB923C;--acc2:#F97316;--acc-soft:#FFEDD5;--acc-softer:#FFF7ED;--acc-text:#7C2D12}
+.t-mint  {--acc:#2DD4BF;--acc2:#14B8A6;--acc-soft:#CCFBF1;--acc-softer:#F0FFFE;--acc-text:#134E4A}
+
 html,body{height:100%;overflow:hidden;font-family:'Pretendard',sans-serif;background:var(--surface2);color:var(--text)}
-#app{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
 
 /* 로딩 */
-#loading-screen{position:fixed;inset:0;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:16px}
-#loading-screen .logo{font-size:48px}
-#loading-screen p{font-size:14px;color:rgba(255,255,255,0.5)}
-.spinner{width:28px;height:28px;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--acc);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
+#loading{position:fixed;inset:0;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:999}
+#loading p{font-size:13px;color:rgba(255,255,255,0.4)}
+.spin{width:26px;height:26px;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--acc);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
 
 /* 로그인 */
-#login-screen{position:fixed;inset:0;background:var(--navy);display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:998}
-.login-logo{font-size:52px;margin-bottom:8px}
-.login-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:6px}
-.login-sub{font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:32px;text-align:center;line-height:1.6}
-.login-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;width:100%;max-width:340px}
-.login-input{width:100%;padding:12px 14px;border:1px solid rgba(255,255,255,0.15);border-radius:10px;background:rgba(255,255,255,0.07);color:#fff;font-size:14px;font-family:'Pretendard',sans-serif;margin-bottom:10px}
-.login-input::placeholder{color:rgba(255,255,255,0.3)}
-.login-input:focus{outline:none;border-color:var(--acc)}
-.login-btn{width:100%;padding:13px;border-radius:10px;background:var(--acc);color:var(--navy);font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:'Pretendard',sans-serif;margin-bottom:8px}
-.login-btn:active{transform:scale(0.98)}
-.login-err{font-size:12px;color:#F87171;text-align:center;min-height:18px;margin-top:4px}
-.login-toggle{font-size:12px;color:rgba(255,255,255,0.45);text-align:center;margin-top:12px;cursor:pointer}
-.login-toggle span{color:var(--acc);font-weight:600}
+#login{position:fixed;inset:0;background:var(--navy);display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;z-index:998}
+.l-logo{font-size:50px;margin-bottom:6px}
+.l-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px}
+.l-sub{font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:28px;text-align:center;line-height:1.6}
+.l-box{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;width:100%;max-width:340px}
+.l-inp{width:100%;padding:12px 14px;border:1px solid rgba(255,255,255,0.15);border-radius:10px;background:rgba(255,255,255,0.07);color:#fff;font-size:14px;font-family:'Pretendard',sans-serif;margin-bottom:10px}
+.l-inp::placeholder{color:rgba(255,255,255,0.3)}
+.l-inp:focus{outline:none;border-color:var(--acc)}
+.l-btn{width:100%;padding:13px;border-radius:10px;background:var(--acc);color:var(--navy);font-size:14px;font-weight:700;border:none;cursor:pointer;font-family:'Pretendard',sans-serif}
+.l-btn:active{transform:scale(0.98)}
+.l-err{font-size:12px;color:#F87171;text-align:center;min-height:16px;margin-top:8px}
+.l-toggle{font-size:12px;color:rgba(255,255,255,0.4);text-align:center;margin-top:12px;cursor:pointer}
+.l-toggle span{color:var(--acc);font-weight:600}
 
-/* 헤더 */
-.mob-trainer-header{background:var(--navy);padding:max(44px,env(safe-area-inset-top,44px)) 16px 12px;display:flex;align-items:flex-end;justify-content:space-between;flex-shrink:0}
-.mob-member-header{background:var(--navy);padding:max(44px,env(safe-area-inset-top,44px)) 16px 14px;flex-shrink:0}
-.mh-name{font-size:18px;font-weight:700;color:var(--acc)}
-.mh-sub{font-size:11px;color:rgba(255,255,255,0.45);margin-top:1px}
-.xp-labels{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:3px;margin-top:10px}
+/* 앱 레이아웃 */
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
+
+/* 모바일 헤더 */
+.hd{background:var(--navy);padding:max(44px,env(safe-area-inset-top,44px)) 16px 12px;display:flex;align-items:flex-end;justify-content:space-between;flex-shrink:0}
+.hd-name{font-size:16px;font-weight:700;color:#fff}
+.hd-sub{font-size:10px;color:rgba(255,255,255,0.4);margin-top:1px}
+.hd-member{background:var(--navy);padding:max(44px,env(safe-area-inset-top,44px)) 16px 14px;flex-shrink:0}
+.hd-mname{font-size:18px;font-weight:700;color:var(--acc)}
+.hd-msub{font-size:11px;color:rgba(255,255,255,0.4);margin-top:1px}
+.xp-row{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.4);margin:10px 0 3px}
 .xp-track{background:rgba(255,255,255,0.12);border-radius:10px;height:6px;overflow:hidden}
-.xp-bar-inner{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:10px;transition:width .5s ease}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:10px;transition:width .5s}
+.chip{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.1);border:0.5px solid rgba(255,255,255,0.15);border-radius:20px;padding:5px 10px;font-size:11px;color:rgba(255,255,255,0.7);cursor:pointer;font-weight:500;white-space:nowrap}
 
 /* 콘텐츠 */
-.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:14px 14px calc(70px + var(--safe-bottom));background:var(--surface2)}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:14px 14px calc(68px + var(--sb));background:var(--surface2)}
 
 /* 탭바 */
-.tabbar{background:var(--surface);border-top:0.5px solid var(--border2);display:flex;padding-bottom:var(--safe-bottom);flex-shrink:0;position:relative;z-index:10}
-.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:8px 4px 6px}
-.tab-item i{font-size:22px;color:var(--text3)}
-.tab-item span{font-size:9px;color:var(--text3);font-weight:500}
-.tab-item.active i,.tab-item.active span{color:var(--acc2)}
-.tab-dot{position:relative}
-.tab-dot::after{content:'';position:absolute;top:0;right:-1px;width:7px;height:7px;background:#F43F5E;border-radius:50%;border:1.5px solid var(--surface)}
+.tabs{background:var(--surface);border-top:0.5px solid var(--border2);display:flex;padding-bottom:var(--sb);flex-shrink:0;z-index:10}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:8px 4px 6px}
+.tab i{font-size:22px;color:var(--text3)}
+.tab span{font-size:9px;color:var(--text3);font-weight:500}
+.tab.on i,.tab.on span{color:var(--acc2)}
 
-/* 사이드바 (태블릿) */
+/* 태블릿 사이드바 */
 @media(min-width:768px){
   #app{flex-direction:row}
-  .mob-trainer-header,.mob-member-header{display:none}
-  .sidebar{width:220px;background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;height:100vh}
-  .sb-logo{padding:24px 16px 14px;border-bottom:1px solid rgba(255,255,255,0.07)}
-  .sb-logo h1{font-size:15px;font-weight:700;color:#fff}
-  .sb-logo p{font-size:11px;color:rgba(255,255,255,0.38);margin-top:2px}
-  .sb-nav{flex:1;padding:10px 8px;overflow-y:auto}
-  .sb-sec{font-size:9px;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:0.9px;padding:10px 8px 3px}
-  .sb-item{display:flex;align-items:center;gap:7px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:1px;transition:all .15s}
-  .sb-item:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.85)}
-  .sb-item.active{background:rgba(255,255,255,0.1);color:var(--acc)}
-  .sb-item i{font-size:15px;width:17px;text-align:center}
-  .sb-badge{margin-left:auto;background:var(--acc);color:var(--navy);font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px}
-  .sb-bottom{padding:10px 10px 16px;border-top:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:6px}
-  .main-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
-  .topbar{background:var(--surface);border-bottom:0.5px solid var(--border2);padding:0 20px;height:52px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+  .hd,.hd-member{display:none}
+  .sb{width:216px;background:var(--navy);display:flex;flex-direction:column;flex-shrink:0;height:100vh}
+  .sb-logo{padding:22px 14px 13px;border-bottom:1px solid rgba(255,255,255,0.07)}
+  .sb-logo h1{font-size:14px;font-weight:700;color:#fff}
+  .sb-logo p{font-size:11px;color:rgba(255,255,255,0.35);margin-top:2px}
+  .sb-nav{flex:1;padding:8px;overflow-y:auto}
+  .sb-sec{font-size:9px;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:.9px;padding:10px 8px 3px}
+  .sb-it{display:flex;align-items:center;gap:7px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:1px;transition:all .15s}
+  .sb-it:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.85)}
+  .sb-it.on{background:rgba(255,255,255,0.1);color:var(--acc)}
+  .sb-it i{font-size:15px;width:17px;text-align:center}
+  .sb-bot{padding:10px;border-top:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:6px}
+  .sb-theme{padding:8px 10px 0}
+  .sb-theme p{font-size:9px;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+  .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  .topbar{background:var(--surface);border-bottom:0.5px solid var(--border2);padding:0 20px;height:52px;display:flex;align-items:center;flex-shrink:0}
   .topbar h2{font-size:14px;font-weight:600;flex:1}
-  .tabbar{display:none}
+  .tabs{display:none}
   .content{padding:16px 20px 20px}
 }
 @media(max-width:767px){
-  .sidebar{display:none}
-  .main-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  .sb{display:none}
+  .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
   .topbar{display:none}
 }
 
-/* 공통 컴포넌트 */
+/* 공통 */
 .card{background:var(--surface);border:0.5px solid var(--border2);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:10px}
 .card-acc{background:var(--acc-softer);border-color:rgba(0,0,0,0.05)}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.metric{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
-.metric-label{font-size:11px;color:var(--text3);margin-bottom:3px;font-weight:500}
-.metric-value{font-size:22px;font-weight:700;color:var(--acc2)}
-.metric-sub{font-size:10px;color:var(--text3);margin-top:1px}
-.sec-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;display:flex;align-items:center;gap:4px}
-.mc{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border)}
-.mc:last-child{border-bottom:none}
-.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
-.mname{font-size:13px;font-weight:600}
-.msub{font-size:11px;color:var(--text3);margin-top:1px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.met{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
+.met-l{font-size:11px;color:var(--text3);margin-bottom:3px;font-weight:500}
+.met-v{font-size:22px;font-weight:700;color:var(--acc2)}
+.met-s{font-size:10px;color:var(--text3);margin-top:1px}
+.st{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:4px}
+.row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border)}
+.row:last-child{border-bottom:none}
+.av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;background:var(--acc-soft);color:var(--acc-text)}
 .tag{display:inline-flex;align-items:center;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600}
-.tag-acc{background:var(--acc-soft);color:var(--acc-text)}
+.tag-a{background:var(--acc-soft);color:var(--acc-text)}
 .tag-g{background:#DCFCE7;color:#14532D}
 .tag-y{background:#FEF9C3;color:#713F12}
 .tag-r{background:#FEE2E2;color:#7F1D1D}
 .tag-gr{background:var(--surface3);color:var(--text3)}
-.warn-pill{background:#FFF1F2;border:0.5px solid rgba(244,63,94,0.2);color:#9F1239;font-size:10px;padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:3px;margin-right:4px;margin-bottom:4px;font-weight:500}
-.ex-row{display:flex;align-items:center;gap:7px;padding:6px 10px;background:var(--surface2);border-radius:8px;margin:3px 0;border:0.5px solid var(--border)}
-.ex-row span:first-child{font-size:12px;font-weight:500;flex:1}
-.ex-row span:last-of-type{font-size:11px;color:var(--text3)}
-.divider{height:0.5px;background:var(--border);margin:10px 0}
-.progress-bar{height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;margin-top:4px}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:3px}
-.level-pill{display:inline-flex;align-items:center;gap:3px;background:var(--acc-soft);color:var(--acc-text);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
-.xp-pill{background:var(--acc-soft);color:var(--acc-text);font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;display:inline-block;margin-top:5px}
-.form-group{margin-bottom:11px}
-.form-label{font-size:10px;color:var(--text3);margin-bottom:3px;display:block;font-weight:600;text-transform:uppercase;letter-spacing:0.4px}
+.wp{background:#FFF1F2;border:0.5px solid rgba(244,63,94,0.2);color:#9F1239;font-size:10px;padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:3px;margin-right:4px;margin-bottom:4px;font-weight:500}
+.ex{display:flex;align-items:center;gap:7px;padding:6px 10px;background:var(--surface2);border-radius:8px;margin:3px 0;border:0.5px solid var(--border)}
+.ex span:first-child{font-size:12px;font-weight:500;flex:1}
+.ex span:last-of-type{font-size:11px;color:var(--text3)}
+.div{height:0.5px;background:var(--border);margin:10px 0}
+.pb{height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;margin-top:4px}
+.pf{height:100%;background:linear-gradient(90deg,var(--acc),var(--acc2));border-radius:3px}
+.lv{display:inline-flex;align-items:center;gap:3px;background:var(--acc-soft);color:var(--acc-text);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+.xpp{background:var(--acc-soft);color:var(--acc-text);font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;display:inline-block;margin-top:5px}
+.fg{margin-bottom:11px}
+.fl{font-size:10px;color:var(--text3);margin-bottom:3px;display:block;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
 input,select,textarea{width:100%;padding:9px 11px;border:0.5px solid var(--border2);border-radius:9px;background:var(--surface);color:var(--text);font-size:13px;font-family:'Pretendard',sans-serif;-webkit-appearance:none}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft)}
 textarea{resize:vertical;min-height:70px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:10px 16px;border-radius:10px;font-size:13px;cursor:pointer;border:0.5px solid var(--border2);background:var(--surface);color:var(--text2);font-family:'Pretendard',sans-serif;font-weight:500;transition:all .15s}
 .btn:active{transform:scale(0.97)}
-.btn-acc{background:var(--acc);color:var(--acc-text);border-color:var(--acc);font-weight:700}
-.btn-full{width:100%;margin-top:6px}
-.btn-danger{background:#FEE2E2;color:#7F1D1D;border-color:#FEE2E2}
-.session-item{padding:10px 0;border-bottom:0.5px solid var(--border)}
-.session-item:last-child{border-bottom:none}
-.sticky-warn{background:#FFF1F2;border:0.5px solid rgba(244,63,94,0.2);border-left:3px solid #F43F5E;border-radius:0 10px 10px 0;padding:10px 12px;margin-bottom:12px}
-.inbody-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:0.5px solid var(--border)}
-.inbody-row:last-child{border-bottom:none}
+.btn-a{background:var(--acc);color:var(--acc-text);border-color:var(--acc);font-weight:700}
+.btn-w{width:100%;margin-top:6px}
+.btn-d{background:#FEE2E2;color:#7F1D1D;border-color:#FEE2E2}
+.si{padding:10px 0;border-bottom:0.5px solid var(--border)}
+.si:last-child{border-bottom:none}
+.sw{background:#FFF1F2;border:0.5px solid rgba(244,63,94,0.2);border-left:3px solid #F43F5E;border-radius:0 10px 10px 0;padding:10px 12px;margin-bottom:12px}
+.ir{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:0.5px solid var(--border)}
+.ir:last-child{border-bottom:none}
 .pos{color:#059669;font-weight:600}.neg{color:#DC2626;font-weight:600}
-.notice-card{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:var(--shadow)}
-.notice-pin{border-left:3px solid #EAB308;background:#FFFBEB;border-radius:0 12px 12px 0}
-.streak-card{background:var(--navy2);border-radius:14px;padding:14px 16px;color:#fff;margin-bottom:12px}
-.streak-big{font-size:30px;font-weight:700;color:var(--acc);line-height:1}
-.streak-dots{display:flex;gap:5px;margin-top:9px}
-.s-dot{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,0.4);font-weight:600;border:1px solid rgba(255,255,255,0.08);flex-shrink:0}
-.s-dot.done{background:var(--acc);color:var(--navy);border-color:var(--acc)}
-.s-dot.today{background:rgba(255,255,255,0.15);color:#fff;border:2px solid var(--acc);animation:dp 1.5s infinite}
+.nc{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:12px 14px;margin-bottom:8px;box-shadow:var(--shadow)}
+.np{border-left:3px solid #EAB308;background:#FFFBEB;border-radius:0 12px 12px 0}
+.sc{background:var(--navy2);border-radius:14px;padding:14px 16px;color:#fff;margin-bottom:12px}
+.sb2{font-size:30px;font-weight:700;color:var(--acc);line-height:1}
+.dots{display:flex;gap:5px;margin-top:9px}
+.dot{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,0.4);font-weight:600;border:1px solid rgba(255,255,255,0.08);flex-shrink:0}
+.dot.on{background:var(--acc);color:var(--navy);border-color:var(--acc)}
+.dot.td{background:rgba(255,255,255,0.15);color:#fff;border:2px solid var(--acc);animation:dp 1.5s infinite}
 @keyframes dp{0%,100%{box-shadow:0 0 0 0 rgba(56,189,248,0.4)}50%{box-shadow:0 0 0 5px transparent}}
-.mission-item{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:13px;margin-bottom:8px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;box-shadow:var(--shadow)}
-.mission-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
-.mission-item.hard::before{background:#F43F5E}
-.mission-item.mid::before{background:var(--acc)}
-.mission-item.done{opacity:0.5;background:var(--surface3)}
-.mission-item.done::before{background:var(--border2)}
-.mission-item:active{transform:scale(0.98)}
-.mi-title{font-size:13px;font-weight:600;margin-bottom:2px}
-.mi-desc{font-size:11px;color:var(--text3)}
-.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-.hm-card{background:var(--surface);border:0.5px solid var(--border2);border-radius:14px;padding:14px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow)}
-.hm-card.acc{background:var(--acc-softer);border-color:rgba(0,0,0,0.04)}
-.hm-card:active{transform:scale(0.97)}
-.hm-icon{font-size:22px;margin-bottom:7px}
-.hm-title{font-size:13px;font-weight:700;margin-bottom:2px}
-.hm-sub{font-size:11px;color:var(--text3)}
-.check-item{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:13px}
-.check-item:last-child{border-bottom:none}
-.check-item input{width:16px;height:16px;accent-color:var(--acc);cursor:pointer;flex-shrink:0;margin-top:1px}
-.ai-block{background:var(--acc-softer);border:0.5px solid var(--border2);border-radius:10px;padding:11px 13px;margin-bottom:8px}
-.ai-block-title{font-size:10px;font-weight:700;color:var(--acc2);margin-bottom:7px;text-transform:uppercase;letter-spacing:0.5px;display:flex;align-items:center;gap:4px}
-.ai-ex{font-size:12px;padding:5px 0;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;gap:8px}
-.ai-ex:last-child{border-bottom:none}
-.swatch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.swatch-item{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 6px;border-radius:12px;cursor:pointer;border:2px solid var(--border2);background:var(--surface);transition:all .15s}
-.swatch-item.active{border-color:var(--acc);background:var(--acc-softer)}
-.swatch-circle{width:30px;height:30px;border-radius:50%}
-.swatch-name{font-size:11px;font-weight:600;color:var(--text2)}
-.empty-state{text-align:center;padding:36px 20px;color:var(--text3)}
-.empty-state i{font-size:40px;margin-bottom:12px;display:block;opacity:0.4}
-.empty-state p{font-size:13px;line-height:1.6}
-.role-chip{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,0.1);border:0.5px solid rgba(255,255,255,0.15);border-radius:20px;padding:5px 10px;font-size:11px;color:rgba(255,255,255,0.75);cursor:pointer;font-weight:500;white-space:nowrap}
+.mi{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:13px;margin-bottom:8px;cursor:pointer;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.mi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.mi.hard::before{background:#F43F5E}
+.mi.mid::before{background:var(--acc)}
+.mi.done{opacity:0.5;background:var(--surface3)}
+.mi.done::before{background:var(--border2)}
+.mi:active{transform:scale(0.98)}
+.hg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.hc{background:var(--surface);border:0.5px solid var(--border2);border-radius:14px;padding:14px;cursor:pointer;transition:all .15s;box-shadow:var(--shadow)}
+.hc.acc{background:var(--acc-softer);border-color:rgba(0,0,0,0.04)}
+.hc:active{transform:scale(0.97)}
+.hc-i{font-size:22px;margin-bottom:7px}
+.hc-t{font-size:13px;font-weight:700;margin-bottom:2px}
+.hc-s{font-size:11px;color:var(--text3)}
+.ci{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:13px}
+.ci:last-child{border-bottom:none}
+.ci input{width:16px;height:16px;accent-color:var(--acc);cursor:pointer;flex-shrink:0;margin-top:1px}
+.ab{background:var(--acc-softer);border:0.5px solid var(--border2);border-radius:10px;padding:11px 13px;margin-bottom:8px}
+.ab-t{font-size:10px;font-weight:700;color:var(--acc2);margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;gap:4px}
+.ae{font-size:12px;padding:5px 0;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;gap:8px}
+.ae:last-child{border-bottom:none}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sw2{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 6px;border-radius:12px;cursor:pointer;border:2px solid var(--border2);background:var(--surface);transition:all .15s}
+.sw2.on{border-color:var(--acc);background:var(--acc-softer)}
+.sw2:active{transform:scale(0.95)}
+.sc2{width:30px;height:30px;border-radius:50%}
+.sn{font-size:11px;font-weight:600;color:var(--text2)}
+.es{text-align:center;padding:36px 20px;color:var(--text3)}
+.es i{font-size:40px;margin-bottom:12px;display:block;opacity:0.4}
+.es p{font-size:13px;line-height:1.6}
 ::-webkit-scrollbar{display:none}
-.page-enter{animation:pIn .2s ease}
-@keyframes pIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.pe{animation:pi .2s ease}
+@keyframes pi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
 
-<div id="loading-screen">
-  <div class="logo">⚡</div>
-  <div class="spinner"></div>
+<div id="loading">
+  <div style="font-size:48px">⚡</div>
+  <div class="spin"></div>
   <p>PT Manager AI</p>
 </div>
 
-<div id="login-screen">
-  <div class="login-logo">⚡</div>
-  <div class="login-title">PT Manager AI</div>
-  <div class="login-sub">트레이너와 회원을 위한<br>AI 수업 관리 시스템</div>
-  <div class="login-card">
-    <div id="login-mode-label" style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:12px;text-align:center">로그인</div>
-    <input class="login-input" type="email" id="login-email" placeholder="이메일">
-    <input class="login-input" type="password" id="login-pw" placeholder="비밀번호">
-    <input class="login-input" type="text" id="signup-name" placeholder="이름" style="display:none">
-    <select id="signup-role" style="display:none;padding:12px 14px;border:1px solid rgba(255,255,255,0.15);border-radius:10px;background:rgba(255,255,255,0.07);color:#fff;font-size:14px;margin-bottom:10px;width:100%;font-family:'Pretendard',sans-serif">
+<div id="login">
+  <div class="l-logo">⚡</div>
+  <div class="l-title">PT Manager AI</div>
+  <div class="l-sub">트레이너와 회원을 위한<br>AI 수업 관리 시스템</div>
+  <div class="l-box">
+    <div id="l-mode" style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:12px;text-align:center">로그인</div>
+    <input class="l-inp" type="email" id="l-email" placeholder="이메일">
+    <input class="l-inp" type="password" id="l-pw" placeholder="비밀번호">
+    <input class="l-inp" type="text" id="l-name" placeholder="이름" style="display:none">
+    <select id="l-role" style="display:none;padding:12px 14px;border:1px solid rgba(255,255,255,0.15);border-radius:10px;background:rgba(255,255,255,0.07);color:#fff;font-size:14px;margin-bottom:10px;width:100%;font-family:'Pretendard',sans-serif">
       <option value="trainer">트레이너</option>
       <option value="member">회원</option>
     </select>
-    <button class="login-btn" onclick="doAuth()" id="auth-btn">로그인</button>
-    <div class="login-err" id="login-err"></div>
-    <div class="login-toggle" onclick="toggleAuthMode()">계정이 없으신가요? <span id="toggle-txt">회원가입</span></div>
+    <button class="l-btn" onclick="doAuth()" id="l-btn">로그인</button>
+    <div class="l-err" id="l-err"></div>
+    <div class="l-toggle" onclick="toggleMode()">계정이 없으신가요? <span id="l-tog">회원가입</span></div>
   </div>
 </div>
 
 <div id="app" class="t-sky" style="display:none">
-  <div class="sidebar" id="sidebar">
+  <!-- 사이드바 -->
+  <div class="sb" id="sb">
     <div class="sb-logo">
       <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:3px 9px;margin-bottom:8px">
         <span style="font-size:11px;color:var(--acc);font-weight:600">⚡ PT Manager AI</span>
       </div>
-      <h1 id="sb-title">로딩 중...</h1>
+      <h1 id="sb-title">로딩 중</h1>
       <p id="sb-sub"></p>
     </div>
     <nav class="sb-nav" id="sb-nav"></nav>
-    <div id="sb-theme-wrap" style="display:none;padding:8px 10px 0">
-      <div style="font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:7px">테마</div>
-      <div style="display:flex;gap:5px;flex-wrap:wrap" id="sb-swatches"></div>
+    <div id="sb-theme" style="display:none" class="sb-theme">
+      <p>테마</p>
+      <div style="display:flex;gap:5px;flex-wrap:wrap" id="sb-sw"></div>
     </div>
-    <div class="sb-bottom">
-      <button class="role-chip" style="justify-content:center" onclick="toggleRole()">
-        <i class="ti ti-switch-horizontal"></i><span id="role-btn-txt">회원 뷰로 전환</span>
-      </button>
-      <button class="role-chip" style="justify-content:center;color:rgba(255,120,120,0.8)" onclick="doLogout()">
-        <i class="ti ti-logout"></i>로그아웃
-      </button>
+    <div class="sb-bot">
+      <div class="chip" style="justify-content:center" onclick="toggleRole()"><i class="ti ti-switch-horizontal"></i><span id="rb-txt">회원 뷰로 전환</span></div>
+      <div class="chip" style="justify-content:center;color:rgba(255,100,100,0.8)" onclick="doLogout()"><i class="ti ti-logout"></i>로그아웃</div>
     </div>
   </div>
 
-  <div class="main-area">
-    <div class="topbar" id="topbar">
-      <h2 id="topbar-title">대시보드</h2>
-      <div id="topbar-actions"></div>
-    </div>
+  <!-- 메인 -->
+  <div class="main">
+    <div class="topbar"><h2 id="tb-title">대시보드</h2><div id="tb-act"></div></div>
 
-    <div id="member-mob-header" style="display:none">
-      <div class="mob-member-header">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between">
-          <div>
-            <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:2px">안녕하세요 👋</div>
-            <div class="mh-name" id="m-header-name">회원님</div>
-            <div class="mh-sub" id="m-header-sub"></div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-            <div class="level-pill" id="m-level-pill"><i class="ti ti-star"></i>Lv.1</div>
-            <div class="role-chip" onclick="toggleRole()"><i class="ti ti-switch-horizontal"></i>트레이너</div>
-          </div>
+    <!-- 트레이너 모바일 헤더 -->
+    <div id="hd-t" style="display:none">
+      <div class="hd">
+        <div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.4)">⚡ PT Manager AI</div>
+          <div class="hd-name" id="hd-page">대시보드</div>
         </div>
-        <div class="xp-labels"><span>경험치</span><span id="m-xp-label">0 XP</span></div>
-        <div class="xp-track"><div class="xp-bar-inner" id="m-xp-bar" style="width:0%"></div></div>
+        <div style="display:flex;gap:6px">
+          <div class="chip" onclick="toggleRole()"><i class="ti ti-switch-horizontal"></i>회원뷰</div>
+          <div class="chip" onclick="doLogout()" style="color:rgba(255,100,100,0.8)"><i class="ti ti-logout"></i></div>
+        </div>
       </div>
     </div>
 
-    <div id="trainer-mob-header" style="display:none">
-      <div class="mob-trainer-header">
-        <div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:1px">⚡ PT Manager AI</div>
-          <div style="font-size:16px;font-weight:700;color:#fff" id="trainer-mob-title">대시보드</div>
+    <!-- 회원 모바일 헤더 -->
+    <div id="hd-m" style="display:none">
+      <div class="hd-member">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between">
+          <div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:2px">안녕하세요 👋</div>
+            <div class="hd-mname" id="hd-mname">회원님</div>
+            <div class="hd-msub" id="hd-msub"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+            <div class="lv" id="hd-lv"><i class="ti ti-star"></i>Lv.1</div>
+            <div class="chip" onclick="toggleRole()"><i class="ti ti-switch-horizontal"></i>트레이너</div>
+          </div>
         </div>
-        <div style="display:flex;gap:6px;align-items:center">
-          <div class="role-chip" onclick="toggleRole()"><i class="ti ti-switch-horizontal"></i>회원뷰</div>
-          <div class="role-chip" onclick="doLogout()" style="color:rgba(255,120,120,0.8)"><i class="ti ti-logout"></i></div>
-        </div>
+        <div class="xp-row"><span>경험치</span><span id="hd-xp">0 XP</span></div>
+        <div class="xp-track"><div class="xp-fill" id="hd-xpb" style="width:0%"></div></div>
       </div>
     </div>
 
     <div class="content" id="content"></div>
-    <div class="tabbar" id="tabbar"></div>
+    <div class="tabs" id="tabs"></div>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
-// ══════════════════════════════════
-// Supabase 연결
-// ══════════════════════════════════
-const SUPABASE_URL = 'https://vljmjxkqnzxsawdstdcl.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZsam1qeGtxbnp4c2F3ZHN0ZGNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3OTkyNjAsImV4cCI6MjA5NDM3NTI2MH0.tP40JvDzeenxeWcKyLgZCSkzkHPyot3RyEJZsCj4Zio';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// ── Supabase ──
+const SB = supabase.createClient(
+  'https://vljmjxkqnzxsawdstdcl.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZsam1qeGtxbnp4c2F3ZHN0ZGNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3OTkyNjAsImV4cCI6MjA5NDM3NTI2MH0.tP40JvDzeenxeWcKyLgZCSkzkHPyot3RyEJZsCj4Zio'
+);
 
-// ══════════════════════════════════
-// 전역 상태
-// ══════════════════════════════════
-let role = 'trainer';
-let curPage = 'dashboard';
-let curTheme = 'sky';
-let chartInst = null;
-let currentUser = null;
-let userProfile = null;
-let memberProfile = null;
-let memberList = [];
-let sessionList = [];
-let inbodyList = [];
-let noticeList = [];
-let missionList = [];
-let isSignup = false;
+// ── 상태 ──
+let role='trainer', page='dashboard', theme='sky', chart=null;
+let user=null, prof=null, mprof=null;
+let members=[], sessions=[], inbodys=[], notices=[], missions=[];
+let isSignup=false;
 
-const themes = [
-  {id:'sky',   name:'스카이', color:'#38BDF8', cls:'t-sky'},
-  {id:'pink',  name:'핑크',   color:'#F472B6', cls:'t-pink'},
-  {id:'lime',  name:'라임',   color:'#84CC16', cls:'t-lime'},
-  {id:'purple',name:'퍼플',   color:'#A78BFA', cls:'t-purple'},
-  {id:'peach', name:'피치',   color:'#FB923C', cls:'t-peach'},
-  {id:'mint',  name:'민트',   color:'#2DD4BF', cls:'t-mint'},
+const THEMES=[
+  {id:'sky',name:'스카이',color:'#38BDF8',cls:'t-sky'},
+  {id:'pink',name:'핑크',color:'#F472B6',cls:'t-pink'},
+  {id:'lime',name:'라임',color:'#84CC16',cls:'t-lime'},
+  {id:'purple',name:'퍼플',color:'#A78BFA',cls:'t-purple'},
+  {id:'peach',name:'피치',color:'#FB923C',cls:'t-peach'},
+  {id:'mint',name:'민트',color:'#2DD4BF',cls:'t-mint'},
 ];
 
-const MISSIONS_DEF = [
-  {key:'attend_3',    title:'이번 주 3회 출석',    desc:'주 3회 이상 수업 참석',         xp:150, type:'hard', icon:'🏃'},
-  {key:'streak_7',    title:'7일 연속 숙제 완료',  desc:'매일 숙제를 빠짐없이 체크',     xp:200, type:'hard', icon:'🔥'},
-  {key:'inbody',      title:'인바디 측정하기',      desc:'이번 달 인바디 측정 완료',      xp:100, type:'mid',  icon:'📊'},
-  {key:'review',      title:'수업 후기 남기기',     desc:'오늘 수업 만족도 입력',         xp:50,  type:'mid',  icon:'⭐'},
-  {key:'goal_50',     title:'체중 목표 50% 달성',  desc:'목표 체중의 50% 달성',          xp:300, type:'hard', icon:'🏆'},
-  {key:'session_10',  title:'누적 수업 10회',       desc:'누적 수업 10회 달성',           xp:80,  type:'mid',  icon:'💪'},
-  {key:'attend_month',title:'한 달 개근',           desc:'한 달 모든 수업 참석',          xp:500, type:'hard', icon:'👑'},
-  {key:'diet',        title:'건강 식단 인증',       desc:'식단 사진을 트레이너에게 전송', xp:30,  type:'mid',  icon:'🥗'},
+const MISSIONS=[
+  {key:'attend_3',title:'이번 주 3회 출석',desc:'주 3회 이상 수업 참석',xp:150,type:'hard',icon:'🏃'},
+  {key:'streak_7',title:'7일 연속 숙제 완료',desc:'매일 숙제를 빠짐없이 체크',xp:200,type:'hard',icon:'🔥'},
+  {key:'inbody',title:'인바디 측정하기',desc:'이번 달 인바디 측정 완료',xp:100,type:'mid',icon:'📊'},
+  {key:'review',title:'수업 후기 남기기',desc:'오늘 수업 만족도 입력',xp:50,type:'mid',icon:'⭐'},
+  {key:'goal_50',title:'체중 목표 50% 달성',desc:'목표 체중의 50% 달성',xp:300,type:'hard',icon:'🏆'},
+  {key:'session_10',title:'누적 수업 10회',desc:'누적 수업 10회 달성',xp:80,type:'mid',icon:'💪'},
+  {key:'month',title:'한 달 개근',desc:'한 달 모든 수업 참석',xp:500,type:'hard',icon:'👑'},
+  {key:'diet',title:'건강 식단 인증',desc:'식단 사진을 트레이너에게 전송',xp:30,type:'mid',icon:'🥗'},
 ];
 
-const pageTitles = {
-  dashboard:'대시보드', members:'회원 관리', session:'수업 일지',
-  'ai-plan':'AI 수업안', inbody:'인바디 변화', homework:'숙제 공유', notice:'센터 공지',
-  'm-home':'홈', 'm-journal':'수업 일지', 'm-inbody':'인바디',
-  'm-missions':'미션 & 보상', 'm-homework':'숙제', 'm-notice':'공지', 'm-settings':'설정',
+const PT={
+  dashboard:'대시보드',members:'회원 관리',session:'수업 일지',
+  'ai-plan':'AI 수업안',inbody:'인바디 변화',homework:'숙제 공유',notice:'센터 공지',
+  'mh':'홈','mj':'수업 일지','mi2':'인바디','mm':'미션 & 보상',
+  'mhw':'숙제','mn':'공지','ms':'설정',
 };
 
-// ══════════════════════════════════
-// 인증
-// ══════════════════════════════════
-async function initAuth() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    currentUser = session.user;
-    await loadUserProfile();
-    showApp();
-  } else {
-    showLogin();
+// ── 인증 ──
+async function init(){
+  try{
+    const {data:{session}}=await SB.auth.getSession();
+    if(session){user=session.user;await loadProf();showApp();}
+    else showLogin();
+  }catch(e){showLogin();}
+}
+
+function showLogin(){
+  document.getElementById('loading').style.display='none';
+  document.getElementById('login').style.display='flex';
+}
+
+function showApp(){
+  document.getElementById('loading').style.display='none';
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').style.display='flex';
+  setTheme(prof?.theme||'sky');
+  role=prof?.role||'trainer';
+  go(role==='member'?'mh':'dashboard');
+}
+
+function toggleMode(){
+  isSignup=!isSignup;
+  document.getElementById('l-mode').textContent=isSignup?'회원가입':'로그인';
+  document.getElementById('l-btn').textContent=isSignup?'가입하기':'로그인';
+  document.getElementById('l-tog').textContent=isSignup?'로그인':'회원가입';
+  document.getElementById('l-name').style.display=isSignup?'block':'none';
+  document.getElementById('l-role').style.display=isSignup?'block':'none';
+}
+
+async function doAuth(){
+  const email=document.getElementById('l-email').value.trim();
+  const pw=document.getElementById('l-pw').value.trim();
+  const err=document.getElementById('l-err');
+  const btn=document.getElementById('l-btn');
+  err.textContent='';
+  if(!email||!pw){err.textContent='이메일과 비밀번호를 입력하세요';return;}
+  btn.textContent='처리 중...';btn.disabled=true;
+
+  try{
+    if(isSignup){
+      const name=document.getElementById('l-name').value.trim();
+      const r=document.getElementById('l-role').value;
+      if(!name){err.textContent='이름을 입력하세요';btn.textContent='가입하기';btn.disabled=false;return;}
+      const {data,error}=await SB.auth.signUp({email,password:pw});
+      if(error)throw error;
+      await SB.from('users').insert({id:data.user.id,name,role:r,theme:'sky',
+        invite_token:r==='member'?name.replace(/\s/g,'')+'_'+Math.random().toString(36).slice(2,8):null});
+      if(r==='member') await SB.from('members').insert({user_id:data.user.id});
+      user=data.user;await loadProf();showApp();
+    }else{
+      const {data,error}=await SB.auth.signInWithPassword({email,password:pw});
+      if(error)throw error;
+      user=data.user;await loadProf();showApp();
+    }
+  }catch(e){
+    err.textContent=isSignup?e.message:'이메일 또는 비밀번호가 틀렸어요';
+    btn.textContent=isSignup?'가입하기':'로그인';btn.disabled=false;
   }
 }
 
-function showLogin() {
-  document.getElementById('loading-screen').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-}
+async function doLogout(){await SB.auth.signOut();location.reload();}
 
-function showApp() {
-  document.getElementById('loading-screen').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  applyTheme(userProfile?.theme || 'sky');
-  role = userProfile?.role || 'trainer';
-  showPage(role === 'member' ? 'm-home' : 'dashboard');
-}
-
-function toggleAuthMode() {
-  isSignup = !isSignup;
-  document.getElementById('login-mode-label').textContent = isSignup ? '회원가입' : '로그인';
-  document.getElementById('auth-btn').textContent = isSignup ? '가입하기' : '로그인';
-  document.getElementById('toggle-txt').textContent = isSignup ? '로그인' : '회원가입';
-  document.getElementById('signup-name').style.display = isSignup ? 'block' : 'none';
-  document.getElementById('signup-role').style.display = isSignup ? 'block' : 'none';
-}
-
-async function doAuth() {
-  const email = document.getElementById('login-email').value.trim();
-  const pw    = document.getElementById('login-pw').value.trim();
-  const errEl = document.getElementById('login-err');
-  const btn   = document.getElementById('auth-btn');
-  errEl.textContent = '';
-  if (!email || !pw) { errEl.textContent = '이메일과 비밀번호를 입력하세요'; return; }
-  btn.textContent = '처리 중...'; btn.disabled = true;
-
-  if (isSignup) {
-    const name = document.getElementById('signup-name').value.trim();
-    const r    = document.getElementById('signup-role').value;
-    if (!name) { errEl.textContent = '이름을 입력하세요'; btn.textContent='가입하기'; btn.disabled=false; return; }
-    const { data, error } = await sb.auth.signUp({ email, password: pw });
-    if (error) { errEl.textContent = error.message; btn.textContent='가입하기'; btn.disabled=false; return; }
-    await sb.from('users').insert({
-      id: data.user.id, name, role: r, theme: 'sky',
-      invite_token: r==='member' ? name.replace(/\s/g,'')+'_'+Math.random().toString(36).slice(2,8) : null
-    });
-    if (r === 'member') await sb.from('members').insert({ user_id: data.user.id });
-    currentUser = data.user;
-    await loadUserProfile();
-    showApp();
-  } else {
-    const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
-    if (error) { errEl.textContent = '이메일 또는 비밀번호가 틀렸어요'; btn.textContent='로그인'; btn.disabled=false; return; }
-    currentUser = data.user;
-    await loadUserProfile();
-    showApp();
+// ── 데이터 ──
+async function loadProf(){
+  const {data}=await SB.from('users').select('*').eq('id',user.id).single();
+  prof=data;
+  if(data?.role==='member'){
+    const {data:mp}=await SB.from('members').select('*').eq('user_id',user.id).single();
+    mprof=mp;
   }
 }
 
-async function doLogout() {
-  await sb.auth.signOut();
-  location.reload();
+async function loadMembers(){
+  const {data}=await SB.from('members').select('*,user:users(name,theme,invite_token)').order('created_at');
+  members=data||[];
 }
 
-// ══════════════════════════════════
-// 데이터 로딩
-// ══════════════════════════════════
-async function loadUserProfile() {
-  const { data } = await sb.from('users').select('*').eq('id', currentUser.id).single();
-  userProfile = data;
-  if (data?.role === 'member') {
-    const { data: mp } = await sb.from('members').select('*').eq('user_id', currentUser.id).single();
-    memberProfile = mp;
-  }
+async function loadSessions(mid=null){
+  let q=SB.from('sessions').select('*').order('session_date',{ascending:false}).limit(20);
+  if(mid) q=q.eq('member_id',mid);
+  const {data}=await q;
+  sessions=data||[];
 }
 
-async function loadMembers() {
-  const { data } = await sb.from('members')
-    .select('*, user:users(name, theme, invite_token)')
-    .order('created_at');
-  memberList = data || [];
+async function loadInbody(mid=null){
+  let q=SB.from('inbody_records').select('*').order('measured_at',{ascending:false}).limit(20);
+  if(mid) q=q.eq('member_id',mid);
+  const {data}=await q;
+  inbodys=data||[];
 }
 
-async function loadSessions(memberId = null) {
-  let q = sb.from('sessions').select('*').order('session_date', { ascending: false });
-  if (memberId) q = q.eq('member_id', memberId);
-  const { data } = await q.limit(20);
-  sessionList = data || [];
+async function loadNotices(){
+  const {data}=await SB.from('notices').select('*').order('is_pinned',{ascending:false}).order('created_at',{ascending:false});
+  notices=data||[];
 }
 
-async function loadInbody(memberId = null) {
-  let q = sb.from('inbody_records').select('*').order('measured_at', { ascending: false });
-  if (memberId) q = q.eq('member_id', memberId);
-  const { data } = await q.limit(20);
-  inbodyList = data || [];
+async function loadMissions(){
+  if(!mprof) return;
+  const {data}=await SB.from('mission_progress').select('*').eq('member_id',mprof.id);
+  missions=data||[];
 }
 
-async function loadNotices() {
-  const { data } = await sb.from('notices').select('*')
-    .order('is_pinned', { ascending: false })
-    .order('created_at', { ascending: false });
-  noticeList = data || [];
+// ── 테마 ──
+function setTheme(id){
+  theme=id;
+  const app=document.getElementById('app');
+  THEMES.forEach(t=>app.classList.remove(t.cls));
+  app.classList.add(THEMES.find(x=>x.id===id)?.cls||'t-sky');
+  renderSw();
 }
 
-async function loadMissions() {
-  if (!memberProfile) return;
-  const { data } = await sb.from('mission_progress').select('*').eq('member_id', memberProfile.id);
-  missionList = data || [];
+async function chTheme(id){
+  setTheme(id);
+  await SB.from('users').update({theme:id}).eq('id',user.id);
+  go('ms');
 }
 
-// ══════════════════════════════════
-// 테마
-// ══════════════════════════════════
-function applyTheme(id) {
-  curTheme = id;
-  const app = document.getElementById('app');
-  themes.forEach(t => app.classList.remove(t.cls));
-  app.classList.add(themes.find(x => x.id === id)?.cls || 't-sky');
-  renderSbSwatches();
+function renderSw(){
+  const el=document.getElementById('sb-sw');
+  if(!el) return;
+  el.innerHTML=THEMES.map(t=>`<div onclick="chTheme('${t.id}')" style="width:22px;height:22px;border-radius:50%;background:${t.color};cursor:pointer;border:2px solid ${t.id===theme?'#fff':'transparent'}"></div>`).join('');
 }
 
-async function changeTheme(id) {
-  applyTheme(id);
-  await sb.from('users').update({ theme: id }).eq('id', currentUser.id);
-  showPage('m-settings');
-}
-
-function renderSbSwatches() {
-  const el = document.getElementById('sb-swatches');
-  if (!el) return;
-  el.innerHTML = themes.map(t =>
-    `<div onclick="changeTheme('${t.id}')" style="width:22px;height:22px;border-radius:50%;background:${t.color};cursor:pointer;border:2px solid ${t.id===curTheme?'#fff':'transparent'}"></div>`
-  ).join('');
-}
-
-// ══════════════════════════════════
-// 네비게이션
-// ══════════════════════════════════
-const trainerNav = [
-  {id:'dashboard',icon:'ti-layout-dashboard',label:'대시보드'},
-  {id:'members',  icon:'ti-users',            label:'회원 관리'},
-  {sec:'수업'},
-  {id:'session',  icon:'ti-notebook',         label:'수업 일지'},
-  {id:'ai-plan',  icon:'ti-robot',            label:'AI 수업안'},
-  {sec:'데이터'},
-  {id:'inbody',   icon:'ti-chart-line',       label:'인바디 변화'},
-  {sec:'공유'},
-  {id:'homework', icon:'ti-checklist',        label:'숙제 공유'},
-  {id:'notice',   icon:'ti-speakerphone',     label:'센터 공지'},
+// ── 네비 ──
+const TN=[
+  {id:'dashboard',i:'ti-layout-dashboard',l:'대시보드'},
+  {id:'members',i:'ti-users',l:'회원 관리'},
+  {s:'수업'},
+  {id:'session',i:'ti-notebook',l:'수업 일지'},
+  {id:'ai-plan',i:'ti-robot',l:'AI 수업안'},
+  {s:'데이터'},
+  {id:'inbody',i:'ti-chart-line',l:'인바디 변화'},
+  {s:'공유'},
+  {id:'homework',i:'ti-checklist',l:'숙제 공유'},
+  {id:'notice',i:'ti-speakerphone',l:'센터 공지'},
 ];
-const memberNav = [
-  {id:'m-home',    icon:'ti-home',       label:'홈'},
-  {id:'m-journal', icon:'ti-notebook',   label:'수업 일지'},
-  {id:'m-inbody',  icon:'ti-chart-line', label:'인바디'},
-  {sec:'게임'},
-  {id:'m-missions',icon:'ti-trophy',     label:'미션', badge:'!'},
-  {sec:'기타'},
-  {id:'m-homework',icon:'ti-checklist',  label:'숙제'},
-  {id:'m-notice',  icon:'ti-speakerphone',label:'공지'},
-  {id:'m-settings',icon:'ti-palette',   label:'설정'},
+const MN=[
+  {id:'mh',i:'ti-home',l:'홈'},
+  {id:'mj',i:'ti-notebook',l:'수업 일지'},
+  {id:'mi2',i:'ti-chart-line',l:'인바디'},
+  {s:'게임'},
+  {id:'mm',i:'ti-trophy',l:'미션',b:'!'},
+  {s:'기타'},
+  {id:'mhw',i:'ti-checklist',l:'숙제'},
+  {id:'mn',i:'ti-speakerphone',l:'공지'},
+  {id:'ms',i:'ti-palette',l:'설정'},
 ];
-const trainerTabs = [
-  {id:'dashboard',icon:'ti-layout-dashboard',label:'홈'},
-  {id:'members',  icon:'ti-users',            label:'회원'},
-  {id:'session',  icon:'ti-notebook',         label:'일지'},
-  {id:'ai-plan',  icon:'ti-robot',            label:'AI'},
-  {id:'inbody',   icon:'ti-chart-line',       label:'인바디'},
+const TT=[
+  {id:'dashboard',i:'ti-layout-dashboard',l:'홈'},
+  {id:'members',i:'ti-users',l:'회원'},
+  {id:'session',i:'ti-notebook',l:'일지'},
+  {id:'ai-plan',i:'ti-robot',l:'AI'},
+  {id:'inbody',i:'ti-chart-line',l:'인바디'},
 ];
-const memberTabs = [
-  {id:'m-home',    icon:'ti-home',      label:'홈'},
-  {id:'m-missions',icon:'ti-trophy',    label:'미션', dot:true},
-  {id:'m-journal', icon:'ti-notebook',  label:'일지'},
-  {id:'m-homework',icon:'ti-checklist', label:'숙제'},
-  {id:'m-settings',icon:'ti-user',      label:'설정'},
+const MT=[
+  {id:'mh',i:'ti-home',l:'홈'},
+  {id:'mm',i:'ti-trophy',l:'미션'},
+  {id:'mj',i:'ti-notebook',l:'일지'},
+  {id:'mhw',i:'ti-checklist',l:'숙제'},
+  {id:'ms',i:'ti-user',l:'설정'},
 ];
 
-function renderNav() {
-  const isMob = window.innerWidth < 768;
-  const nav = role === 'trainer' ? trainerNav : memberNav;
-  document.getElementById('sb-nav').innerHTML = nav.map(it => {
-    if (it.sec) return `<div class="sb-sec">${it.sec}</div>`;
-    const badge = it.badge ? `<span class="sb-badge">${it.badge}</span>` : '';
-    return `<div class="sb-item ${it.id===curPage?'active':''}" onclick="showPage('${it.id}')"><i class="ti ${it.icon}"></i>${it.label}${badge}</div>`;
+function renderNav(){
+  const mob=window.innerWidth<768;
+  const nav=role==='trainer'?TN:MN;
+  document.getElementById('sb-nav').innerHTML=nav.map(it=>{
+    if(it.s) return `<div class="sb-sec">${it.s}</div>`;
+    const b=it.b?`<span style="margin-left:auto;background:var(--acc);color:var(--navy);font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px">${it.b}</span>`:'';
+    return `<div class="sb-it ${it.id===page?'on':''}" onclick="go('${it.id}')"><i class="ti ${it.i}"></i>${it.l}${b}</div>`;
   }).join('');
+  document.getElementById('sb-title').textContent=role==='trainer'?'트레이너 모드':'회원 모드';
+  document.getElementById('sb-sub').textContent=prof?.name||'';
+  document.getElementById('rb-txt').textContent=role==='trainer'?'회원 뷰로 전환':'트레이너 뷰로 전환';
+  document.getElementById('sb-theme').style.display=role==='member'?'block':'none';
+  renderSw();
 
-  document.getElementById('sb-title').textContent = role==='trainer' ? '트레이너 모드' : '회원 모드';
-  document.getElementById('sb-sub').textContent   = userProfile?.name || '';
-  document.getElementById('role-btn-txt').textContent = role==='trainer' ? '회원 뷰로 전환' : '트레이너 뷰로 전환';
-  document.getElementById('sb-theme-wrap').style.display = role==='member' ? 'block' : 'none';
-  renderSbSwatches();
+  const tabs=role==='trainer'?TT:MT;
+  document.getElementById('tabs').innerHTML=tabs.map(t=>`<div class="tab ${t.id===page?'on':''}" onclick="go('${t.id}')"><i class="ti ${t.i}"></i><span>${t.l}</span></div>`).join('');
 
-  const tabs = role==='trainer' ? trainerTabs : memberTabs;
-  document.getElementById('tabbar').innerHTML = tabs.map(t =>
-    `<div class="tab-item ${t.id===curPage?'active':''} ${t.dot?'tab-dot':''}" onclick="showPage('${t.id}')"><i class="ti ${t.icon}"></i><span>${t.label}</span></div>`
-  ).join('');
+  document.getElementById('hd-t').style.display=(role==='trainer'&&mob)?'block':'none';
+  document.getElementById('hd-m').style.display=(role==='member'&&mob)?'block':'none';
+  document.getElementById('tb-title').textContent=PT[page]||'';
+  if(mob&&role==='trainer') document.getElementById('hd-page').textContent=PT[page]||'';
 
-  document.getElementById('member-mob-header').style.display  = (role==='member'&&isMob)  ? 'block' : 'none';
-  document.getElementById('trainer-mob-header').style.display = (role==='trainer'&&isMob) ? 'block' : 'none';
-
-  if (isMob && role==='trainer') document.getElementById('trainer-mob-title').textContent = pageTitles[curPage]||'';
-  document.getElementById('topbar-title').textContent = pageTitles[curPage]||'';
-
-  if (role==='member' && memberProfile) {
-    document.getElementById('m-header-name').textContent  = (userProfile?.name||'')+'님';
-    document.getElementById('m-header-sub').textContent   = `${memberProfile.goal||''} · ${memberProfile.current_week||1}주차`;
-    document.getElementById('m-level-pill').innerHTML     = `<i class="ti ti-star"></i>Lv.${memberProfile.level||1}`;
-    const xpMax = (memberProfile.level||1)*200;
-    document.getElementById('m-xp-label').textContent    = `${memberProfile.xp||0} / ${xpMax} XP`;
-    document.getElementById('m-xp-bar').style.width      = Math.min(100,Math.round((memberProfile.xp||0)/xpMax*100))+'%';
+  if(role==='member'&&mprof){
+    document.getElementById('hd-mname').textContent=(prof?.name||'')+'님';
+    document.getElementById('hd-msub').textContent=`${mprof.goal||''} · ${mprof.current_week||1}주차`;
+    document.getElementById('hd-lv').innerHTML=`<i class="ti ti-star"></i>Lv.${mprof.level||1}`;
+    const xm=(mprof.level||1)*200;
+    document.getElementById('hd-xp').textContent=`${mprof.xp||0} / ${xm} XP`;
+    document.getElementById('hd-xpb').style.width=Math.min(100,Math.round((mprof.xp||0)/xm*100))+'%';
   }
 }
 
-// ══════════════════════════════════
-// 페이지 이동
-// ══════════════════════════════════
-async function showPage(id) {
-  curPage = id;
-  renderNav();
-  if (chartInst) { chartInst.destroy(); chartInst = null; }
-  const c = document.getElementById('content');
-  c.innerHTML = `<div style="display:flex;justify-content:center;padding:48px"><div class="spinner" style="border-top-color:var(--acc2)"></div></div>`;
-  c.scrollTop = 0;
+// ── 페이지 이동 ──
+async function go(id){
+  page=id; renderNav();
+  if(chart){chart.destroy();chart=null;}
+  const c=document.getElementById('content');
+  c.innerHTML=`<div style="display:flex;justify-content:center;padding:48px"><div class="spin" style="border-top-color:var(--acc2)"></div></div>`;
+  c.scrollTop=0;
 
-  // 페이지별 데이터 로드
-  if (['dashboard','members'].includes(id))         await loadMembers();
-  if (['session','dashboard','homework'].includes(id)) await loadSessions();
-  if (['inbody'].includes(id))                      await loadInbody();
-  if (['notice','m-notice'].includes(id))           await loadNotices();
-  if (id==='m-missions')                            await loadMissions();
-  if (id==='m-journal')                             await loadSessions(memberProfile?.id);
-  if (id==='m-inbody')                              await loadInbody(memberProfile?.id);
-  if (id==='m-homework')                            await loadSessions(memberProfile?.id);
+  if(['dashboard','members'].includes(id)) await loadMembers();
+  if(['session','dashboard','homework'].includes(id)) await loadSessions();
+  if(id==='inbody') await loadInbody();
+  if(['notice','mn'].includes(id)) await loadNotices();
+  if(id==='mm') await loadMissions();
+  if(id==='mj') await loadSessions(mprof?.id);
+  if(id==='mi2') await loadInbody(mprof?.id);
+  if(id==='mhw') await loadSessions(mprof?.id);
+  if(id==='mh'){await loadSessions(mprof?.id);await loadInbody(mprof?.id);await loadNotices();}
 
-  const div = document.createElement('div');
-  div.className = 'page-enter';
-  div.innerHTML = getPageHTML(id);
-  c.innerHTML = '';
-  c.appendChild(div);
-  setTimeout(() => { if (id==='inbody'||id==='m-inbody') drawChart(id); }, 100);
+  const d=document.createElement('div');
+  d.className='pe';
+  d.innerHTML=html(id);
+  c.innerHTML='';c.appendChild(d);
+  setTimeout(()=>{if(id==='inbody'||id==='mi2') drawChart(id);},100);
 }
 
-function toggleRole() {
-  role = role==='trainer' ? 'member' : 'trainer';
-  showPage(role==='member' ? 'm-home' : 'dashboard');
-}
+function toggleRole(){role=role==='trainer'?'member':'trainer';go(role==='member'?'mh':'dashboard');}
 
-// ══════════════════════════════════
-// 트레이너 페이지 HTML
-// ══════════════════════════════════
-function getPageHTML(id) {
-  if (role==='trainer') {
-    if (id==='dashboard') return tDash();
-    if (id==='members')   return tMembers();
-    if (id==='session')   return tSession();
-    if (id==='ai-plan')   return tAI();
-    if (id==='inbody')    return tInbody();
-    if (id==='homework')  return tHomework();
-    if (id==='notice')    return tNotice();
-  } else {
-    if (id==='m-home')     return mHome();
-    if (id==='m-journal')  return mJournal();
-    if (id==='m-inbody')   return mInbody();
-    if (id==='m-missions') return mMissions();
-    if (id==='m-homework') return mHomework();
-    if (id==='m-notice')   return mNotice();
-    if (id==='m-settings') return mSettings();
+// ── HTML ──
+function html(id){
+  if(role==='trainer'){
+    if(id==='dashboard') return pDash();
+    if(id==='members')   return pMembers();
+    if(id==='session')   return pSession();
+    if(id==='ai-plan')   return pAI();
+    if(id==='inbody')    return pInbody();
+    if(id==='homework')  return pHomework();
+    if(id==='notice')    return pNotice();
+  }else{
+    if(id==='mh')  return mHome();
+    if(id==='mj')  return mJournal();
+    if(id==='mi2') return mInbody();
+    if(id==='mm')  return mMissions();
+    if(id==='mhw') return mHomework();
+    if(id==='mn')  return mNotice();
+    if(id==='ms')  return mSettings();
   }
   return '';
 }
 
-function tDash() {
-  const today = new Date().toISOString().split('T')[0];
-  const todayCount = sessionList.filter(s => s.session_date===today).length;
+// ══ 트레이너 페이지 ══
+function pDash(){
+  const today=new Date().toISOString().split('T')[0];
   return `
-  <div class="grid-2" style="margin-bottom:10px">
-    <div class="metric"><div class="metric-label">전체 회원</div><div class="metric-value">${memberList.length}</div><div class="metric-sub">등록된 회원</div></div>
-    <div class="metric"><div class="metric-label">오늘 수업</div><div class="metric-value">${todayCount}</div><div class="metric-sub">수업 일지 기준</div></div>
-    <div class="metric"><div class="metric-label">전체 수업</div><div class="metric-value">${sessionList.length}</div><div class="metric-sub">누적 수업 수</div></div>
-    <div class="metric"><div class="metric-label">공지</div><div class="metric-value">${noticeList.length}</div><div class="metric-sub">등록된 공지</div></div>
+  <div class="g2" style="margin-bottom:10px">
+    <div class="met"><div class="met-l">전체 회원</div><div class="met-v">${members.length}</div></div>
+    <div class="met"><div class="met-l">오늘 수업</div><div class="met-v">${sessions.filter(s=>s.session_date===today).length}</div></div>
+    <div class="met"><div class="met-l">전체 수업</div><div class="met-v">${sessions.length}</div></div>
+    <div class="met"><div class="met-l">공지</div><div class="met-v">${notices.length}</div></div>
   </div>
   <div class="card">
-    <div class="sec-title"><i class="ti ti-users"></i>회원 현황</div>
-    ${memberList.length===0
-      ? `<div class="empty-state"><i class="ti ti-users"></i><p>등록된 회원이 없어요<br>회원 관리에서 초대 링크를 보내세요</p></div>`
-      : memberList.slice(0,5).map(m=>`
-        <div class="mc">
-          <div class="avatar" style="background:var(--acc-soft);color:var(--acc-text)">${m.user?.name?.charAt(0)||'?'}</div>
-          <div><div class="mname">${m.user?.name||'이름없음'}</div><div class="msub">${m.goal||'목표미설정'} · ${m.current_week||1}주차</div></div>
-          <div style="margin-left:auto;display:flex;align-items:center;gap:5px">
-            <span class="tag tag-acc">Lv.${m.level||1}</span>
-            <span style="font-size:10px;color:#F43F5E;font-weight:700">🔥${m.streak||0}일</span>
-          </div>
-        </div>`).join('')}
+    <div class="st"><i class="ti ti-users"></i>회원 현황</div>
+    ${members.length===0?`<div class="es"><i class="ti ti-users"></i><p>등록된 회원이 없어요</p></div>`:
+      members.slice(0,5).map(m=>`<div class="row"><div class="av">${m.user?.name?.charAt(0)||'?'}</div><div><div style="font-size:13px;font-weight:600">${m.user?.name||'-'}</div><div style="font-size:11px;color:var(--text3)">${m.goal||'-'} · ${m.current_week||1}주차</div></div><div style="margin-left:auto;display:flex;align-items:center;gap:5px"><span class="tag tag-a">Lv.${m.level||1}</span><span style="font-size:10px;color:#F43F5E;font-weight:700">🔥${m.streak||0}일</span></div></div>`).join('')}
   </div>
   <div class="card">
-    <div class="sec-title"><i class="ti ti-notebook"></i>최근 수업 일지</div>
-    ${sessionList.length===0
-      ? `<div class="empty-state"><i class="ti ti-notebook"></i><p>아직 수업 일지가 없어요</p></div>`
-      : sessionList.slice(0,3).map(s=>`
-        <div class="session-item">
-          <div style="display:flex;justify-content:space-between;margin-bottom:2px">
-            <span style="font-size:13px;font-weight:600">${s.session_date}</span>
-            <span class="tag ${s.is_shared?'tag-g':'tag-y'}">${s.is_shared?'공유됨':'비공개'}</span>
-          </div>
-          <div style="font-size:11px;color:var(--text3);margin-top:2px">${s.coaching_note||'내용 없음'}</div>
-        </div>`).join('')}
+    <div class="st"><i class="ti ti-notebook"></i>최근 수업 일지</div>
+    ${sessions.length===0?`<div class="es"><i class="ti ti-notebook"></i><p>수업 일지가 없어요</p></div>`:
+      sessions.slice(0,3).map(s=>`<div class="si"><div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-size:13px;font-weight:600">${s.session_date}</span><span class="tag ${s.is_shared?'tag-g':'tag-y'}">${s.is_shared?'공유됨':'비공개'}</span></div><div style="font-size:11px;color:var(--text3)">${s.coaching_note||'-'}</div></div>`).join('')}
   </div>`;
 }
 
-function tMembers() {
+function pMembers(){
   return `
   <div style="display:flex;gap:8px;margin-bottom:12px">
     <input type="text" placeholder="회원 검색..." style="flex:1">
-    <button class="btn btn-acc" onclick="copyInvite()"><i class="ti ti-link"></i>초대 링크</button>
+    <button class="btn btn-a" onclick="copyInvite()"><i class="ti ti-link"></i>초대 링크</button>
   </div>
   <div class="card">
-    ${memberList.length===0
-      ? `<div class="empty-state"><i class="ti ti-users"></i><p>등록된 회원이 없어요<br>초대 링크를 카카오톡으로 보내세요</p></div>`
-      : memberList.map(m=>`
-        <div class="mc">
-          <div class="avatar" style="background:var(--acc-soft);color:var(--acc-text)">${m.user?.name?.charAt(0)||'?'}</div>
-          <div style="flex:1">
-            <div class="mname">${m.user?.name||'이름없음'}</div>
-            <div class="msub">${m.goal||'목표미설정'} · ${m.current_week||1}주차</div>
-            ${(m.warnings||[]).length?`<div style="margin-top:3px">${m.warnings.map(w=>`<span class="warn-pill">${w}</span>`).join('')}</div>`:''}
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
-            <span class="tag tag-acc">Lv.${m.level||1}</span>
-            <span style="font-size:10px;color:#F43F5E;font-weight:700">🔥${m.streak||0}일</span>
-          </div>
-        </div>`).join('')}
+    ${members.length===0?`<div class="es"><i class="ti ti-users"></i><p>등록된 회원이 없어요<br>초대 링크를 카카오톡으로 보내세요</p></div>`:
+      members.map(m=>`<div class="row"><div class="av">${m.user?.name?.charAt(0)||'?'}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${m.user?.name||'-'}</div><div style="font-size:11px;color:var(--text3)">${m.goal||'-'} · ${m.current_week||1}주차</div>${(m.warnings||[]).length?`<div style="margin-top:3px">${m.warnings.map(w=>`<span class="wp">${w}</span>`).join('')}</div>`:''}</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><span class="tag tag-a">Lv.${m.level||1}</span><span style="font-size:10px;color:#F43F5E;font-weight:700">🔥${m.streak||0}일</span></div></div>`).join('')}
   </div>
   <div class="card card-acc">
-    <div class="sec-title"><i class="ti ti-link"></i>카카오톡 초대 링크</div>
+    <div class="st"><i class="ti ti-link"></i>카카오톡 초대 링크</div>
     <p style="font-size:12px;color:var(--text2);margin-bottom:10px">회원이 이 링크로 가입하면 자동으로 연결돼요.</p>
-    <div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:8px;padding:9px 11px;font-size:11px;color:var(--acc2);font-family:monospace;margin-bottom:8px;word-break:break-all">${window.location.origin}?trainer=${userProfile?.id}</div>
-    <button class="btn btn-acc btn-full" onclick="copyInvite()"><i class="ti ti-copy"></i>링크 복사</button>
+    <div style="background:var(--surface);border:0.5px solid var(--border2);border-radius:8px;padding:9px 11px;font-size:11px;color:var(--acc2);font-family:monospace;margin-bottom:8px;word-break:break-all">${window.location.origin}?trainer=${prof?.id}</div>
+    <button class="btn btn-a btn-w" onclick="copyInvite()"><i class="ti ti-copy"></i>링크 복사</button>
   </div>`;
 }
 
-function copyInvite() {
-  navigator.clipboard.writeText(`${window.location.origin}?trainer=${userProfile?.id}`)
+function copyInvite(){
+  navigator.clipboard.writeText(`${window.location.origin}?trainer=${prof?.id}`)
     .then(()=>alert('링크 복사 완료! 카카오톡으로 보내주세요 😊'));
 }
 
-function tSession() {
+function pSession(){
   return `
   <div class="card">
-    <div class="sec-title"><i class="ti ti-notebook"></i>수업 정보</div>
-    <div class="form-group"><label class="form-label">회원</label>
-      <select id="sel-member">
-        <option value="">회원 선택</option>
-        ${memberList.map(m=>`<option value="${m.id}">${m.user?.name||'이름없음'}</option>`).join('')}
-      </select>
-    </div>
-    <div class="grid-2" style="gap:8px">
-      <div class="form-group"><label class="form-label">날짜</label><input type="date" id="inp-date" value="${new Date().toISOString().split('T')[0]}"></div>
-      <div class="form-group"><label class="form-label">컨디션</label>
-        <select id="inp-condition"><option>좋음 😊</option><option>보통 😐</option><option>피로 😔</option><option>통증 😣</option></select>
-      </div>
+    <div class="st"><i class="ti ti-notebook"></i>수업 정보</div>
+    <div class="fg"><label class="fl">회원</label><select id="sel-m"><option value="">회원 선택</option>${members.map(m=>`<option value="${m.id}">${m.user?.name||'-'}</option>`).join('')}</select></div>
+    <div class="g2" style="gap:8px">
+      <div class="fg"><label class="fl">날짜</label><input type="date" id="s-date" value="${new Date().toISOString().split('T')[0]}"></div>
+      <div class="fg"><label class="fl">컨디션</label><select id="s-cond"><option>좋음 😊</option><option>보통 😐</option><option>피로 😔</option><option>통증 😣</option></select></div>
     </div>
   </div>
   <div class="card">
-    <div class="sec-title"><i class="ti ti-barbell"></i>수행 운동</div>
-    <div id="ex-list">
-      <div class="ex-row"><span contenteditable="true">스쿼트</span><span contenteditable="true">60kg · 10회 · 4세트</span><i class="ti ti-trash" style="font-size:13px;color:var(--text3);cursor:pointer;margin-left:6px" onclick="this.closest('.ex-row').remove()"></i></div>
-    </div>
-    <button class="btn btn-full" onclick="addEx()"><i class="ti ti-plus"></i>운동 추가</button>
+    <div class="st"><i class="ti ti-barbell"></i>수행 운동</div>
+    <div id="ex-list"><div class="ex"><span contenteditable="true">스쿼트</span><span contenteditable="true">60kg · 10회 · 4세트</span><i class="ti ti-trash" style="font-size:13px;color:var(--text3);cursor:pointer;margin-left:6px" onclick="this.closest('.ex').remove()"></i></div></div>
+    <button class="btn btn-w" onclick="addEx()"><i class="ti ti-plus"></i>운동 추가</button>
   </div>
   <div class="card">
-    <div class="sec-title"><i class="ti ti-message"></i>코칭 & 숙제</div>
-    <div class="form-group"><label class="form-label">코칭 포인트</label><textarea id="inp-coaching" placeholder="오늘 코칭 포인트를 입력하세요"></textarea></div>
-    <div class="form-group"><label class="form-label">주의사항</label><textarea id="inp-caution" placeholder="주의사항"></textarea></div>
-    <div class="form-group"><label class="form-label">숙제</label><textarea id="inp-homework" placeholder="다음 수업 전까지 할 숙제"></textarea></div>
+    <div class="st"><i class="ti ti-message"></i>코칭 & 숙제</div>
+    <div class="fg"><label class="fl">코칭 포인트</label><textarea id="s-coach" placeholder="오늘 코칭 포인트"></textarea></div>
+    <div class="fg"><label class="fl">주의사항</label><textarea id="s-caut" placeholder="주의사항"></textarea></div>
+    <div class="fg"><label class="fl">숙제</label><textarea id="s-hw" placeholder="다음 수업 전까지 할 숙제"></textarea></div>
     <div style="display:flex;gap:8px;margin-top:4px">
-      <button class="btn btn-full" style="flex:1" onclick="saveSession(false)"><i class="ti ti-device-floppy"></i>저장</button>
-      <button class="btn btn-acc btn-full" style="flex:2" onclick="saveSession(true)"><i class="ti ti-send"></i>저장 & 회원 공유</button>
+      <button class="btn btn-w" style="flex:1" onclick="saveSession(false)"><i class="ti ti-device-floppy"></i>저장</button>
+      <button class="btn btn-a btn-w" style="flex:2" onclick="saveSession(true)"><i class="ti ti-send"></i>저장 & 공유</button>
     </div>
   </div>
   <div class="card">
-    <div class="sec-title"><i class="ti ti-history"></i>최근 수업 일지</div>
-    ${sessionList.length===0
-      ? `<div class="empty-state"><i class="ti ti-notebook"></i><p>아직 수업 일지가 없어요</p></div>`
-      : sessionList.slice(0,5).map(s=>`
-        <div class="session-item">
-          <div style="display:flex;justify-content:space-between;margin-bottom:2px">
-            <span style="font-size:13px;font-weight:600">${s.session_date}</span>
-            <span class="tag ${s.is_shared?'tag-g':'tag-y'}">${s.is_shared?'공유됨':'비공개'}</span>
-          </div>
-          <div style="font-size:11px;color:var(--text3)">${s.coaching_note||'-'}</div>
-        </div>`).join('')}
+    <div class="st"><i class="ti ti-history"></i>최근 수업 일지</div>
+    ${sessions.length===0?`<div class="es"><i class="ti ti-notebook"></i><p>수업 일지가 없어요</p></div>`:
+      sessions.slice(0,5).map(s=>`<div class="si"><div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-size:13px;font-weight:600">${s.session_date}</span><span class="tag ${s.is_shared?'tag-g':'tag-y'}">${s.is_shared?'공유됨':'비공개'}</span></div><div style="font-size:11px;color:var(--text3)">${s.coaching_note||'-'}</div></div>`).join('')}
   </div>`;
 }
 
-async function saveSession(isShared) {
-  const memberId = document.getElementById('sel-member')?.value;
-  if (!memberId) { alert('회원을 선택해주세요'); return; }
-  const exRows = document.querySelectorAll('#ex-list .ex-row');
-  const exercises = Array.from(exRows).map(r=>({ name: r.querySelectorAll('span')[0]?.textContent, detail: r.querySelectorAll('span')[1]?.textContent }));
-  const { error } = await sb.from('sessions').insert({
-    member_id:     memberId,
-    trainer_id:    currentUser.id,
-    session_date:  document.getElementById('inp-date')?.value,
-    condition:     document.getElementById('inp-condition')?.value,
-    exercises,
-    coaching_note: document.getElementById('inp-coaching')?.value||'',
-    caution:       document.getElementById('inp-caution')?.value||'',
-    homework:      document.getElementById('inp-homework')?.value||'',
-    is_shared:     isShared,
+async function saveSession(shared){
+  const mid=document.getElementById('sel-m')?.value;
+  if(!mid){alert('회원을 선택해주세요');return;}
+  const exs=Array.from(document.querySelectorAll('#ex-list .ex')).map(r=>({name:r.querySelectorAll('span')[0]?.textContent,detail:r.querySelectorAll('span')[1]?.textContent}));
+  const {error}=await SB.from('sessions').insert({
+    member_id:mid,trainer_id:user.id,
+    session_date:document.getElementById('s-date')?.value,
+    condition:document.getElementById('s-cond')?.value,
+    exercises:exs,
+    coaching_note:document.getElementById('s-coach')?.value||'',
+    caution:document.getElementById('s-caut')?.value||'',
+    homework:document.getElementById('s-hw')?.value||'',
+    is_shared:shared,
   });
-  if (error) { alert('저장 실패: '+error.message); return; }
-  alert(isShared ? '저장 완료! 회원에게 공유됐어요 ✅' : '저장 완료!');
-  showPage('session');
+  if(error){alert('저장 실패: '+error.message);return;}
+  alert(shared?'저장 완료! 회원에게 공유됐어요 ✅':'저장 완료!');
+  go('session');
 }
 
-function tAI() {
+function pAI(){
   return `
   <div class="card">
-    <div class="sec-title"><i class="ti ti-robot"></i>AI 수업안 생성</div>
-    <div class="form-group"><label class="form-label">회원</label>
-      <select id="ai-sel-member">
-        <option value="">회원 선택</option>
-        ${memberList.map(m=>`<option value="${m.id}">${m.user?.name}</option>`).join('')}
-      </select>
+    <div class="st"><i class="ti ti-robot"></i>AI 수업안 생성</div>
+    <div class="fg"><label class="fl">회원</label><select id="ai-m"><option value="">회원 선택</option>${members.map(m=>`<option value="${m.id}">${m.user?.name}</option>`).join('')}</select></div>
+    <div class="g2" style="gap:8px">
+      <div class="fg"><label class="fl">목표</label><select id="ai-g"><option>근비대</option><option>감량</option><option>재활</option></select></div>
+      <div class="fg"><label class="fl">주차</label><select id="ai-w">${[...Array(12)].map((_,i)=>`<option>${i+1}주차</option>`).join('')}</select></div>
     </div>
-    <div class="grid-2" style="gap:8px">
-      <div class="form-group"><label class="form-label">목표</label><select id="ai-goal"><option>근비대</option><option>감량</option><option>재활</option></select></div>
-      <div class="form-group"><label class="form-label">주차</label><select id="ai-week">${[...Array(12)].map((_,i)=>`<option>${i+1}주차</option>`).join('')}</select></div>
-    </div>
-    <button class="btn btn-acc btn-full" id="gen-btn" onclick="genPlan()"><i class="ti ti-sparkles"></i>AI 수업안 자동 생성</button>
+    <button class="btn btn-a btn-w" id="gen-btn" onclick="genPlan()"><i class="ti ti-sparkles"></i>AI 수업안 자동 생성</button>
   </div>
-  <div id="plan-result"></div>
-  <div class="card">
-    <div class="sec-title"><i class="ti ti-history"></i>확정 이력</div>
-    ${sessionList.filter(s=>s.is_shared).length===0
-      ? `<div class="empty-state"><i class="ti ti-robot"></i><p>확정된 수업안이 없어요</p></div>`
-      : sessionList.filter(s=>s.is_shared).slice(0,3).map(s=>`
-        <div class="session-item">
-          <div style="display:flex;justify-content:space-between"><span style="font-size:13px;font-weight:600">${s.session_date}</span><span class="tag tag-g">공유완료</span></div>
-        </div>`).join('')}
-  </div>`;
+  <div id="plan-result"></div>`;
 }
 
-function genPlan() {
-  const btn = document.getElementById('gen-btn');
-  if (!btn) return;
-  btn.innerHTML = '<i class="ti ti-loader"></i> 분석 중...'; btn.disabled = true;
-  setTimeout(() => {
-    btn.innerHTML = '<i class="ti ti-sparkles"></i> AI 수업안 자동 생성'; btn.disabled = false;
-    const r = document.getElementById('plan-result');
-    if (!r) return;
-    const goal = document.getElementById('ai-goal')?.value;
-    const week = document.getElementById('ai-week')?.value;
-    r.innerHTML = `
-      <div class="card">
-        <div class="sec-title"><i class="ti ti-list"></i>${goal} ${week} 추천 수업안</div>
-        ${[['ti-wave-sine','준비운동 10분',['폼롤러 전신 이완','동적 스트레칭 10회','바디웨이트 스쿼트 15회×2']],
-           ['ti-barbell','메인 운동 35분',['메인 운동 A · 8회·4세트','메인 운동 B · 10회·3세트','메인 운동 C · 12회·3세트']],
-           ['ti-flame','보강 운동 10분',['보강 A · 15회×3','보강 B · 12회×3']],
-           ['ti-heart','쿨다운 5분',['전신 스트레칭 각 30초']]].map(([ic,title,exs])=>
-          `<div class="ai-block"><div class="ai-block-title"><i class="ti ${ic}"></i>${title}</div>${exs.map(e=>`<div class="ai-ex"><span>${e}</span></div>`).join('')}</div>`).join('')}
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <button class="btn" style="flex:1"><i class="ti ti-edit"></i>수정</button>
-          <button class="btn btn-acc" style="flex:2" onclick="savePlan(this)"><i class="ti ti-check"></i>확정 & 저장</button>
-        </div>
-      </div>`;
+function genPlan(){
+  const btn=document.getElementById('gen-btn');
+  if(!btn) return;
+  btn.innerHTML='<i class="ti ti-loader"></i> 분석 중...';btn.disabled=true;
+  setTimeout(()=>{
+    btn.innerHTML='<i class="ti ti-sparkles"></i> AI 수업안 자동 생성';btn.disabled=false;
+    const r=document.getElementById('plan-result');if(!r) return;
+    const g=document.getElementById('ai-g')?.value;
+    const w=document.getElementById('ai-w')?.value;
+    r.innerHTML=`<div class="card"><div class="st"><i class="ti ti-list"></i>${g} ${w} 수업안</div>
+      ${[['ti-wave-sine','준비운동 10분',['폼롤러 전신','동적 스트레칭 10회','바디웨이트 스쿼트 15회×2']],
+         ['ti-barbell','메인 35분',['메인 A · 8회·4세트','메인 B · 10회·3세트','메인 C · 12회·3세트']],
+         ['ti-flame','보강 10분',['보강 A · 15회×3','보강 B · 12회×3']],
+         ['ti-heart','쿨다운 5분',['전신 스트레칭 각 30초']]].map(([ic,t,ex])=>
+        `<div class="ab"><div class="ab-t"><i class="ti ${ic}"></i>${t}</div>${ex.map(e=>`<div class="ae"><span>${e}</span></div>`).join('')}</div>`).join('')}
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn" style="flex:1"><i class="ti ti-edit"></i>수정</button>
+        <button class="btn btn-a" style="flex:2" onclick="savePlan(this)"><i class="ti ti-check"></i>확정 & 저장</button>
+      </div></div>`;
     r.scrollIntoView({behavior:'smooth',block:'nearest'});
-  }, 1800);
+  },1800);
 }
 
-async function savePlan(btn) {
-  const memberId = document.getElementById('ai-sel-member')?.value;
-  if (!memberId) { alert('회원을 선택해주세요'); return; }
-  btn.innerHTML = '<i class="ti ti-check"></i> 저장 완료!'; btn.disabled = true;
-  await sb.from('ai_plans').insert({
-    member_id: memberId, trainer_id: currentUser.id,
-    plan_content: { note: '자동 생성' }, is_confirmed: true, confirmed_at: new Date().toISOString(),
+async function savePlan(btn){
+  const mid=document.getElementById('ai-m')?.value;
+  if(!mid){alert('회원을 선택해주세요');return;}
+  btn.innerHTML='<i class="ti ti-check"></i> 저장 완료!';btn.disabled=true;
+  await SB.from('ai_plans').insert({member_id:mid,trainer_id:user.id,plan_content:{note:'자동생성'},is_confirmed:true,confirmed_at:new Date().toISOString()});
+  setTimeout(()=>go('homework'),1000);
+}
+
+function pInbody(){
+  return `
+  <div class="card">
+    <div class="st"><i class="ti ti-chart-line"></i>인바디 입력</div>
+    <div class="fg"><label class="fl">회원</label><select id="ib-m"><option value="">회원 선택</option>${members.map(m=>`<option value="${m.id}">${m.user?.name}</option>`).join('')}</select></div>
+    <div class="fg"><label class="fl">측정일</label><input type="date" id="ib-d" value="${new Date().toISOString().split('T')[0]}"></div>
+    <div class="g2" style="gap:8px">
+      <div class="fg"><label class="fl">체중(kg)</label><input type="number" id="ib-w" step="0.1" placeholder="0.0"></div>
+      <div class="fg"><label class="fl">체지방률(%)</label><input type="number" id="ib-f" step="0.1" placeholder="0.0"></div>
+      <div class="fg"><label class="fl">골격근량(kg)</label><input type="number" id="ib-mu" step="0.1" placeholder="0.0"></div>
+      <div class="fg"><label class="fl">BMI</label><input type="number" id="ib-b" step="0.1" placeholder="0.0"></div>
+    </div>
+    <button class="btn btn-a btn-w" onclick="saveInbody()"><i class="ti ti-device-floppy"></i>인바디 저장</button>
+  </div>
+  <div class="card">
+    <div class="st"><i class="ti ti-history"></i>측정 이력 (${inbodys.length}건)</div>
+    ${inbodys.length===0?`<div class="es"><i class="ti ti-chart-line"></i><p>인바디 기록이 없어요</p></div>`:
+      inbodys.slice(0,6).map(r=>`<div class="ir"><span style="font-size:12px;color:var(--text3)">${r.measured_at}</span><div style="display:flex;gap:8px;font-size:12px"><span>체중 <b>${r.weight}kg</b></span><span>체지방 <b>${r.body_fat_pct}%</b></span><span>근육 <b>${r.muscle_mass}kg</b></span></div></div>`).join('')}
+  </div>`;
+}
+
+async function saveInbody(){
+  const mid=document.getElementById('ib-m')?.value;
+  if(!mid){alert('회원을 선택해주세요');return;}
+  const {error}=await SB.from('inbody_records').insert({
+    member_id:mid,measured_at:document.getElementById('ib-d')?.value,
+    weight:parseFloat(document.getElementById('ib-w')?.value)||null,
+    body_fat_pct:parseFloat(document.getElementById('ib-f')?.value)||null,
+    muscle_mass:parseFloat(document.getElementById('ib-mu')?.value)||null,
+    bmi:parseFloat(document.getElementById('ib-b')?.value)||null,
   });
-  setTimeout(() => showPage('homework'), 1000);
+  if(error){alert('저장 실패: '+error.message);return;}
+  alert('인바디 저장 완료! ✅');go('inbody');
 }
 
-function tInbody() {
-  return `
-  <div class="card">
-    <div class="sec-title"><i class="ti ti-chart-line"></i>인바디 입력</div>
-    <div class="form-group"><label class="form-label">회원</label>
-      <select id="inbody-sel">
-        <option value="">회원 선택</option>
-        ${memberList.map(m=>`<option value="${m.id}">${m.user?.name}</option>`).join('')}
-      </select>
-    </div>
-    <div class="form-group"><label class="form-label">측정일</label><input type="date" id="inbody-date" value="${new Date().toISOString().split('T')[0]}"></div>
-    <div class="grid-2" style="gap:8px">
-      <div class="form-group"><label class="form-label">체중(kg)</label><input type="number" id="inbody-w" step="0.1" placeholder="0.0"></div>
-      <div class="form-group"><label class="form-label">체지방률(%)</label><input type="number" id="inbody-f" step="0.1" placeholder="0.0"></div>
-      <div class="form-group"><label class="form-label">골격근량(kg)</label><input type="number" id="inbody-m" step="0.1" placeholder="0.0"></div>
-      <div class="form-group"><label class="form-label">BMI</label><input type="number" id="inbody-b" step="0.1" placeholder="0.0"></div>
-    </div>
-    <button class="btn btn-acc btn-full" onclick="saveInbody()"><i class="ti ti-device-floppy"></i>인바디 저장</button>
-  </div>
-  <div class="card">
-    <div class="sec-title"><i class="ti ti-history"></i>측정 이력 (${inbodyList.length}건)</div>
-    ${inbodyList.length===0
-      ? `<div class="empty-state"><i class="ti ti-chart-line"></i><p>아직 인바디 기록이 없어요</p></div>`
-      : inbodyList.slice(0,6).map(r=>`
-        <div class="inbody-row">
-          <span style="font-size:12px;color:var(--text3)">${r.measured_at}</span>
-          <div style="display:flex;gap:8px;font-size:12px">
-            <span>체중 <b>${r.weight}kg</b></span>
-            <span>체지방 <b>${r.body_fat_pct}%</b></span>
-            <span>근육 <b>${r.muscle_mass}kg</b></span>
-          </div>
-        </div>`).join('')}
+function pHomework(){
+  const sh=sessions.filter(s=>s.is_shared);
+  return `<div class="card"><div class="st"><i class="ti ti-send"></i>공유된 수업 일지 (${sh.length}건)</div>
+    ${sh.length===0?`<div class="es"><i class="ti ti-send"></i><p>공유된 수업 일지가 없어요</p></div>`:
+      sh.slice(0,5).map(s=>`<div class="si"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:13px;font-weight:600">${s.session_date}</span><span class="tag tag-g">공유됨</span></div><div style="font-size:12px;color:var(--text2)">${s.homework||'숙제 없음'}</div></div>`).join('')}
   </div>`;
 }
 
-async function saveInbody() {
-  const memberId = document.getElementById('inbody-sel')?.value;
-  if (!memberId) { alert('회원을 선택해주세요'); return; }
-  const { error } = await sb.from('inbody_records').insert({
-    member_id:    memberId,
-    measured_at:  document.getElementById('inbody-date')?.value,
-    weight:       parseFloat(document.getElementById('inbody-w')?.value)||null,
-    body_fat_pct: parseFloat(document.getElementById('inbody-f')?.value)||null,
-    muscle_mass:  parseFloat(document.getElementById('inbody-m')?.value)||null,
-    bmi:          parseFloat(document.getElementById('inbody-b')?.value)||null,
-  });
-  if (error) { alert('저장 실패: '+error.message); return; }
-  alert('인바디 저장 완료! ✅');
-  showPage('inbody');
-}
-
-function tHomework() {
-  const shared = sessionList.filter(s=>s.is_shared);
+function pNotice(){
   return `
   <div class="card">
-    <div class="sec-title"><i class="ti ti-send"></i>공유된 수업 일지 (${shared.length}건)</div>
-    ${shared.length===0
-      ? `<div class="empty-state"><i class="ti ti-send"></i><p>공유된 수업 일지가 없어요<br>수업 일지 저장 시 '공유' 버튼을 눌러주세요</p></div>`
-      : shared.slice(0,5).map(s=>`
-        <div class="session-item">
-          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
-            <span style="font-size:13px;font-weight:600">${s.session_date}</span>
-            <span class="tag tag-g">공유됨</span>
-          </div>
-          <div style="font-size:12px;color:var(--text2)">${s.homework||'숙제 없음'}</div>
-        </div>`).join('')}
+    <div class="st"><i class="ti ti-edit"></i>공지 작성</div>
+    <div class="fg"><label class="fl">제목</label><input type="text" id="n-t" placeholder="공지 제목"></div>
+    <div class="fg"><label class="fl">내용</label><textarea id="n-b" placeholder="공지 내용..." style="min-height:90px"></textarea></div>
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px"><input type="checkbox" id="n-p" style="width:15px;height:15px;accent-color:var(--acc)"><label for="n-p" style="font-size:13px;color:var(--text2)">상단 고정</label></div>
+    <button class="btn btn-a btn-w" onclick="saveNotice()"><i class="ti ti-send"></i>공지 게시</button>
+  </div>
+  ${notices.map(n=>`<div class="nc ${n.is_pinned?'np':''}">${n.is_pinned?`<div style="font-size:9px;color:#92400E;font-weight:700;margin-bottom:2px">📌 고정</div>`:''}<div style="font-size:14px;font-weight:700;margin-bottom:3px">${n.title}</div><div style="font-size:13px;color:var(--text2)">${n.body}</div><div style="font-size:10px;color:var(--text3);margin-top:5px">${new Date(n.created_at).toLocaleDateString('ko-KR')}</div></div>`).join('')}`;
+}
+
+async function saveNotice(){
+  const t=document.getElementById('n-t')?.value?.trim();
+  const b=document.getElementById('n-b')?.value?.trim();
+  if(!t||!b){alert('제목과 내용을 입력해주세요');return;}
+  const {error}=await SB.from('notices').insert({trainer_id:user.id,title:t,body:b,is_pinned:document.getElementById('n-p')?.checked||false});
+  if(error){alert('저장 실패: '+error.message);return;}
+  alert('공지 게시 완료! ✅');go('notice');
+}
+
+// ══ 회원 페이지 ══
+function mHome(){
+  const sh=sessions.filter(s=>s.is_shared);
+  const done=missions.filter(x=>x.is_done).length;
+  return `
+  <div class="hg">
+    <div class="hc acc" onclick="go('mm')"><div class="hc-i">🏆</div><div class="hc-t">미션 & 보상</div><div class="hc-s">${MISSIONS.length-done}개 진행 중</div></div>
+    <div class="hc acc" onclick="go('mhw')"><div class="hc-i">📋</div><div class="hc-t">오늘 숙제</div><div class="hc-s">${sh.length>0&&sh[0].homework?sh[0].homework.slice(0,16)+'...':'숙제 없음'}</div></div>
+    <div class="hc" onclick="go('mj')"><div class="hc-i">📖</div><div class="hc-t">수업 일지</div><div class="hc-s">${sh.length>0?sh[0].session_date:'없음'}</div></div>
+    <div class="hc" onclick="go('mi2')"><div class="hc-i">📊</div><div class="hc-t">인바디</div><div class="hc-s">${inbodys.length>0?inbodys[0].weight+'kg':'기록 없음'}</div></div>
+    <div class="hc" onclick="go('mn')"><div class="hc-i">📢</div><div class="hc-t">공지</div><div class="hc-s">${notices.length}건</div></div>
+    <div class="hc" onclick="go('ms')"><div class="hc-i">🎨</div><div class="hc-t">테마 설정</div><div class="hc-s">색상 바꾸기</div></div>
+  </div>
+  <div class="card"><div class="g2">
+    <div><div style="font-size:11px;color:var(--text3)">연속 출석</div><div style="font-size:22px;font-weight:700;color:var(--acc2)">🔥 ${mprof?.streak||0}일</div></div>
+    <div><div style="font-size:11px;color:var(--text3)">완료 미션</div><div style="font-size:22px;font-weight:700;color:var(--acc2)">${done}/${MISSIONS.length}</div></div>
+  </div></div>`;
+}
+
+function mJournal(){
+  const sh=sessions.filter(s=>s.is_shared);
+  return sh.length===0
+    ?`<div class="card"><div class="es"><i class="ti ti-notebook"></i><p>아직 공유된 수업 일지가 없어요<br>트레이너가 수업 후 공유해줄 거예요!</p></div></div>`
+    :sh.map(s=>`<div class="card"><div style="background:var(--acc-softer);border-radius:9px;padding:10px 12px;margin-bottom:10px"><div style="font-size:10px;color:var(--text3)">${s.session_date}</div><div style="font-size:15px;font-weight:700;color:var(--acc2);margin-top:1px">${s.condition||''}</div></div>${s.coaching_note?`<div class="st"><i class="ti ti-message"></i>코칭 포인트</div><div style="background:var(--acc-softer);border-radius:9px;padding:12px;font-size:13px;line-height:1.65;margin-bottom:10px">${s.coaching_note}</div>`:''} ${s.caution?`<div class="st"><i class="ti ti-alert-circle"></i>주의사항</div><div style="background:#FFF1F2;border-left:3px solid #F43F5E;border-radius:0 9px 9px 0;padding:10px 12px;font-size:13px;margin-bottom:10px">${s.caution}</div>`:''} ${s.homework?`<div class="st"><i class="ti ti-checklist"></i>숙제</div><div style="background:var(--surface2);border-radius:9px;padding:11px;font-size:13px">${s.homework}</div>`:''}</div>`).join('');
+}
+
+function mInbody(){
+  return `
+  <div class="card"><div class="st"><i class="ti ti-chart-line"></i>변화 그래프</div>
+    ${inbodys.length===0?`<div class="es"><i class="ti ti-chart-line"></i><p>인바디 기록이 없어요</p></div>`:`<canvas id="m-ib-chart" height="160"></canvas>`}
+  </div>
+  <div class="card"><div class="st"><i class="ti ti-list"></i>측정 이력 (${inbodys.length}건)</div>
+    ${inbodys.length===0?`<div class="es"><i class="ti ti-chart-line"></i><p>기록이 없어요</p></div>`:
+      inbodys.map(r=>`<div class="ir"><span style="font-size:11px;color:var(--text3)">${r.measured_at}</span><div style="display:flex;gap:8px;font-size:12px"><span>체중 <b>${r.weight}kg</b></span><span>체지방 <b>${r.body_fat_pct}%</b></span><span>근육 <b>${r.muscle_mass}kg</b></span></div></div>`).join('')}
   </div>`;
 }
 
-function tNotice() {
+function mMissions(){
+  const dk=new Set(missions.filter(x=>x.is_done).map(x=>x.mission_key));
   return `
-  <div class="card">
-    <div class="sec-title"><i class="ti ti-edit"></i>공지 작성</div>
-    <div class="form-group"><label class="form-label">제목</label><input type="text" id="notice-title" placeholder="공지 제목"></div>
-    <div class="form-group"><label class="form-label">내용</label><textarea id="notice-body" placeholder="공지 내용..." style="min-height:90px"></textarea></div>
-    <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px">
-      <input type="checkbox" id="notice-pin" style="width:15px;height:15px;accent-color:var(--acc)">
-      <label for="notice-pin" style="font-size:13px;color:var(--text2)">상단 고정</label>
-    </div>
-    <button class="btn btn-acc btn-full" onclick="saveNotice()"><i class="ti ti-send"></i>공지 게시</button>
-  </div>
-  ${noticeList.map(n=>`
-    <div class="notice-card ${n.is_pinned?'notice-pin':''}">
-      ${n.is_pinned?`<div style="font-size:9px;color:#92400E;font-weight:700;margin-bottom:2px">📌 고정</div>`:''}
-      <div style="font-size:14px;font-weight:700;margin-bottom:3px">${n.title}</div>
-      <div style="font-size:13px;color:var(--text2)">${n.body}</div>
-      <div style="font-size:10px;color:var(--text3);margin-top:5px">${new Date(n.created_at).toLocaleDateString('ko-KR')}</div>
-    </div>`).join('')}`;
-}
-
-async function saveNotice() {
-  const title = document.getElementById('notice-title')?.value?.trim();
-  const body  = document.getElementById('notice-body')?.value?.trim();
-  if (!title||!body) { alert('제목과 내용을 입력해주세요'); return; }
-  const { error } = await sb.from('notices').insert({
-    trainer_id: currentUser.id, title, body,
-    is_pinned: document.getElementById('notice-pin')?.checked||false,
-  });
-  if (error) { alert('저장 실패: '+error.message); return; }
-  alert('공지 게시 완료! ✅');
-  showPage('notice');
-}
-
-// ══════════════════════════════════
-// 회원 페이지 HTML
-// ══════════════════════════════════
-function mHome() {
-  const shared = sessionList.filter(s=>s.is_shared);
-  const doneMissions = missionList.filter(x=>x.is_done).length;
-  return `
-  <div class="home-grid">
-    <div class="hm-card acc" onclick="showPage('m-missions')"><div class="hm-icon">🏆</div><div class="hm-title">미션 & 보상</div><div class="hm-sub">${MISSIONS_DEF.length-doneMissions}개 진행 중</div></div>
-    <div class="hm-card acc" onclick="showPage('m-homework')"><div class="hm-icon">📋</div><div class="hm-title">오늘 숙제</div><div class="hm-sub">${shared.length>0&&shared[0].homework?shared[0].homework.slice(0,16)+'...':'숙제 없음'}</div></div>
-    <div class="hm-card" onclick="showPage('m-journal')"><div class="hm-icon">📖</div><div class="hm-title">수업 일지</div><div class="hm-sub">${shared.length>0?shared[0].session_date:'없음'}</div></div>
-    <div class="hm-card" onclick="showPage('m-inbody')"><div class="hm-icon">📊</div><div class="hm-title">인바디</div><div class="hm-sub">${inbodyList.length>0?inbodyList[0].weight+'kg':'기록 없음'}</div></div>
-    <div class="hm-card" onclick="showPage('m-notice')"><div class="hm-icon">📢</div><div class="hm-title">공지</div><div class="hm-sub">${noticeList.length}건</div></div>
-    <div class="hm-card" onclick="showPage('m-settings')"><div class="hm-icon">🎨</div><div class="hm-title">테마 설정</div><div class="hm-sub">색상 바꾸기</div></div>
-  </div>
-  <div class="card">
-    <div class="grid-2">
-      <div><div style="font-size:11px;color:var(--text3)">연속 출석</div><div style="font-size:22px;font-weight:700;color:var(--acc2)">🔥 ${memberProfile?.streak||0}일</div></div>
-      <div><div style="font-size:11px;color:var(--text3)">완료 미션</div><div style="font-size:22px;font-weight:700;color:var(--acc2)">${doneMissions}/${MISSIONS_DEF.length}</div></div>
-    </div>
-  </div>`;
-}
-
-function mJournal() {
-  const shared = sessionList.filter(s=>s.is_shared);
-  return shared.length===0
-    ? `<div class="card"><div class="empty-state"><i class="ti ti-notebook"></i><p>아직 공유된 수업 일지가 없어요<br>트레이너가 수업 후 공유해줄 거예요!</p></div></div>`
-    : shared.map(s=>`
-      <div class="card">
-        <div style="background:var(--acc-softer);border-radius:9px;padding:10px 12px;margin-bottom:10px">
-          <div style="font-size:10px;color:var(--text3)">${s.session_date}</div>
-          <div style="font-size:15px;font-weight:700;color:var(--acc2);margin-top:1px">${s.condition||''}</div>
-        </div>
-        ${s.coaching_note?`<div class="sec-title"><i class="ti ti-message"></i>코칭 포인트</div><div style="background:var(--acc-softer);border-radius:9px;padding:12px;font-size:13px;line-height:1.65;margin-bottom:10px">${s.coaching_note}</div>`:''}
-        ${s.caution?`<div class="sec-title"><i class="ti ti-alert-circle"></i>주의사항</div><div style="background:#FFF1F2;border-left:3px solid #F43F5E;border-radius:0 9px 9px 0;padding:10px 12px;font-size:13px;margin-bottom:10px">${s.caution}</div>`:''}
-        ${s.homework?`<div class="sec-title"><i class="ti ti-checklist"></i>숙제</div><div style="background:var(--surface2);border-radius:9px;padding:11px;font-size:13px">${s.homework}</div>`:''}
-      </div>`).join('');
-}
-
-function mInbody() {
-  return `
-  <div class="card">
-    <div class="sec-title"><i class="ti ti-chart-line"></i>변화 그래프</div>
-    ${inbodyList.length===0?`<div class="empty-state"><i class="ti ti-chart-line"></i><p>아직 인바디 기록이 없어요</p></div>`:`<canvas id="member-inbody-chart" height="160"></canvas>`}
-  </div>
-  <div class="card">
-    <div class="sec-title"><i class="ti ti-list"></i>측정 이력 (${inbodyList.length}건)</div>
-    ${inbodyList.length===0
-      ? `<div class="empty-state"><i class="ti ti-chart-line"></i><p>기록이 없어요</p></div>`
-      : inbodyList.map(r=>`
-        <div class="inbody-row">
-          <span style="font-size:11px;color:var(--text3)">${r.measured_at}</span>
-          <div style="display:flex;gap:8px;font-size:12px">
-            <span>체중 <b>${r.weight}kg</b></span><span>체지방 <b>${r.body_fat_pct}%</b></span><span>근육 <b>${r.muscle_mass}kg</b></span>
-          </div>
-        </div>`).join('')}
-  </div>`;
-}
-
-function mMissions() {
-  const doneKeys = new Set(missionList.filter(x=>x.is_done).map(x=>x.mission_key));
-  return `
-  <div class="streak-card">
+  <div class="sc">
     <div style="display:flex;align-items:flex-start;justify-content:space-between">
-      <div><div class="streak-big">🔥 ${memberProfile?.streak||0}일</div><div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px">연속 출석 중</div></div>
-      <div style="text-align:right"><div class="level-pill" style="margin-bottom:5px"><i class="ti ti-star"></i>Lv.${memberProfile?.level||1}</div><div style="font-size:10px;color:rgba(255,255,255,0.45)">${memberProfile?.xp||0} XP</div></div>
+      <div><div class="sb2">🔥 ${mprof?.streak||0}일</div><div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px">연속 출석 중</div></div>
+      <div style="text-align:right"><div class="lv" style="margin-bottom:5px"><i class="ti ti-star"></i>Lv.${mprof?.level||1}</div><div style="font-size:10px;color:rgba(255,255,255,0.45)">${mprof?.xp||0} XP</div></div>
     </div>
-    <div class="streak-dots">${['월','화','수','목','금','토','일'].map((d,i)=>`<div class="s-dot ${i<(memberProfile?.streak||0)%7?'done':i===Math.min((memberProfile?.streak||0)%7,6)?'today':''}">${d}</div>`).join('')}</div>
+    <div class="dots">${['월','화','수','목','금','토','일'].map((d,i)=>`<div class="dot ${i<(mprof?.streak||0)%7?'on':i===Math.min((mprof?.streak||0)%7,6)?'td':''}">${d}</div>`).join('')}</div>
   </div>
-  <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">진행 중인 미션</div>
-  ${MISSIONS_DEF.filter(m=>!doneKeys.has(m.key)).map(m=>`
-    <div class="mission-item ${m.type}" onclick="completeMission('${m.key}',${m.xp})">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="font-size:22px;width:32px;text-align:center">${m.icon}</div>
-        <div style="flex:1"><div class="mi-title">${m.title}</div><div class="mi-desc">${m.desc}</div><span class="xp-pill">+${m.xp} XP</span></div>
-        <i class="ti ti-chevron-right" style="color:var(--text3)"></i>
-      </div>
-    </div>`).join('')}
-  ${MISSIONS_DEF.filter(m=>doneKeys.has(m.key)).length>0?`
-    <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">완료한 미션</div>
-    ${MISSIONS_DEF.filter(m=>doneKeys.has(m.key)).map(m=>`
-      <div class="mission-item done">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div style="font-size:22px;width:32px;text-align:center">${m.icon}</div>
-          <div style="flex:1"><div class="mi-title">${m.title}</div></div>
-          <i class="ti ti-circle-check" style="color:var(--acc);font-size:18px"></i>
-        </div>
-      </div>`).join('')}`:''}`;
+  <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">진행 중인 미션</div>
+  ${MISSIONS.filter(m=>!dk.has(m.key)).map(m=>`<div class="mi ${m.type}" onclick="completeMission('${m.key}',${m.xp})"><div style="display:flex;align-items:center;gap:10px"><div style="font-size:22px;width:32px;text-align:center">${m.icon}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;margin-bottom:2px">${m.title}</div><div style="font-size:11px;color:var(--text3)">${m.desc}</div><span class="xpp">+${m.xp} XP</span></div><i class="ti ti-chevron-right" style="color:var(--text3)"></i></div></div>`).join('')}
+  ${MISSIONS.filter(m=>dk.has(m.key)).length>0?`<div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 8px">완료한 미션</div>${MISSIONS.filter(m=>dk.has(m.key)).map(m=>`<div class="mi done"><div style="display:flex;align-items:center;gap:10px"><div style="font-size:22px;width:32px;text-align:center">${m.icon}</div><div style="flex:1;font-size:13px;font-weight:600">${m.title}</div><i class="ti ti-circle-check" style="color:var(--acc);font-size:18px"></i></div></div>`).join('')}`:''}`;
 }
 
-async function completeMission(key, xp) {
-  if (!memberProfile) return;
-  const { error } = await sb.from('mission_progress').upsert(
-    { member_id: memberProfile.id, mission_key: key, is_done: true, done_at: new Date().toISOString() },
-    { onConflict: 'member_id,mission_key' }
-  );
-  if (!error) {
-    const newXp = (memberProfile.xp||0) + xp;
-    await sb.from('members').update({ xp: newXp }).eq('id', memberProfile.id);
-    memberProfile.xp = newXp;
-  }
-  await loadMissions();
-  showPage('m-missions');
+async function completeMission(key,xp){
+  if(!mprof) return;
+  await SB.from('mission_progress').upsert({member_id:mprof.id,mission_key:key,is_done:true,done_at:new Date().toISOString()},{onConflict:'member_id,mission_key'});
+  const nx=(mprof.xp||0)+xp;
+  await SB.from('members').update({xp:nx}).eq('id',mprof.id);
+  mprof.xp=nx;
+  await loadMissions();go('mm');
 }
 
-function mHomework() {
-  const shared = sessionList.filter(s=>s.is_shared&&s.homework);
+function mHomework(){
+  const sh=sessions.filter(s=>s.is_shared&&s.homework);
+  return `<div class="card">
+    ${sh.length===0?`<div class="es"><i class="ti ti-checklist"></i><p>아직 숙제가 없어요<br>트레이너가 수업 후 공유해줄 거예요!</p></div>`:
+      `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div class="st" style="margin-bottom:0"><i class="ti ti-checklist"></i>최근 숙제</div><span class="tag tag-a">${sh[0].session_date}</span></div>
+      <div style="background:var(--acc-softer);border-radius:9px;padding:12px;font-size:13px;line-height:1.8;white-space:pre-line">${sh[0].homework}</div>
+      <div style="margin-top:10px;padding:9px 10px;background:var(--acc-softer);border-radius:8px;font-size:11px;color:var(--acc-text);font-weight:500">✨ 숙제 완료 시 미션에서 XP 획득!</div>`}
+  </div>
+  ${sh[0]?.caution?`<div class="card"><div style="background:#FFF1F2;border-left:3px solid #F43F5E;border-radius:0 9px 9px 0;padding:10px 12px"><div style="font-size:10px;font-weight:700;color:#9F1239;margin-bottom:2px">⚠️ 주의사항</div><div style="font-size:13px;color:var(--text2)">${sh[0].caution}</div></div></div>`:''}`;
+}
+
+function mNotice(){
+  return notices.length===0
+    ?`<div class="card"><div class="es"><i class="ti ti-speakerphone"></i><p>아직 공지가 없어요</p></div></div>`
+    :notices.map(n=>`<div class="nc ${n.is_pinned?'np':''}">${n.is_pinned?`<div style="font-size:9px;color:#92400E;font-weight:700;margin-bottom:2px">📌 고정</div>`:''}<div style="font-size:14px;font-weight:700;margin-bottom:3px">${n.title}</div><div style="font-size:13px;color:var(--text2)">${n.body}</div><div style="font-size:10px;color:var(--text3);margin-top:5px">${new Date(n.created_at).toLocaleDateString('ko-KR')}</div></div>`).join('');
+}
+
+function mSettings(){
   return `
   <div class="card">
-    ${shared.length===0
-      ? `<div class="empty-state"><i class="ti ti-checklist"></i><p>아직 숙제가 없어요<br>트레이너가 수업 후 공유해줄 거예요!</p></div>`
-      : `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <div class="sec-title" style="margin-bottom:0"><i class="ti ti-checklist"></i>최근 숙제</div>
-          <span class="tag tag-acc">${shared[0].session_date}</span>
-        </div>
-        <div style="background:var(--acc-softer);border-radius:9px;padding:12px;font-size:13px;line-height:1.8;white-space:pre-line">${shared[0].homework}</div>
-        <div style="margin-top:10px;padding:9px 10px;background:var(--acc-softer);border-radius:8px;font-size:11px;color:var(--acc-text);font-weight:500">✨ 숙제 완료 시 미션에서 XP 획득!</div>`}
-  </div>
-  ${shared[0]?.caution?`<div class="card"><div style="background:#FFF1F2;border-left:3px solid #F43F5E;border-radius:0 9px 9px 0;padding:10px 12px"><div style="font-size:10px;font-weight:700;color:#9F1239;margin-bottom:2px">⚠️ 주의사항</div><div style="font-size:13px;color:var(--text2)">${shared[0].caution}</div></div></div>`:''}`;
-}
-
-function mNotice() {
-  return noticeList.length===0
-    ? `<div class="card"><div class="empty-state"><i class="ti ti-speakerphone"></i><p>아직 공지가 없어요</p></div></div>`
-    : noticeList.map(n=>`
-      <div class="notice-card ${n.is_pinned?'notice-pin':''}">
-        ${n.is_pinned?`<div style="font-size:9px;color:#92400E;font-weight:700;margin-bottom:2px">📌 고정</div>`:''}
-        <div style="font-size:14px;font-weight:700;margin-bottom:3px">${n.title}</div>
-        <div style="font-size:13px;color:var(--text2)">${n.body}</div>
-        <div style="font-size:10px;color:var(--text3);margin-top:5px">${new Date(n.created_at).toLocaleDateString('ko-KR')}</div>
-      </div>`).join('');
-}
-
-function mSettings() {
-  return `
-  <div class="card">
-    <div class="sec-title"><i class="ti ti-palette"></i>테마 색상</div>
+    <div class="st"><i class="ti ti-palette"></i>테마 색상</div>
     <p style="font-size:12px;color:var(--text3);margin-bottom:14px">내 취향에 맞게 앱 색상을 바꿔보세요!</p>
-    <div class="swatch-grid">
-      ${themes.map(t=>`
-        <div class="swatch-item ${t.id===curTheme?'active':''}" onclick="changeTheme('${t.id}')">
-          <div class="swatch-circle" style="background:${t.color}"></div>
-          <div class="swatch-name">${t.name}</div>
-        </div>`).join('')}
-    </div>
+    <div class="sg">${THEMES.map(t=>`<div class="sw2 ${t.id===theme?'on':''}" onclick="chTheme('${t.id}')"><div class="sc2" style="background:${t.color}"></div><div class="sn">${t.name}</div></div>`).join('')}</div>
   </div>
   <div class="card">
-    <div class="sec-title"><i class="ti ti-user"></i>내 정보</div>
+    <div class="st"><i class="ti ti-user"></i>내 정보</div>
     <div style="display:flex;align-items:center;gap:12px;padding:4px 0">
-      <div style="width:44px;height:44px;border-radius:50%;background:var(--acc-soft);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--acc-text)">${userProfile?.name?.charAt(0)||'?'}</div>
-      <div>
-        <div style="font-size:15px;font-weight:700">${userProfile?.name||''}</div>
-        <div style="font-size:12px;color:var(--text3)">${memberProfile?.goal||''} · ${memberProfile?.current_week||1}주차</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:1px">${currentUser?.email||''}</div>
-      </div>
+      <div style="width:44px;height:44px;border-radius:50%;background:var(--acc-soft);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--acc-text)">${prof?.name?.charAt(0)||'?'}</div>
+      <div><div style="font-size:15px;font-weight:700">${prof?.name||''}</div><div style="font-size:12px;color:var(--text3)">${mprof?.goal||''} · ${mprof?.current_week||1}주차</div><div style="font-size:11px;color:var(--text3);margin-top:1px">${user?.email||''}</div></div>
     </div>
-    <button class="btn btn-danger btn-full" style="margin-top:12px" onclick="doLogout()"><i class="ti ti-logout"></i>로그아웃</button>
+    <button class="btn btn-d btn-w" style="margin-top:12px" onclick="doLogout()"><i class="ti ti-logout"></i>로그아웃</button>
   </div>`;
 }
 
 // ── 기타 ──
-function addEx() {
-  const list = document.getElementById('ex-list');
-  if (!list) return;
-  const names = ['런지','힙 쓰러스트','케이블 로우','숄더프레스','덤벨 컬','플랭크'];
-  const row = document.createElement('div');
-  row.className = 'ex-row';
-  row.innerHTML = `<span contenteditable="true">${names[Math.floor(Math.random()*names.length)]}</span><span contenteditable="true">-- · -- 회 · -- 세트</span><i class="ti ti-trash" style="font-size:13px;color:var(--text3);cursor:pointer;margin-left:6px" onclick="this.closest('.ex-row').remove()"></i>`;
+function addEx(){
+  const list=document.getElementById('ex-list');if(!list) return;
+  const names=['런지','힙 쓰러스트','케이블 로우','숄더프레스','덤벨 컬','플랭크'];
+  const row=document.createElement('div');row.className='ex';
+  row.innerHTML=`<span contenteditable="true">${names[Math.floor(Math.random()*names.length)]}</span><span contenteditable="true">-- · -- 회 · -- 세트</span><i class="ti ti-trash" style="font-size:13px;color:var(--text3);cursor:pointer;margin-left:6px" onclick="this.closest('.ex').remove()"></i>`;
   list.appendChild(row);
 }
 
-function drawChart(id) {
-  const cid = id==='m-inbody' ? 'member-inbody-chart' : 'inbody-chart';
-  const canvas = document.getElementById(cid);
-  if (!canvas || inbodyList.length===0) return;
-  if (chartInst) { chartInst.destroy(); chartInst=null; }
-  const sorted = [...inbodyList].reverse().slice(-6);
-  chartInst = new Chart(canvas, {
-    type:'line',
-    data:{
-      labels: sorted.map(r=>r.measured_at),
-      datasets:[
-        {label:'체지방률(%)', data:sorted.map(r=>r.body_fat_pct), borderColor:'#F43F5E', backgroundColor:'rgba(244,63,94,0.06)', borderWidth:2, tension:.4, pointRadius:3, pointBackgroundColor:'#F43F5E', yAxisID:'y'},
-        {label:'골격근량(kg)',data:sorted.map(r=>r.muscle_mass),  borderColor:'#0EA5E9', backgroundColor:'rgba(14,165,233,0.06)',  borderWidth:2, tension:.4, pointRadius:3, pointBackgroundColor:'#0EA5E9', yAxisID:'y1'},
-      ]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:true,
-      interaction:{mode:'index',intersect:false},
-      plugins:{legend:{labels:{font:{size:10},color:'#94A3B8',boxWidth:10}}},
-      scales:{
-        x:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{font:{size:10},color:'#94A3B8'}},
-        y:{position:'left', grid:{color:'rgba(148,163,184,0.08)'}, ticks:{font:{size:9},color:'#F43F5E'}},
-        y1:{position:'right',grid:{drawOnChartArea:false},         ticks:{font:{size:9},color:'#0EA5E9'}}
-      }
-    }
-  });
+function drawChart(id){
+  const cid=id==='mi2'?'m-ib-chart':'ib-chart';
+  const canvas=document.getElementById(cid);
+  if(!canvas||inbodys.length===0) return;
+  if(chart){chart.destroy();chart=null;}
+  const data=[...inbodys].reverse().slice(-6);
+  chart=new Chart(canvas,{type:'line',data:{
+    labels:data.map(r=>r.measured_at),
+    datasets:[
+      {label:'체지방률(%)',data:data.map(r=>r.body_fat_pct),borderColor:'#F43F5E',backgroundColor:'rgba(244,63,94,0.06)',borderWidth:2,tension:.4,pointRadius:3,pointBackgroundColor:'#F43F5E',yAxisID:'y'},
+      {label:'골격근량(kg)',data:data.map(r=>r.muscle_mass),borderColor:'#0EA5E9',backgroundColor:'rgba(14,165,233,0.06)',borderWidth:2,tension:.4,pointRadius:3,pointBackgroundColor:'#0EA5E9',yAxisID:'y1'},
+    ]
+  },options:{responsive:true,maintainAspectRatio:true,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{labels:{font:{size:10},color:'#94A3B8',boxWidth:10}}},
+    scales:{x:{grid:{color:'rgba(148,163,184,0.1)'},ticks:{font:{size:10},color:'#94A3B8'}},
+      y:{position:'left',grid:{color:'rgba(148,163,184,0.08)'},ticks:{font:{size:9},color:'#F43F5E'}},
+      y1:{position:'right',grid:{drawOnChartArea:false},ticks:{font:{size:9},color:'#0EA5E9'}}}}});
 }
 
-// ── 시작 ──
-initAuth();
+init();
 </script>
 </body>
 </html>
+
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
