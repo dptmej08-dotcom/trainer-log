@@ -299,7 +299,8 @@ const MISSIONS=[
   {key:'diet',title:'건강 식단 인증',desc:'식단 사진을 트레이너에게 전송',xp:30,type:'mid',icon:'🥗'},
 ];
 
-const GOALS=['근비대','감량','재활','체력향상','다이어트','체형교정'];
+const GOALS=['근력향상','다이어트','재활','체형교정'];
+// DB에 이미 저장된 '근비대','감량' 등 구버전 값도 표시될 수 있으니 select에서 처리
 const WEEKS=[...Array(24)].map((_,i)=>`${i+1}주차`);
 
 const PT={
